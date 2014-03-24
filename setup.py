@@ -7,14 +7,6 @@ from setuptools import setup
 ###########################################
 # (see notes below.)
 
-def check_gr1c():
-    import subprocess
-    try:
-        subprocess.call(["gr1c", "-V"], stdout=subprocess.PIPE)
-    except OSError:
-        return False
-    return True
-
 def check_glpk():
     try:
         import cvxopt.glpk
@@ -58,11 +50,8 @@ other_depends = {}
 glpk_msg = 'GLPK seems to be missing\n' +\
     'and thus apparently not used by your installation of CVXOPT.\n' +\
     'If you\'re interested, see http://www.gnu.org/s/glpk/'
-gr1c_msg = 'gr1c not found.\n' +\
-    'If you\'re interested in a GR(1) synthesis tool besides JTLV,\n' +\
-    'see http://scottman.net/2012/gr1c'
 mpl_msg = 'matplotlib not found.\n' +\
-    'For many graphics drawing features in TuLiP, you must install\n' +\
+    'For many graphics drawing features, you must install\n' +\
     'matplotlib (http://matplotlib.org/).'
 pydot_msg = 'pydot not found.\n' +\
     'Several graph image file creation and dot (http://www.graphviz.org/)\n' +\
@@ -77,7 +66,6 @@ pydot_msg = 'pydot not found.\n' +\
 #           found); we interpret the return value True to be success,
 #           and False failure.
 optionals = {'glpk' : [check_glpk, 'GLPK found.', glpk_msg],
-             'gr1c' : [check_gr1c, 'gr1c found.', gr1c_msg],
              'matplotlib' : [check_mpl, 'matplotlib found.', mpl_msg],
              'pydot' : [check_pydot, 'pydot found.', pydot_msg]}
 
@@ -112,16 +100,6 @@ if check_deps:
             print('ERROR: NumPy not found.')
             raise
         try:
-            import scipy
-        except:
-            print('ERROR: SciPy not found.')
-            raise
-        try:
-            import ply
-        except:
-            print('ERROR: ply not found.')
-            raise
-        try:
             import networkx
         except:
             print('ERROR: NetworkX not found.')
@@ -146,17 +124,7 @@ if check_deps:
         else:
             print("\t"+opt_val[2] )
 
-
 if perform_setup:
-    # Build PLY table, to be installed as tulip package data
-    try:
-        import os
-        import tulip.spec.plyparser
-        tulip.spec.plyparser.rebuild_parsetab()
-        os.rename("parsetab.py", "tulip/spec/parsetab.py")
-        plytable_build_failed = False
-    except:
-        plytable_build_failed = True
 
     from tulip import __version__ as tulip_version
     setup(
@@ -167,10 +135,9 @@ if perform_setup:
         author_email = 'murray@cds.caltech.edu',
         url = 'http://www.cds.caltech.edu/tulip',
         license = 'BSD',
-        requires = ['numpy', 'scipy', 'ply', 'networkx', 'cvxopt'],
+        requires = ['numpy', 'networkx', 'cvxopt'],
         install_requires = [
-            'numpy >= 1.7', 'ply >= 3.4',
-            'networkx >= 1.6', 'cvxopt'
+            'numpy >= 1.7', 'networkx >= 1.6', 'cvxopt'
         ],
         packages = [
             'tulip', 'tulip.transys', 'tulip.transys.export',
@@ -184,8 +151,3 @@ if perform_setup:
             'tulip.spec' : ['parsetab.py']
         },
     )
-
-    if plytable_build_failed:
-        print("!"*65)
-        print("    Failed to build PLY table.  Please run setup.py again.")
-        print("!"*65)
