@@ -32,6 +32,8 @@
 # 
 """ Polytope package
 """
+__version__ = '0.1a'
+
 from .polytope import Polytope, Region
 from .polytope import is_empty, is_fulldim, is_convex, is_adjacent, is_subset
 from .polytope import reduce, separate, box2poly, grid_region

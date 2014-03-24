@@ -125,12 +125,11 @@ if check_deps:
             print("\t"+opt_val[2] )
 
 if perform_setup:
-
-    from tulip import __version__ as tulip_version
+    from polytope import __version__ as polytope_version
     setup(
-        name = 'tulip',
-        version = tulip_version,
-        description = 'Temporal Logic Planning (TuLiP) Toolbox',
+        name = 'polytope',
+        version = polytope_version,
+        description = 'Polytope Toolbox',
         author = 'Caltech Control and Dynamical Systems',
         author_email = 'murray@cds.caltech.edu',
         url = 'http://www.cds.caltech.edu/tulip',
@@ -140,14 +139,8 @@ if perform_setup:
             'numpy >= 1.7', 'networkx >= 1.6', 'cvxopt'
         ],
         packages = [
-            'tulip', 'tulip.transys', 'tulip.transys.export',
-            'tulip.abstract', 'tulip.polytope', 'tulip.spec',
-            'tulip.interfaces'
+            'polytope',
         ],
-        package_dir = {'tulip' : 'tulip'},
-        package_data={
-            'tulip.interfaces': ['jtlv_grgame.jar'],
-            'tulip.transys.export' : ['d3.v3.min.js'],
-            'tulip.spec' : ['parsetab.py']
-        },
+        package_dir = {'polytope' : 'polytope'},
+        package_data={},
     )
