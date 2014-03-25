@@ -37,7 +37,7 @@
 #  The overall structure of this library and the functions in the list
 #  below are taken with permission from:
 #
-#  M. Kvasnica, P. Grieder and M. Baoti,
+#  M. Kvasnica, P. Grieder and M. Baotić,
 #  Multi-Parametric Toolbox (MPT),
 #  http://control.ee.ethz.ch/~mpt/
 #
