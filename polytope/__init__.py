@@ -32,7 +32,7 @@
 # 
 """ Polytope package
 """
-__version__ = '0.1a'
+__version__ = '0.1.0'
 
 from .polytope import Polytope, Region
 from .polytope import is_empty, is_fulldim, is_convex, is_adjacent, is_subset
