@@ -1,6 +1,7 @@
 Polytope
 ========
-This is the source repository for `polytope`, a toolbox for geometric operations on polytopes in any dimension.
+This is the source repository for `polytope`, a toolbox for geometric operations
+on polytopes in any dimension.
 
 Installation
 ------------
@@ -26,5 +27,8 @@ provided in the file named `LICENSE`.
 
 Acknowledgment
 --------------
-Polytope was part of the `Temporal Logic Planning Toolbox (TuLiP) <http://www.cds.caltech.edu/tulip>`_ before growing to become an independent package.
-It originates from changesets 7bb73a9f725572db454a0a5e4957da84bc778f65 and 3178c570ee1ef06eb8ace033f205f51743ac54c6 of `TuLiP <https://github.com/tulip-control/tulip-control>`_.
+Polytope was part of the `Temporal Logic Planning Toolbox (TuLiP)
+<http://www.cds.caltech.edu/tulip>`_ before growing to become an independent
+package.  It originates from changesets 7bb73a9f725572db454a0a5e4957da84bc778f65
+and 3178c570ee1ef06eb8ace033f205f51743ac54c6 of `TuLiP
+<https://github.com/tulip-control/tulip-control>`_.
