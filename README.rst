@@ -21,7 +21,8 @@ Optional: `matplotlib`, `scipy`.
 
 License
 -------
-Polytope is licensed under the 3-clause BSD license.
+Polytope is licensed under the 3-clause BSD license.  The full statement is
+provided in the file named `LICENSE`.
 
 Acknowledgment
 --------------
