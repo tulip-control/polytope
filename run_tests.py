@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 """
-Driver script for testing TuLiP.  Try calling it with "-h" flag.
+Driver script for testing polytope package.  Try calling it with "-h" flag.
 
-SCL; 16 Jan 2014.
+This script was originally copied from one by the same name in
+TuLiP (http://tulip-control.org).
 """
 
 import imp
@@ -26,7 +27,7 @@ if __name__ == "__main__":
 
     --fast           exclude tests that are marked as slow
     --cover          generate a coverage report
-    --outofsource    import tulip from outside the current directory
+    --outofsource    import polytope from outside the current directory
     --where=DIR      search for tests in directory DIR; default is "tests"
                      (this is exactly the "-w" or "--where" option of nose)""")
         exit(1)
@@ -44,10 +45,10 @@ if __name__ == "__main__":
         measure_coverage = False
 
     if "--outofsource" in sys.argv:
-        require_nonlocaldir_tulip = True
+        require_nonlocaldir_polytope = True
         sys.argv.remove("--outofsource")
     else:
-        require_nonlocaldir_tulip = False
+        require_nonlocaldir_polytope = False
 
     # Try to find test directory among command-line arguments
     given_tests_dir = False
@@ -63,7 +64,7 @@ if __name__ == "__main__":
     if not given_tests_dir:
         tests_dir = "tests"
 
-    if require_nonlocaldir_tulip:
+    if require_nonlocaldir_polytope:
         # Scrub local directory from search path for modules
         import os
         try:
@@ -77,11 +78,11 @@ if __name__ == "__main__":
         except ValueError:
             pass
     try:
-        modtuple = imp.find_module("tulip", sys.path)
-        imp.load_module("tulip", *modtuple)
+        modtuple = imp.find_module("polytope", sys.path)
+        imp.load_module("polytope", *modtuple)
     except ImportError:
-        if require_nonlocaldir_tulip:
-            raise ImportError("tulip package not found, besides in the local directory")
+        if require_nonlocaldir_polytope:
+            raise ImportError("polytope package not found, besides in the local directory")
         else:
             raise
 
@@ -89,7 +90,7 @@ if __name__ == "__main__":
     if skip_slow:
         argv.append("--attr=!slow")
     if measure_coverage:
-        argv.extend(["--with-coverage", "--cover-html", "--cover-package=tulip"])
+        argv.extend(["--with-coverage", "--cover-html", "--cover-package=polytope"])
     testfiles = []
     excludefiles = []
     for basename in sys.argv[1:]:  # Only add extant file names

@@ -3,7 +3,7 @@
 Tests for the polytope subpackage.
 """
 import numpy as np
-from tulip import polytope as pc
+import polytope as pc
 
 # unit square
 Ab = np.array([[0.0, 1.0, 1.0],
