@@ -1,7 +1,4 @@
-recursive-include examples *.py README
+recursive-include examples *.py
 include run_tests.py
 include tests/*.py
 include README.rst
-include doc/*
-exclude doc/*.sh
-recursive-include contrib *
