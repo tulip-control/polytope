@@ -134,9 +134,9 @@ if perform_setup:
         author_email = 'murray@cds.caltech.edu',
         url = 'http://tulip-control.org',
         license = 'BSD',
-        requires = ['numpy', 'networkx', 'cvxopt'],
+        requires = ['numpy', 'scipy', 'networkx', 'cvxopt'],
         install_requires = [
-            'numpy >= 1.7', 'networkx >= 1.6', 'cvxopt'
+            'numpy >= 1.6', 'scipy', 'networkx >= 1.6', 'cvxopt'
         ],
         packages = [
             'polytope',
