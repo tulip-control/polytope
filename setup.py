@@ -21,17 +21,6 @@ def check_mpl():
         return False
     return True
 
-def check_pydot():
-    try:
-        import pydot
-        from distutils.version import StrictVersion
-        if StrictVersion(pydot.__version__) < StrictVersion('1.0.28'):
-            print('Pydot version >= 1.0.28 required.' +
-                'found: ' +pydot.__version__)
-    except ImportError:
-        return False
-    return True
-
 # Handle "dry-check" argument to check for dependencies without
 # installing the tulip package; checking occurs by default if
 # "install" is given, unless both "install" and "nocheck" are given
@@ -53,10 +42,6 @@ glpk_msg = 'GLPK seems to be missing\n' +\
 mpl_msg = 'matplotlib not found.\n' +\
     'For many graphics drawing features, you must install\n' +\
     'matplotlib (http://matplotlib.org/).'
-pydot_msg = 'pydot not found.\n' +\
-    'Several graph image file creation and dot (http://www.graphviz.org/)\n' +\
-    'export routines will be unavailable unless you install\n' +\
-    'pydot (http://code.google.com/p/pydot/).'
 
 # These are nice to have but not necessary. Each item is of the form
 #
@@ -66,8 +51,7 @@ pydot_msg = 'pydot not found.\n' +\
 #           found); we interpret the return value True to be success,
 #           and False failure.
 optionals = {'glpk' : [check_glpk, 'GLPK found.', glpk_msg],
-             'matplotlib' : [check_mpl, 'matplotlib found.', mpl_msg],
-             'pydot' : [check_pydot, 'pydot found.', pydot_msg]}
+             'matplotlib' : [check_mpl, 'matplotlib found.', mpl_msg]}
 
 import sys
 perform_setup = True
