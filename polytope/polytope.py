@@ -80,7 +80,7 @@ try:
     import cvxopt.glpk
     lp_solver = 'glpk'
 except:
-    logger.warn("GLPK (Gnu Linear Programming Kit) solver for CVXOPT not found, "
+    logger.warn("GLPK (GNU Linear Programming Kit) solver for CVXOPT not found, "
            "reverting to CVXOPT's own solver. This may be slow")
     lp_solver = None
 
