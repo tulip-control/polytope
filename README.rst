@@ -16,9 +16,9 @@ To avoid checking for optional dependencies, add the option "nocheck"::
 
 Dependencies
 ------------
-Required: ``numpy``, ``cvxopt``, ``networkx``.
+Required: ``numpy``, ``scipy``, ``cvxopt``, ``networkx``.
 
-Optional: ``matplotlib``, ``scipy``.
+Optional: ``matplotlib``.
 
 License
 -------
