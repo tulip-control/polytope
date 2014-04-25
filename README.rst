@@ -1,7 +1,9 @@
 Polytope
 ========
+
 This is the source repository for ``polytope``, a toolbox for geometric
-operations on polytopes in any dimension.
+operations on polytopes in any dimension.  Documentation and examples are
+available in the directories ``doc/`` and ``examples/``.
 
 Installation
 ------------
