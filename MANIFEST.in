@@ -1,4 +1,5 @@
 recursive-include examples *.py
 include run_tests.py
 include tests/*.py
+include doc/*
 include README.rst LICENSE AUTHORS
