@@ -47,8 +47,8 @@ We can check if the point with coordinates `[0.5, 0.5]` is in `Polytope` `p` wit
 
 We can compare polytopes:
 
-    - `p1 <= p2` is `True` iff `p1` is a subset of `p2`
-    - `p1 == p2` iff `p1 <= p2` and `p2 <= p1`
+  - `p1 <= p2` is `True` iff `p1` is a subset of `p2`
+  - `p1 == p2` iff `p1 <= p2` and `p2 <= p1`
 
 Set operations between polytopes are available as methods (as well as functions):
 
