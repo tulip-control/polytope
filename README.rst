@@ -1,7 +1,7 @@
 Polytope
 ========
-This is the source repository for `polytope`, a toolbox for geometric operations
-on polytopes in any dimension.
+This is the source repository for ``polytope``, a toolbox for geometric
+operations on polytopes in any dimension.
 
 Installation
 ------------
@@ -16,9 +16,9 @@ To avoid checking for optional dependencies, add the option "nocheck"::
 
 Dependencies
 ------------
-Required: `numpy`, `cvxopt`, `networkx`.
+Required: ``numpy``, ``cvxopt``, ``networkx``.
 
-Optional: `matplotlib`, `scipy`.
+Optional: ``matplotlib``, ``scipy``.
 
 License
 -------
