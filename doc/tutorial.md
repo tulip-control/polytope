@@ -85,13 +85,13 @@ p.bounding_box
 Several of these attributes are properties that compute the associated attribute, if it has not been already computed.
 The reason is that some computations, e.g., volume or [Chebyshev ball](https://en.wikipedia.org/wiki/Chebyshev_center) radius, require sampling or solving an optimization problem, which can be computationally expensive.
 
-Finally, the method `plot` does what it says on a `matplotlib` figure and `text` can be used for placing annotations at the `Polytope`'s Chebyshev center.
+Finally, the method `plot` does what it says on a [matplotlib](http://matplotlib.org) figure and `text` can be used for placing annotations at the `Polytope`'s Chebyshev center.
 The `bounding_box` can be used to set the correct axis limits to ensure the `Polytope` is visible in the plot.
 
 ## Regions
 
 A `Region` is a (possibly non-convex and even disconnected) container of (by definition convex) `Polytope` objects.
-The polytopes can be passed in an iterable during instantiation:
+The polytopes can be passed in an [iterable](https://docs.python.org/2.7/glossary.html#term-iterable) during instantiation:
 
 ```python
 p1 = pc.box2poly([[0,2], [0,1]])
@@ -100,7 +100,7 @@ r = pc.Region([p1, p2])
 ```
 
 The above results in a `Region` representing a non-convex polytope comprised of two convex polytopes.
-iteration is over the `Region`'s polytopes:
+Iteration is over the `Region`'s polytopes:
 
 ```python
 for polytope in r:
