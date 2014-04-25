@@ -138,7 +138,7 @@ The other methods and attributes have names identical with those of `Polytope`.
 
 ## Functions
 
-A couple of functions are available:
+An incomplete list of additional functions besides those described above:
 
 - `is_empty`
 - `is_fulldim`
