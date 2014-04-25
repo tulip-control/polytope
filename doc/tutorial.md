@@ -2,7 +2,9 @@
 
 First import the package:
 
-    import polytope as pc
+```python
+import polytope as pc
+```
 
 The `polytope` package is structured around two classes:
 
@@ -13,37 +15,41 @@ The `polytope` package is structured around two classes:
 
 A `Polytope` is defined by passing the matrices `A` and `b` as `numpy` arrays:
 
-    import numpy as np
-    
-    A = np.array([[1.0, 0.0],
-                  [0.0, 1.0],
-                  [-1.0, -0.0],
-                  [-0.0, -1.0]])
-    
-    b = np.array([2.0, 1.0, 0.0, 0.0])
-    
-    p = pc.Polytope(A, b)
+```python
+import numpy as np
+
+A = np.array([[1.0, 0.0],
+              [0.0, 1.0],
+              [-1.0, -0.0],
+              [-0.0, -1.0]])
+
+b = np.array([2.0, 1.0, 0.0, 0.0])
+
+p = pc.Polytope(A, b)
+```
 
 In this particular case we created a `Polytope` which happens to be aligned with the coordinate axes.
 So we can instantiate the exact same `Polytope` by calling the convenience function `box2poly` instead:
 
-    p = pc.box2poly([[0, 2], [0, 1]])
+```python
+p = pc.box2poly([[0, 2], [0, 1]])
+```
 
-To verify we got what we wanted:
+To verify we got what we wanted `print(p)` shows:
 
-    print(p)
-
-shows:
-
-    Single polytope 
-      [[ 1.  0.] |    [[ 2.]
-       [ 0.  1.] x <=  [ 1.]
-       [-1. -0.] |     [ 0.]
-       [-0. -1.]]|     [ 0.]]
+```python
+Single polytope 
+ [[ 1.  0.] |    [[ 2.]
+  [ 0.  1.] x <=  [ 1.]
+  [-1. -0.] |     [ 0.]
+  [-0. -1.]]|     [ 0.]]
+```
 
 We can check if the point with coordinates `[0.5, 0.5]` is in `Polytope` `p` with the expression:
 
-    [0.5, 0.5] in p
+```python
+[0.5, 0.5] in p
+```
 
 We can compare polytopes:
 
@@ -52,23 +58,29 @@ We can compare polytopes:
 
 Set operations between polytopes are available as methods (as well as functions):
 
-    p1.union(p2)
-    p1.diff(p2)
-    p1.intersect(p2)
+```python
+p1.union(p2)
+p1.diff(p2)
+p1.intersect(p2)
+```
 
 Some additional operations are available:
 
-    p1.project(dim)
-    p1.scale(10) # b := 10 * b
+```python
+p1.project(dim)
+p1.scale(10) # b := 10 * b
+```
 
 Various `Polytope` characteristics are accessible via attributes:
 
-    p.dim # number of dimensions of ambient Euclidean space
-    p.volume # measure in ambient space
-    p.chebR # Chebyshev ball radius
-    p.chebXc # Chebyshev ball center
-    p.cheby
-    p.bounding_box
+```python
+p.dim # number of dimensions of ambient Euclidean space
+p.volume # measure in ambient space
+p.chebR # Chebyshev ball radius
+p.chebXc # Chebyshev ball center
+p.cheby
+p.bounding_box
+```
 
 Several of these attributes are properties that compute the associated attribute, if it has not been already computed.
 The reason is that some computations, e.g., volume or [Chebyshev ball](https://en.wikipedia.org/wiki/Chebyshev_center) radius, require sampling or solving an optimization problem, which can be computationally expensive.
@@ -81,15 +93,19 @@ The `bounding_box` can be used to set the correct axis limits to ensure the `Pol
 A `Region` is a (possibly non-convex and even disconnected) container of (by definition convex) `Polytope` objects.
 The polytopes can be passed in an iterable during instantiation:
 
-    p1 = pc.box2poly([[0,2], [0,1]])
-    p2 = pc.box2poly([[2,3], [0,2]])
-    r = pc.Region([p1, p2])
+```python
+p1 = pc.box2poly([[0,2], [0,1]])
+p2 = pc.box2poly([[2,3], [0,2]])
+r = pc.Region([p1, p2])
+```
 
 The above results in a `Region` representing a non-convex polytope comprised of two convex polytopes.
 iteration is over the `Region`'s polytopes:
 
-    for polytope in r:
-        print(polytope)
+```python
+for polytope in r:
+    print(polytope)
+```
 
 The `Region` itself can also be displayed with `print(r)`.
 Polytopes in a `Region` are ordered in a list, so `Region[i]` returns the `i`-th `Polytope` in that list.
@@ -98,9 +114,11 @@ For a single `Polytope` calling `len(p)` returns 0.
 
 Addition and subtraction return new `Region` objects:
 
-    r1 + r2 # set union
-    r1 - r2 # set difference
-    r1 and r2 # intersection
+```python
+r1 + r2 # set union
+r1 - r2 # set difference
+r1 and r2 # intersection
+```
 
 The other methods and attributes have names identical with those of `Polytope`.
 
