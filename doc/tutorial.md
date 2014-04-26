@@ -131,7 +131,7 @@ Addition and subtraction return new `Region` objects:
 ```python
 r1 + r2 # set union
 r1 - r2 # set difference
-r1 and r2 # intersection
+r1 & r2 # intersection
 ```
 
 The other methods and attributes have names identical with those of `Polytope`.
