@@ -115,7 +115,7 @@ if perform_setup:
         version = polytope_version,
         description = 'Polytope Toolbox',
         author = 'Caltech Control and Dynamical Systems',
-        author_email = 'murray@cds.caltech.edu',
+        author_email = 'polytope@tulip-control.org',
         url = 'http://tulip-control.org',
         license = 'BSD',
         requires = ['numpy', 'scipy', 'networkx', 'cvxopt'],
