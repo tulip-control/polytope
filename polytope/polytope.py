@@ -246,7 +246,7 @@ class ConvexPolytope(object):
             msg += str(type(other) )
             raise Exception(msg)
         
-        if (not is_fulldim(self)) or (not is_fulldim(other)):
+        if not self.is_fulldim() or not other.is_fulldim():
             return ConvexPolytope()
         
         if self.dim != other.dim:
@@ -398,7 +398,7 @@ class ConvexPolytope(object):
         if ax is None:
             ax, fig = newax()
         
-        if not is_fulldim(self):
+        if not self.is_fulldim():
             logger.error("Cannot plot empty polytope")
             return ax
         
@@ -713,7 +713,7 @@ class Region(object):
             return None
         
         #TODO optional arg for text label
-        if not is_fulldim(self):
+        if not self.is_fulldim():
             logger.error("Cannot plot empty region")
             return
         
@@ -744,7 +744,7 @@ def is_convex(reg, abs_tol=ABS_TOL):
         be convex the envelope describing the convex polytope is
         returned.
     """
-    if not is_fulldim(reg):
+    if not reg.is_fulldim():
         return True
     
     if len(reg) == 0:
@@ -763,7 +763,7 @@ def is_convex(reg, abs_tol=ABS_TOL):
     if sum(abs(bboxP[:,0] - bboxO[:,0]) > abs_tol) > 0 or \
     sum(abs(bboxP[:,1] - bboxO[:,1]) > abs_tol) > 0:
         return False,None
-    if is_fulldim(outer.diff(reg)):
+    if outer.diff(reg).is_fulldim():
         return False,None
     else:
         return True,outer
@@ -817,7 +817,7 @@ def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):
         lst = []
         for poly2 in poly.list_poly:
             red = reduce(poly2)
-            if is_fulldim(red):
+            if red.is_fulldim():
                 lst.append(red)
         if len(lst) > 0:
             return Region(lst, poly.props)
@@ -829,7 +829,7 @@ def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):
     # If polytope already in minimal representation
         return poly
         
-    if not is_fulldim(poly):
+    if not poly.is_fulldim():
         return ConvexPolytope()
     
     A_arr = poly.A
@@ -922,7 +922,7 @@ def union(polyreg1,polyreg2,check_convex=False):
     
     if check_convex:
         s1 = intersect(polyreg1, polyreg2)
-        if is_fulldim(s1):
+        if s1.is_fulldim():
             s2 = polyreg2.diff(polyreg1)
             s3 = polyreg1.diff(polyreg2)
         else:
@@ -1163,7 +1163,7 @@ def envelope(reg, abs_tol=ABS_TOL):
             Ae = np.vstack([Ae, poly1.A[ind_i,:]])
             be = np.hstack([be, poly1.b[ind_i]])
     ret = reduce(ConvexPolytope(Ae,be))
-    if is_fulldim(ret):
+    if ret.is_fulldim():
         return ret
     else:
         return ConvexPolytope()
@@ -1242,7 +1242,7 @@ def volume(polyreg):
     
     @return: Volume of input
     """
-    if not is_fulldim(polyreg):
+    if not polyreg.is_fulldim():
         return 0.
     try:
         if polyreg._volume is not None:
@@ -1300,7 +1300,7 @@ def extreme(poly1):
     
     poly1 = reduce(poly1) # Need to have polytope non-redundant!
 
-    if not is_fulldim(poly1):
+    if not poly1.is_fulldim():
         return None
     
     A = poly1.A.copy()
@@ -1359,7 +1359,7 @@ def extreme(poly1):
         
         Q = reduce(qhull(Ai))
                 
-        if not is_fulldim(Q):
+        if not Q.is_fulldim():
             return None
         
         H = Q.A
@@ -1557,7 +1557,7 @@ def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
             np.concatenate((A1_arr, A2_arr)),
             np.concatenate((b1_arr, b2_arr))
         )
-        return is_fulldim(dummy, abs_tol=abs_tol / 10)
+        return dummy.is_fulldim(abs_tol=abs_tol / 10)
         
     else:
         M1 = np.concatenate((poly1.A, np.array([poly1.b]).T), 1).T
@@ -1582,7 +1582,7 @@ def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
             np.concatenate((A1_arr, A2_arr)),
             np.concatenate((b1_arr, b2_arr))
         )
-        return is_fulldim(dummy, abs_tol=abs_tol / 10)
+        return dummy.is_fulldim(abs_tol=abs_tol / 10)
     
 #### Helper functions ####
         
@@ -1625,7 +1625,7 @@ def projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
             np.dot(C,poly.A)[:,keep_dim],
             np.dot(C,poly.b)
         )
-        if not is_fulldim(poly):
+        if not poly.is_fulldim():
             return ConvexPolytope()
         poly = reduce(poly)
         
@@ -1803,7 +1803,7 @@ def projection_esp(poly1,keep_dim,del_dim):
     """
     C = poly1.A[:,keep_dim]
     D = poly1.A[:,del_dim]
-    if not is_fulldim(poly1):
+    if not poly1.is_fulldim():
         return ConvexPolytope()
     G,g,E = esp(C,D,poly1.b)
     return ConvexPolytope(G,g)
@@ -1875,7 +1875,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     HK = np.hstack([H,np.array([K]).T])
     for ii in xrange(N): 
         i = ind[ii]
-        if not is_fulldim(reg.list_poly[i]):
+        if not reg.list_poly[i].is_fulldim():
             continue
         Hni = reg.list_poly[i].A.copy()
         Kni = reg.list_poly[i].b.copy()   
