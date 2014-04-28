@@ -1025,7 +1025,6 @@ def cheby_ball(poly1):
         xc = sol['x'][0:-1]
     else:
         # Polytope is empty
-        poly1 = ConvexPolytope(fulldim = False)
         return None, 0
     
     xc = np.array(xc)
