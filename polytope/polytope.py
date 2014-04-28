@@ -223,10 +223,10 @@ class ConvexPolytope(object):
         return not self == other
     
     def __le__(self, other):
-        return is_subset(self, other)
+        return _is_subset(self, other)
     
     def __ge__(self, other):
-        return is_subset(other, self)
+        return _is_subset(other, self)
     
     def __nonzero__(self):
         return bool(self.volume > 0)
@@ -510,10 +510,10 @@ class Region(object):
         return not self == other
     
     def __le__(self, other):
-        return is_subset(self, other)
+        return _is_subset(self, other)
     
     def __ge__(self, other):
-        return is_subset(other, self)
+        return _is_subset(other, self)
     
     def __add__(self, other):
         """Return union with Polytope or Region.
@@ -773,18 +773,18 @@ def is_inside(polyreg, point, abs_tol=ABS_TOL):
     @rtype: bool
     """
     return polyreg.__contains__(point, abs_tol)
-        
-def is_subset(small, big, abs_tol=ABS_TOL):
+
+def _is_subset(small, big, abs_tol=ABS_TOL):
     """Return True if small \subseteq big.
     
-    @type small: L{Polytope} or L{Region}
-    @type big:   L{Polytope} or L{Region}
+    @type small: L{Region}
+    @type big: L{Region}
     
     @rtype: bool
     """
     for x in [small, big]:
-        if not isinstance(x, (ConvexPolytope, Region)):
-            msg = 'Not a Polytope or Region, got instead:\n\t'
+        if not isinstance(x, Region):
+            msg = 'Not a Region, got instead:\n\t'
             msg += str(type(x))
             raise TypeError(msg)
     
