@@ -606,12 +606,23 @@ class Region(object):
         return proj
     
     def __copy__(self):
-        """Return copy of this Region."""
-        return Region(list_poly=self.list_poly[:],
-                      props=self.props.copy())
+        """Return copy of this Region.
+        """
+        r = Region(self.list_poly[:], props=self.props.copy() )
+        
+        r._bbox = self._bbox
+        r._fulldim = self._fulldim
+        r._volume = self._volume
+        r._x = self._x
+        r._r = self._r
+        r._is_empty = self._is_empty
+        r._abs_tol = self._abs_tol
+        
+        return r
     
     def copy(self):
-        """Return copy of this Region."""
+        """Return copy of this Region.
+        """
         return self.__copy__()
     
     @property
