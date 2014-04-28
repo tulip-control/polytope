@@ -1154,42 +1154,32 @@ count = 0
 def mldivide(a, b, save=False):
     """Return set difference a \ b.
     
-    @param a: L{Polytope} or L{Region}
-    @param b: L{Polytope} to subtract
+    @param a: L{Region}
+    @param b: L{Region} to subtract
     
     @return: L{Region} describing the set difference
     """
-    if isinstance(b, ConvexPolytope):
-        b = Region([b])
+    logger.debug('mldivide got Region as minuend')
     
-    if isinstance(a, Region):
-        logger.debug('mldivide got Region as minuend')
+    P = Region()
+    for poly in a:
+        #assert(not is_fulldim(P.intersection(poly) ) )
+        Pdiff = poly
+        for poly1 in b:
+            Pdiff = mldivide(Pdiff, poly1, save=save)
+        P = union(P, Pdiff, check_convex=True)
         
-        P = Region()
-        for poly in a:
-            #assert(not is_fulldim(P.intersection(poly) ) )
-            Pdiff = poly
-            for poly1 in b:
-                Pdiff = mldivide(Pdiff, poly1, save=save)
-            P = union(P, Pdiff, check_convex=True)
+        if save:
+            global count
+            count = count + 1
             
-            if save:
-                global count
-                count = count + 1
-                
-                ax = Pdiff.plot()
-                ax.axis([0.0, 1.0, 0.0, 2.0])
-                ax.figure.savefig('./img/Pdiff' + str(count) + '.pdf')
-                
-                ax = P.plot()
-                ax.axis([0.0, 1.0, 0.0, 2.0])
-                ax.figure.savefig('./img/P' + str(count) + '.pdf')
-    elif isinstance(a, ConvexPolytope):
-        logger.debug('a is Polytope')
-        P = region_diff(a, b)
-    else:
-        raise Exception('a neither Region nor Polytope')
-    
+            ax = Pdiff.plot()
+            ax.axis([0.0, 1.0, 0.0, 2.0])
+            ax.figure.savefig('./img/Pdiff' + str(count) + '.pdf')
+            
+            ax = P.plot()
+            ax.axis([0.0, 1.0, 0.0, 2.0])
+            ax.figure.savefig('./img/P' + str(count) + '.pdf')
     return P
     
 def volume(poly):
