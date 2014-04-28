@@ -96,8 +96,8 @@ np.set_printoptions(precision=5, suppress = True)
 # so that magic methods can still be used
 ABS_TOL = 1e-7
 
-class Polytope(object):
-    """Polytope class with following fields
+class ConvexPolytope(object):
+    """ConvexPolytope class with following fields
     
       - `A`: a numpy array for the hyperplane normals in hyperplane
              representation of a polytope
@@ -195,7 +195,7 @@ class Polytope(object):
     def __copy__(self):
         A = self.A.copy()
         b = self.b.copy()
-        P = Polytope(A,b)
+        P = ConvexPolytope(A,b)
         P._chebXc = self._chebXc
         P._chebR = self._chebR
         P.minrep = self.minrep
@@ -264,14 +264,14 @@ class Polytope(object):
         if isinstance(other, Region):
             return other.intersect(self)
         
-        if not isinstance(other, Polytope):
+        if not isinstance(other, ConvexPolytope):
             msg = 'Polytope intersection defined only'
             msg += ' with other Polytope. Got instead: '
             msg += str(type(other) )
             raise Exception(msg)
         
         if (not is_fulldim(self)) or (not is_fulldim(other)):
-            return Polytope()
+            return ConvexPolytope()
         
         if self.dim != other.dim:
             raise Exception("polytopes have different dimension")
@@ -279,7 +279,7 @@ class Polytope(object):
         iA = np.vstack([self.A, other.A])
         ib = np.hstack([self.b, other.b])
         
-        return reduce(Polytope(iA, ib), abs_tol=abs_tol)
+        return reduce(ConvexPolytope(iA, ib), abs_tol=abs_tol)
     
     def copy(self):
         """Return copy of this Polytope.
@@ -589,7 +589,7 @@ class Region(object):
         
         @rtype: L{Region}
         """
-        if isinstance(other, Polytope):
+        if isinstance(other, ConvexPolytope):
             other = [other]
         
         P = Region()
@@ -783,7 +783,7 @@ def is_subset(small, big, abs_tol=ABS_TOL):
     @rtype: bool
     """
     for x in [small, big]:
-        if not isinstance(x, (Polytope, Region)):
+        if not isinstance(x, (ConvexPolytope, Region)):
             msg = 'Not a Polytope or Region, got instead:\n\t'
             msg += str(type(x))
             raise TypeError(msg)
@@ -818,7 +818,7 @@ def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):
         if len(lst) > 0:
             return Region(lst, poly.props)
         else:
-            return Polytope()
+            return ConvexPolytope()
             
         
     if poly.minrep:
@@ -826,7 +826,7 @@ def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):
         return poly
         
     if not is_fulldim(poly):
-        return Polytope()
+        return ConvexPolytope()
     
     A_arr = poly.A
     b_arr = poly.b
@@ -858,11 +858,11 @@ def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):
     
     if nonEmptyBounded:
         if neq<=nx+1:
-            return Polytope(A_arr,b_arr)
+            return ConvexPolytope(A_arr,b_arr)
     
     # Now eliminate hyperplanes outside the bounding box
     if neq>3*nx:
-        lb, ub = Polytope(A_arr,b_arr).bounding_box
+        lb, ub = ConvexPolytope(A_arr,b_arr).bounding_box
         #cand = -(np.dot((A_arr>0)*A_arr,ub-lb)
         #-(b_arr-np.dot(A_arr,lb).T).T<-1e-4)
         cand = -(
@@ -876,7 +876,7 @@ def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):
     neq, nx = A_arr.shape
     if nonEmptyBounded:
         if neq<=nx+1:
-            return Polytope(A_arr,b_arr)
+            return ConvexPolytope(A_arr,b_arr)
          
     del keep_row[:]
     for k in xrange(A_arr.shape[0]):
@@ -896,7 +896,7 @@ def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):
         elif sol['status'] == "dual infeasable":
             keep_row.append(k)
         
-    polyOut = Polytope(A_arr[keep_row],b_arr[keep_row])
+    polyOut = ConvexPolytope(A_arr[keep_row],b_arr[keep_row])
     polyOut.minrep = True
     return polyOut
 
@@ -1038,7 +1038,7 @@ def cheby_ball(poly1):
         xc = sol['x'][0:-1]
     else:
         # Polytope is empty
-        poly1 = Polytope(fulldim = False)
+        poly1 = ConvexPolytope(fulldim = False)
         return 0,None   
     poly1._chebXc = np.array(xc)
     poly1._chebR = np.double(r)
@@ -1161,7 +1161,7 @@ def envelope(reg, abs_tol=ABS_TOL):
                 poly2 = reg.list_poly[j]
                 testA = np.vstack([poly2.A, -poly1.A[ii,:]])
                 testb = np.hstack([poly2.b, -poly1.b[ii]])
-                testP = Polytope(testA,testb)
+                testP = ConvexPolytope(testA,testb)
                 rc,xc = cheby_ball(testP)
                 if rc > abs_tol:
                     # poly2 intersects with inequality ii -> this inequality
@@ -1174,11 +1174,11 @@ def envelope(reg, abs_tol=ABS_TOL):
         else:
             Ae = np.vstack([Ae, poly1.A[ind_i,:]])
             be = np.hstack([be, poly1.b[ind_i]])
-    ret = reduce(Polytope(Ae,be))
+    ret = reduce(ConvexPolytope(Ae,be))
     if is_fulldim(ret):
         return ret
     else:
-        return Polytope()
+        return ConvexPolytope()
 
 count = 0
 
@@ -1190,7 +1190,7 @@ def mldivide(a, b, save=False):
     
     @return: L{Region} describing the set difference
     """
-    if isinstance(b, Polytope):
+    if isinstance(b, ConvexPolytope):
         b = Region([b])
     
     if isinstance(a, Region):
@@ -1215,7 +1215,7 @@ def mldivide(a, b, save=False):
                 ax = P.plot()
                 ax.axis([0.0, 1.0, 0.0, 2.0])
                 ax.figure.savefig('./img/P' + str(count) + '.pdf')
-    elif isinstance(a, Polytope):
+    elif isinstance(a, ConvexPolytope):
         logger.debug('a is Polytope')
         P = region_diff(a, b)
     else:
@@ -1238,7 +1238,7 @@ def intersect(poly1,poly2,abs_tol=ABS_TOL):
     if isinstance(poly2, Region):
         return poly2.intersect(poly1)
     
-    if not isinstance(poly1, Polytope):
+    if not isinstance(poly1, ConvexPolytope):
         msg = 'poly1 not Region nor Polytope.'
         msg += 'Got instead: ' + str(type(poly1) )
         raise Exception(msg)
@@ -1396,8 +1396,8 @@ def qhull(vertices,abs_tol=ABS_TOL):
     """
     A,b,vert = quickhull(vertices,abs_tol=abs_tol)
     if A.size == 0:
-        return Polytope()
-    return Polytope(A,b,minrep=True,vertices=vert)
+        return ConvexPolytope()
+    return ConvexPolytope(A,b,minrep=True,vertices=vert)
 
 def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     """Projects a polytope onto lower dimensions.
@@ -1424,7 +1424,7 @@ def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     @return: Projected polytope in lower dimension
     """
     if isinstance(poly1, Region):
-        ret = Polytope()
+        ret = ConvexPolytope()
         for i in xrange(len(poly1.list_poly)):
             p = projection(
                 poly1.list_poly[i], dim,
@@ -1473,9 +1473,9 @@ def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     sol = solvers.lp(c,G,h,None,None,lp_solver)
     if sol['status'] != "optimal":
         # Projection not fulldim
-        return Polytope()
+        return ConvexPolytope()
     if sol['x'][-1] < abs_tol:
-        return Polytope()
+        return ConvexPolytope()
     
     if solver == "esp":
         return projection_esp(poly1,new_dim, del_dim)
@@ -1575,7 +1575,7 @@ def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
     if overlap:
         b1_arr += abs_tol
         b2_arr += abs_tol 
-        dummy = Polytope(
+        dummy = ConvexPolytope(
             np.concatenate((A1_arr, A2_arr)),
             np.concatenate((b1_arr, b2_arr))
         )
@@ -1600,7 +1600,7 @@ def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
             b1_arr[i] += abs_tol
             b2_arr[j] += abs_tol
         
-        dummy = Polytope(
+        dummy = ConvexPolytope(
             np.concatenate((A1_arr, A2_arr)),
             np.concatenate((b1_arr, b2_arr))
         )
@@ -1617,16 +1617,16 @@ def is_interior(r0, r1, abs_tol=ABS_TOL):
     
     @rtype: bool
     """
-    if isinstance(r0, Polytope):
+    if isinstance(r0, ConvexPolytope):
         r0 = Region([r0])
-    if isinstance(r1, Polytope):
+    if isinstance(r1, ConvexPolytope):
         r1 = Region([r1])
     
     for p in r1:
         A = p.A.copy()
         b = p.b.copy() + abs_tol
         
-        dummy = Polytope(A, b)
+        dummy = ConvexPolytope(A, b)
         
         if not dummy <= r0:
             return True
@@ -1669,12 +1669,12 @@ def projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
             range(poly.A.shape[1]),
             np.array([i])
         )
-        poly = Polytope(
+        poly = ConvexPolytope(
             np.dot(C,poly.A)[:,keep_dim],
             np.dot(C,poly.b)
         )
         if not is_fulldim(poly):
-            return Polytope()
+            return ConvexPolytope()
         poly = reduce(poly)
         
     return poly
@@ -1686,7 +1686,7 @@ def projection_exthull(poly1,new_dim):
     vert = extreme(poly1)
     if vert is None:
         # qhull failed
-        return Polytope(fulldim=False, minrep=True)
+        return ConvexPolytope(fulldim=False, minrep=True)
     return reduce(qhull(vert[:,new_dim]))
     
 def projection_iterhull(poly1, new_dim, max_iter=1000,
@@ -1852,9 +1852,9 @@ def projection_esp(poly1,keep_dim,del_dim):
     C = poly1.A[:,keep_dim]
     D = poly1.A[:,del_dim]
     if not is_fulldim(poly1):
-        return Polytope()
+        return ConvexPolytope()
     G,g,E = esp(C,D,poly1.b)
-    return Polytope(G,g)
+    return ConvexPolytope(G,g)
 
 def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                 save=False):
@@ -1866,12 +1866,12 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     
     @return: polytope or region containing non-overlapping polytopes
     """
-    if not isinstance(poly, Polytope):
+    if not isinstance(poly, ConvexPolytope):
         raise Exception('poly not a Polytope, but: ' +
                         str(type(poly) ) )
     poly = poly.copy()
     
-    if isinstance(reg, Polytope):
+    if isinstance(reg, ConvexPolytope):
         reg = Region([reg])
     
     if not isinstance(reg, Region):
@@ -1891,7 +1891,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         return poly
 
     if is_empty(poly):
-        return Polytope()
+        return ConvexPolytope()
     
     # Checking intersections to find Polytopes in Region
     # that intersect the Polytope
@@ -1899,7 +1899,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     for i, poly1 in enumerate(reg):
         A_dummy = np.vstack([poly.A, poly1.A])
         b_dummy = np.hstack([poly.b, poly1.b])
-        dummy = Polytope(A_dummy, b_dummy)
+        dummy = ConvexPolytope(A_dummy, b_dummy)
         Rc[i], xc = cheby_ball(dummy)
 
     N = np.sum(Rc >= intersect_tol)    
@@ -1942,7 +1942,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         
     if np.any(mi == 0):
     # If some Ri has no active constraints, Ri covers R
-        return Polytope()
+        return ConvexPolytope()
         
     M = np.sum(mi)
     
@@ -1960,7 +1960,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         
     level = 0
     res_count = 0
-    res = Polytope() # Initiate output
+    res = ConvexPolytope() # Initiate output
     while level != -1:
         if save:
             if res:
@@ -1980,7 +1980,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                 ])
                 Adummy = A[auxINDICES,:]
                 bdummy = B[auxINDICES]
-                R,xopt = cheby_ball(Polytope(Adummy,bdummy))
+                R,xopt = cheby_ball(ConvexPolytope(Adummy,bdummy))
                 if R > abs_tol:
                     level = j
                     counter[level] = 1
@@ -1989,7 +1989,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
             
             if R < abs_tol:
                 level = level - 1
-                res = union(res, Polytope(A[INDICES,:],B[INDICES]), False)
+                res = union(res, ConvexPolytope(A[INDICES,:],B[INDICES]), False)
                 nzcount = np.nonzero(counter)[0]
                 for jj in xrange(len(nzcount)-1,-1,-1):
 
@@ -2038,7 +2038,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                             logger.debug('returning res from 2nd point')
                         return res
                     
-        test_poly = Polytope(A[INDICES,:],B[INDICES])
+        test_poly = ConvexPolytope(A[INDICES,:],B[INDICES])
         rc,xc = cheby_ball(test_poly)
         if rc > abs_tol:
             if level == N - 1:
@@ -2061,7 +2061,7 @@ def box2poly(box):
     @param box: defining the Polytope
     @type box: [[x1min, x1max], [x2min, x2max],...]
     """
-    return Polytope.from_box(box)
+    return ConvexPolytope.from_box(box)
 
 def _get_patch(poly1, **kwargs):
     """Return matplotlib patch for given Polytope.
