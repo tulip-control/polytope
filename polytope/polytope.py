@@ -562,28 +562,25 @@ class Region(object):
         return mldivide(self, other)
         
     def __and__(self, other):
-        """Return intersection with Polytope or Region.
+        """Return intersection with C{other}.
         
         Absolute tolerance 1e-7 used.
         To select the absolute tolerance use
         method Region.intersect
         
-        @type other: L{Polytope} or L{Region}
+        @type other: L{Region}
         
-        @rtype: L{Polytope} or L{Region}
+        @rtype: L{Region}
         """
         return self.intersection(other)
     
     def intersection(self, other, abs_tol=ABS_TOL):
         """Return intersection with C{other}.
         
-        @type other: iterable container of L{Polytope}.
+        @type other: C{Region}.
         
         @rtype: L{Region}
         """
-        if isinstance(other, ConvexPolytope):
-            other = [other]
-        
         P = Region()
         for poly0 in self:
             for poly1 in other:
