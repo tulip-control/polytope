@@ -1734,7 +1734,7 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
             
             OK = 1
             for i in xrange(np.shape(Vert)[0]):
-                if not is_inside(P1,Vert[i,new_dim],abs_tol=1e-5):
+                if not P1.__contains__(Vert[i,new_dim], abs_tol=1e-5):
                     # If all new points are inside
                     # old polytope -> Finished
                     OK = 0
