@@ -119,9 +119,8 @@ class ConvexPolytope(object):
     L{Region}
     """
     def __init__(self,
-        A = np.array([]), b = np.array([]), minrep = False,
-        chebR = 0, chebX = None, fulldim = None,
-        volume = None, vertices = None, normalize=True
+        A = np.array([]), b = np.array([]),
+        minrep = False, vertices = None, normalize=True
     ):
         
         self.A = A.astype(float)
@@ -138,8 +137,8 @@ class ConvexPolytope(object):
                 self.A[i,:] = self.A[i,:]*mult[i]
             self.b = self.b.flatten()*mult
         self.minrep = minrep
-        self._x = chebX
-        self._r = chebR
+        self._x = None
+        self._r = 0
         self.bbox = None
         self.fulldim = fulldim
         self._volume = volume
