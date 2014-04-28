@@ -1112,22 +1112,18 @@ def envelope(reg, abs_tol=ABS_TOL):
     """
     Ae = None
     be = None
-        
-    nP = len(reg.list_poly)
     
-    for i in xrange(nP):
-        poly1 = reg.list_poly[i]
+    for poly1 in reg.list_poly:
         outer_i = np.ones(poly1.A.shape[0])
         for ii in xrange(poly1.A.shape[0]):
             if outer_i[ii] == 0:
                 # If inequality already discarded
                 continue
-            for j in xrange(nP):
+            for poly2 in reg.list_poly:
                 # Check for each polytope
                 # if it intersects with inequality ii
-                if i == j:
-                    continue  
-                poly2 = reg.list_poly[j]
+                if poly1 is poly2:
+                    continue
                 testA = np.vstack([poly2.A, -poly1.A[ii,:]])
                 testb = np.hstack([poly2.b, -poly1.b[ii]])
                 testP = ConvexPolytope(testA,testb)
