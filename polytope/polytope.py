@@ -579,6 +579,16 @@ class Region(object):
                     P = union(P, isect, check_convex=True)
         return P
     
+    def project(self, dim, solver=None, abs_tol=ABS_TOL):
+        """Return Polytope projection on selected subspace.
+        
+        For usage details see function: L{projection}.
+        """
+        proj = Region()
+        for poly in self.list_poly:
+            proj += projection(poly, dim, solver, abs_tol)
+        return proj
+    
     def __copy__(self):
         """Return copy of this Region."""
         return Region(list_poly=self.list_poly[:],
@@ -1400,16 +1410,6 @@ def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     @rtype: L{Polytope}
     @return: Projected polytope in lower dimension
     """
-    if isinstance(poly1, Region):
-        ret = ConvexPolytope()
-        for i in xrange(len(poly1.list_poly)):
-            p = projection(
-                poly1.list_poly[i], dim,
-                solver=solver, abs_tol=abs_tol
-            )
-            ret = ret + p
-        return ret
-    
     if (poly1.dim < len(dim)) or is_empty(poly1):
         return poly1
     
