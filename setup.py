@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 from setuptools import setup
 
 ###########################################
@@ -108,12 +109,21 @@ if check_deps:
         else:
             print("\t"+opt_val[2] )
 
+# load long description from README.rst
+readme_file = 'README.rst'
+if os.path.exists(readme_file):
+    long_description = open('README.txt').read()
+else:
+    print('Could not find readme file to extract long_description.')
+    long_description = ''
+
 if perform_setup:
     from polytope import __version__ as polytope_version
     setup(
         name = 'polytope',
         version = polytope_version,
         description = 'Polytope Toolbox',
+        long_description = long_description,
         author = 'Caltech Control and Dynamical Systems',
         author_email = 'murray@cds.caltech.edu',
         url = 'http://tulip-control.org',
