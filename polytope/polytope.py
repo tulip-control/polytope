@@ -686,8 +686,8 @@ class Region(object):
             dummy = ConvexPolytope(A, b)
             
             if not dummy <= self:
-                return True
-        return False
+                return False
+        return True
     
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
