@@ -1235,7 +1235,7 @@ def intersect(poly1,poly2,abs_tol=ABS_TOL):
     
     return poly1.intersect(poly2)
     
-def volume(polyreg):
+def volume(poly):
     """Approximate volume of L{ConvexPolytope}.
     
     A randomized algorithm is used.
@@ -1249,7 +1249,7 @@ def volume(polyreg):
     
     logger.debug('computing volume...')
 
-    n = polyreg.A.shape[1]
+    n = poly.A.shape[1]
     if n == 1:
         N = 50
     elif n == 2:
@@ -1259,18 +1259,21 @@ def volume(polyreg):
     else:
         N = 10000
     
-    l_b, u_b = polyreg.bounding_box
+    l_b, u_b = poly.bounding_box
+    
     x = np.tile(l_b,(1,N)) +\
         np.random.rand(n,N) *\
         np.tile(u_b-l_b,(1,N) )
-    aux = np.dot(polyreg.A, x) -\
+    
+    aux = np.dot(poly.A, x) -\
         np.tile(
-            np.array([polyreg.b]).T,
+            np.array([poly.b]).T,
             (1, N)
         )
-    aux = np.nonzero(np.all(((aux < 0)==True),0))[0].shape[0]
-    vol = np.prod(u_b-l_b)*aux/N
-    polyreg._volume = vol
+    
+    aux = np.nonzero(np.all(((aux < 0)==True), 0) )[0].shape[0]
+    vol = np.prod(u_b-l_b) * aux / N
+    
     return vol    
             
 def extreme(poly1):
