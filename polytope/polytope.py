@@ -230,16 +230,13 @@ class ConvexPolytope(object):
     def __nonzero__(self):
         return bool(self.volume > 0)
     
-    def intersect(self, other, abs_tol=ABS_TOL):
+    def intersection(self, other, abs_tol=ABS_TOL):
         """Return intersection with Polytope or Region.
         
         @type other: L{Polytope}.
         
         @rtype: L{Polytope} or L{Region}
         """
-        if isinstance(other, Region):
-            return other.intersect(self)
-        
         if not isinstance(other, ConvexPolytope):
             msg = 'Polytope intersection defined only'
             msg += ' with other Polytope. Got instead: '
@@ -575,10 +572,10 @@ class Region(object):
         
         @rtype: L{Polytope} or L{Region}
         """
-        return intersect(self, other)
+        return self.intersection(other)
     
-    def intersect(self, other, abs_tol=ABS_TOL):
-        """Return intersection with Polytope or Region.
+    def intersection(self, other, abs_tol=ABS_TOL):
+        """Return intersection with C{other}.
         
         @type other: iterable container of L{Polytope}.
         
@@ -590,7 +587,7 @@ class Region(object):
         P = Region()
         for poly0 in self:
             for poly1 in other:
-                isect = poly0.intersect(poly1, abs_tol)
+                isect = poly0.intersection(poly1, abs_tol)
                 rp, xp = isect.cheby
             
                 if rp > abs_tol:
@@ -923,7 +920,7 @@ def union(polyreg1,polyreg2,check_convex=False):
         return polyreg1
     
     if check_convex:
-        s1 = intersect(polyreg1, polyreg2)
+        s1 = polyreg1.intersection(polyreg2)
         if s1.is_fulldim():
             s2 = polyreg2.diff(polyreg1)
             s3 = polyreg1.diff(polyreg2)
@@ -1188,7 +1185,7 @@ def mldivide(a, b, save=False):
         
         P = Region()
         for poly in a:
-            #assert(not is_fulldim(P.intersect(poly) ) )
+            #assert(not is_fulldim(P.intersection(poly) ) )
             Pdiff = poly
             for poly1 in b:
                 Pdiff = mldivide(Pdiff, poly1, save=save)
