@@ -57,7 +57,7 @@ _hl = 40 * '-'
 def find_adjacent_regions(partition):
     """Return region pairs that are spatially adjacent.
     
-    @type partition: iterable container of L{Region}
+    @type partition: iterable container of L{Polytope}
     
     @rtype: lil_matrix
     """
@@ -110,14 +110,14 @@ class Partition(object):
         return self.regions[key]
     
     def is_partition(self):
-        """Return True if Regions are pairwise disjoint and cover domain.
+        """Return True if Polytopes are pairwise disjoint and cover domain.
         """
         return self.is_cover() and self.are_disjoint()
     
     def is_cover(self):
-        """Return True if Regions cover domain
+        """Return True if Polytopes cover domain
         """
-        union = pc.Region()
+        union = pc.Polytope()
         for region in self.regions:
             union += region
         
@@ -130,17 +130,17 @@ class Partition(object):
             return True
     
     def are_disjoint(self, check_all=False, fname=None):
-        """Return True if all Regions are disjoint.
+        """Return True if all Polytopes are disjoint.
         
         Print:
         
-            - the offending Regions and their
+            - the offending Polytopes and their
             - their intersection (mean) volume ratio
             - their difference (mean) volume ratio
         
         Optionally save numbered figures of:
         
-            - offending Regions
+            - offending Polytopes
             - their intersection
             - their difference
         

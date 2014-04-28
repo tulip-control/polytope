@@ -116,7 +116,7 @@ class ConvexPolytope(object):
     
     See Also
     ========
-    L{Region}
+    L{Polytope}
     """
     def __init__(self,
         A = np.array([]), b = np.array([]),
@@ -234,11 +234,11 @@ class ConvexPolytope(object):
         return bool(self.volume > 0)
     
     def intersection(self, other, abs_tol=ABS_TOL):
-        """Return intersection with Polytope or Region.
+        """Return intersection with ConvexPolytope or Polytope.
         
         @type other: L{Polytope}.
         
-        @rtype: L{Polytope} or L{Region}
+        @rtype: L{ConvexPolytope} or L{Polytope}
         """
         if not isinstance(other, ConvexPolytope):
             msg = 'Polytope intersection defined only'
@@ -420,7 +420,7 @@ class ConvexPolytope(object):
         """
         _plot_text(self, txt, ax, color)
 
-class Region(object):
+class Polytope(object):
     """Class for lists of convex polytopes
     
     Contains the following fields:
@@ -446,16 +446,16 @@ class Region(object):
             props = set()
         
         if isinstance(list_poly, str):
-            # Hack to be able to use the Region class also for discrete
+            # Hack to be able to use the Polytope class also for discrete
             # problems.
             self.list_poly = list_poly
             self.props = set(props)
         else:
-            if isinstance(list_poly, Region):
+            if isinstance(list_poly, Polytope):
                 dim = list_poly[0].dim
                 for poly in list_poly:
                     if poly.dim != dim:
-                        raise Exception("Region error:"
+                        raise Exception("Polytope error:"
                             " Polytopes must be of same dimension!")                    
             
             self.list_poly = list_poly[:]
@@ -494,7 +494,7 @@ class Region(object):
         return len(self.list_poly)
     
     def __contains__(self, point, abs_tol=ABS_TOL):
-        """Return True if Region contains point.
+        """Return True if Polytope contains point.
         
         See Also
         ========
@@ -521,15 +521,15 @@ class Region(object):
         return _is_subset(other, self)
     
     def __add__(self, other):
-        """Return union with Polytope or Region.
+        """Return union with C{other}.
         
         Applies convex simplification if possible.
         To turn off this check,
         use Region.union
         
-        @type other: L{Polytope} or L{Region}
+        @type other: L{Polytope}
         
-        @rtype: L{Region}
+        @rtype: L{Polytope}
         """
         return union(self, other, check_convex=True)
     
@@ -537,29 +537,29 @@ class Region(object):
         return bool(self.volume > 0)
     
     def union(self, other, check_convex=False):
-        """Return union with Polytope or Region.
+        """Return union with C{other}.
         
         For usage see function union.
         
-        @type other: L{Polytope} or L{Region}
+        @type other: L{Polytope}
         
-        @rtype: L{Region}
+        @rtype: L{Polytope}
         """
         return union(self, other, check_convex)
     
     def __sub__(self, other):
-        """Return set difference with Polytope or Region.
+        """Return set difference with C{other}.
         
-        @type other: L{Polytope} or L{Region}
+        @type other: L{Polytope}
         
-        @rtype: L{Region}
+        @rtype: L{Polytope}
         """
         return mldivide(self, other)
     
     def diff(self, other):
-        """Return set difference with Polytope or Region.
+        """Return set difference with C{other}.
         
-        @type other: L{Polytope} or L{Region}
+        @type other: L{Polytope}
         
         @rtype: L{Region}
         """
@@ -581,11 +581,11 @@ class Region(object):
     def intersection(self, other, abs_tol=ABS_TOL):
         """Return intersection with C{other}.
         
-        @type other: C{Region}.
+        @type other: C{Polytope}.
         
-        @rtype: L{Region}
+        @rtype: L{Polytope}
         """
-        P = Region()
+        P = Polytope()
         for poly0 in self:
             for poly1 in other:
                 isect = poly0.intersection(poly1, abs_tol)
@@ -600,15 +600,15 @@ class Region(object):
         
         For usage details see function: L{projection}.
         """
-        proj = Region()
+        proj = Polytope()
         for poly in self.list_poly:
             proj += projection(poly, dim, solver, abs_tol)
         return proj
     
     def __copy__(self):
-        """Return copy of this Region.
+        """Return copy of this Polytope.
         """
-        r = Region(self.list_poly[:], props=self.props.copy() )
+        r = Polytope(self.list_poly[:], props=self.props.copy() )
         
         r._bbox = self._bbox
         r._fulldim = self._fulldim
@@ -621,7 +621,7 @@ class Region(object):
         return r
     
     def copy(self):
-        """Return copy of this Region.
+        """Return copy of this L{Polytope}.
         """
         return self.__copy__()
     
@@ -632,11 +632,11 @@ class Region(object):
             if red.is_fulldim():
                 lst.append(red)
         
-        return Region(lst, self.props)
+        return Polytope(lst, self.props)
     
     @property
     def dim(self):
-        """Return Region dimension.
+        """Return L{Polytope} dimension.
         """
         return np.shape(self.list_poly[0].A)[1]
     
@@ -726,7 +726,7 @@ class Region(object):
         Checks if C{other} enlarged by C{abs_tol}
         is a subset of C{self}.
         
-        @type other: L{Region}
+        @type other: L{Polytope}
         
         @rtype: bool
         """
@@ -775,7 +775,7 @@ class Region(object):
     def is_convex(self, abs_tol=ABS_TOL):
         """Check if a region is convex.
         
-        @type reg: L{Region}
+        @type reg: L{Polytope}
         
         @return: result,envelope: result indicating if convex.
             If found to be convex the envelope describing
@@ -808,14 +808,14 @@ class Region(object):
 def _is_subset(small, big, abs_tol=ABS_TOL):
     """Return True if small \subseteq big.
     
-    @type small: L{Region}
-    @type big: L{Region}
+    @type small: L{Polytope}
+    @type big: L{Polytope}
     
     @rtype: bool
     """
     for x in [small, big]:
-        if not isinstance(x, Region):
-            msg = 'Not a Region, got instead:\n\t'
+        if not isinstance(x, Polytope):
+            msg = 'Not a Polytope, got instead:\n\t'
             msg += str(type(x))
             raise TypeError(msg)
     
@@ -836,12 +836,12 @@ def _reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     Warning:
       - nonEmptyBounded == 0 case is not tested much.
     
-    @type poly: L{Polytope} or L{Region}
+    @type poly: L{ConvexPolytope}
     
     @return: Reduced L{Polytope} or L{Region} object
     """
     if poly.minrep:
-    # If polytope already in minimal representation
+        # If polytope already in minimal representation
         return poly
         
     if not poly.is_fulldim():
@@ -983,20 +983,20 @@ def union(polyreg1,polyreg2,check_convex=False):
                 templist = [lst[0]]
                 for ii in xrange(1,N):
                     templist.append(lst[ii])
-                    is_conv, env = Region(templist).is_convex()
+                    is_conv, env = Polytope(templist).is_convex()
                     if not is_conv:
                         templist.remove(lst[ii])
                 for poly in templist:
                     lst.remove(poly)
-                cvxpoly = reduce(envelope(Region(templist)))
+                cvxpoly = reduce(envelope(Polytope(templist)))
                 if not cvxpoly.is_empty():
                     final.append(reduce(cvxpoly))
                 N = len(lst)
         else:
             final = lst
-        ret = Region(final)
+        ret = Polytope(final)
     else:
-        ret = Region(lst)
+        ret = Polytope(lst)
     return ret
 
 def cheby_ball(poly):
@@ -1157,7 +1157,7 @@ def mldivide(a, b, save=False):
     """
     logger.debug('mldivide got Region as minuend')
     
-    P = Region()
+    P = Polytope()
     for poly in a:
         #assert(not is_fulldim(P.intersection(poly) ) )
         Pdiff = poly
@@ -1233,7 +1233,7 @@ def extreme(poly1):
     V = np.array([])
     R = np.array([])
     
-    if isinstance(poly1, Region):
+    if isinstance(poly1, Polytope):
         raise Exception("extreme: not executable for regions")
     
     poly1 = reduce(poly1) # Need to have polytope non-redundant!
@@ -1431,7 +1431,7 @@ def separate(reg1, abs_tol=ABS_TOL):
     
     while len(ind_left) > 0:
         ind_del = []
-        connected_reg = Region(
+        connected_reg = Polytope(
             [reg1.list_poly[ind_left[0]]],
             []
         )
@@ -1469,14 +1469,14 @@ def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
         raise Exception("is_adjacent: "
             "polytopes do not have the same dimension")
     
-    if isinstance(poly1, Region):
+    if isinstance(poly1, Polytope):
         for p in poly1:
             adj = is_adjacent(p, poly2, overlap=overlap, abs_tol=abs_tol)
             if adj:
                 return True
         return False
     
-    if isinstance(poly2, Region):
+    if isinstance(poly2, Polytope):
         for p in poly2:
             adj = is_adjacent(poly1, p, overlap=overlap, abs_tol=abs_tol)
             if adj:
@@ -1762,9 +1762,9 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     poly = poly.copy()
     
     if isinstance(reg, ConvexPolytope):
-        reg = Region([reg])
+        reg = Polytope([reg])
     
-    if not isinstance(reg, Region):
+    if not isinstance(reg, Polytope):
         raise Exception('reg not a Region, but: ' +
                         str(type(reg) ) )
     
@@ -1774,7 +1774,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     
     if isinstance(reg, ConvexPolytope):
         # Hack if reg happens to be a polytope
-        reg = Region([reg])
+        reg = Polytope([reg])
         N = 1
         
     if reg.is_empty():
@@ -1794,7 +1794,8 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
 
     N = np.sum(Rc >= intersect_tol)    
     if N == 0:
-        logger.debug('no Polytope in the Region intersects the given Polytope')
+        logger.debug('no ConvexPolytope in the Polytope ' +
+                     'intersects the given ConvexPolytope')
         return poly
     
     # Sort radii
@@ -1996,7 +1997,7 @@ def _get_patch(poly1, **kwargs):
 def grid_region(polyreg, res=None):
     """Grid within polytope or region.
     
-    @type polyreg: L{Polytope} or L{Region}
+    @type polyreg: L{ConvexPolytope} or L{Polytope}
     
     @param res: resolution of grid
     """

@@ -76,7 +76,7 @@ def plot_partition(
         To show C{ppp.adj}, pass: trans = True
     
     @param plot_numbers: If True,
-        then annotate each Region center with its number.
+        then annotate each Polytope center with its number.
     
     @param show: If True, then show the plot.
         Otherwise return axis object.
@@ -164,8 +164,8 @@ def plot_partition(
 def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
     """Plot arrow starting from polyreg0 and ending at polyreg1.
     
-    @type polyreg0: L{Polytope} or L{Region}
-    @type polyreg1: L{Polytope} or L{Region}
+    @type polyreg0: L{Polytope}
+    @type polyreg1: L{Polytope}
     @param ax: axes where to plot
     
     @return: arrow object
