@@ -188,9 +188,6 @@ class ConvexPolytope(object):
             
         except:
             return str(self.A) + str(self.b)
-    
-    def __len__(self):
-        return 0
 
     def __copy__(self):
         A = self.A.copy()
