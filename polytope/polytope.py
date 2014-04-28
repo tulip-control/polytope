@@ -625,6 +625,15 @@ class Region(object):
         """
         return self.__copy__()
     
+    def _reduce(self):
+        lst = []
+        for poly2 in self.list_poly:
+            red = _reduce(poly2)
+            if red.is_fulldim():
+                lst.append(red)
+        
+        return Region(lst, self.props)
+    
     @property
     def dim(self):
         """Return Region dimension.
@@ -796,11 +805,6 @@ def is_convex(reg, abs_tol=ABS_TOL):
     else:
         return True,outer
 
-def is_inside(polyreg, point, abs_tol=ABS_TOL):
-    """Checks if point satisfies all the inequalities of polyreg.
-    
-    @param polyreg: L{Polytope} or L{Region}
-    @type point: tuple, 1d array, or 2d array (a vector)
     
     @rtype: bool
     """
@@ -828,7 +832,7 @@ def _is_subset(small, big, abs_tol=ABS_TOL):
     else:
         return False
 
-def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):  
+def _reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):  
     """Removes redundant inequalities in the hyperplane representation
     of the polytope with the algorithm described at
     http://www.ifor.math.ethz.ch/~fukuda/polyfaq/node24.html
@@ -841,18 +845,6 @@ def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):
     
     @return: Reduced L{Polytope} or L{Region} object
     """
-    if isinstance(poly, Region):
-        lst = []
-        for poly2 in poly.list_poly:
-            red = reduce(poly2)
-            if red.is_fulldim():
-                lst.append(red)
-        if len(lst) > 0:
-            return Region(lst, poly.props)
-        else:
-            return ConvexPolytope()
-            
-        
     if poly.minrep:
     # If polytope already in minimal representation
         return poly
