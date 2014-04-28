@@ -625,7 +625,9 @@ class Region(object):
     @property
     def volume(self):
         if self._volume is None:
-            self._volume = volume(self)
+            self._volume = 0.0
+            for poly in self.list_poly:
+                self._volume += poly.volume
         return self._volume
     
     @property
@@ -1234,28 +1236,18 @@ def intersect(poly1,poly2,abs_tol=ABS_TOL):
     return poly1.intersect(poly2)
     
 def volume(polyreg):
-    """Approximately compute the volume of a Polytope or Region.
+    """Approximate volume of L{ConvexPolytope}.
     
     A randomized algorithm is used.
     
-    @type polyreg: L{Polytope} or L{Region}
+    @type poly: L{ConvexPolytope}
     
-    @return: Volume of input
+    @return: volume of C{poly}
     """
-    if not polyreg.is_fulldim():
-        return 0.
-    try:
-        if polyreg._volume is not None:
-            return polyreg._volume
-    except:
-        logger.debug('computing volume...')
-        
-    if isinstance(polyreg, Region):
-        tot_vol = 0.
-        for i in xrange(len(polyreg)):
-            tot_vol += volume(polyreg.list_poly[i])
-        polyreg._volume = tot_vol
-        return tot_vol
+    if not poly.is_fulldim():
+        return 0.0
+    
+    logger.debug('computing volume...')
 
     n = polyreg.A.shape[1]
     if n == 1:
