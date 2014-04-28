@@ -10,5 +10,6 @@
 *.PNG
 *.pdf
 *.PDF
-/build/
-/dist/
+build/
+dist/
+doc/_build/
