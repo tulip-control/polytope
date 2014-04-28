@@ -1213,28 +1213,6 @@ def mldivide(a, b, save=False):
     
     return P
     
-def intersect(poly1,poly2,abs_tol=ABS_TOL):
-    """Compute the intersection between two polytopes or regions
-    
-    @type poly1: L{Polytope} or L{Region}
-    @type poly2: L{Polytope} or L{Region}
-    
-    @return: Intersection of poly1 and poly2 described by a polytope
-    """
-    #raise NotImplementedError('Being removed, use {Polytope, Region}.intersect instead')
-    if isinstance(poly1, Region):
-        return poly1.intersect(poly2)
-    
-    if isinstance(poly2, Region):
-        return poly2.intersect(poly1)
-    
-    if not isinstance(poly1, ConvexPolytope):
-        msg = 'poly1 not Region nor Polytope.'
-        msg += 'Got instead: ' + str(type(poly1) )
-        raise Exception(msg)
-    
-    return poly1.intersect(poly2)
-    
 def volume(poly):
     """Approximate volume of L{ConvexPolytope}.
     
