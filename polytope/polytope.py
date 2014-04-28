@@ -669,6 +669,26 @@ class Region(object):
                     break
         return self._is_empty
     
+    def is_interior(self, other, abs_tol=ABS_TOL):
+        """Return True if C{other} is strictly in the interior of C{self}.
+        
+        Checks if C{other} enlarged by C{abs_tol}
+        is a subset of C{self}.
+        
+        @type other: L{Region}
+        
+        @rtype: bool
+        """
+        for p in other:
+            A = p.A.copy()
+            b = p.b.copy() + abs_tol
+            
+            dummy = ConvexPolytope(A, b)
+            
+            if not dummy <= self:
+                return True
+        return False
+    
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
         if color is None:
@@ -1579,32 +1599,6 @@ def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
             np.concatenate((b1_arr, b2_arr))
         )
         return is_fulldim(dummy, abs_tol=abs_tol / 10)
-
-def is_interior(r0, r1, abs_tol=ABS_TOL):
-    """Return True if r1 is strictly in the interior of r0.
-    
-    Checks if r1 enlarged by abs_tol
-    is a subset of r0.
-    
-    @type r0: L{Polytope} or L{Region}
-    @type r1: L{Polytope} or L{Region}
-    
-    @rtype: bool
-    """
-    if isinstance(r0, ConvexPolytope):
-        r0 = Region([r0])
-    if isinstance(r1, ConvexPolytope):
-        r1 = Region([r1])
-    
-    for p in r1:
-        A = p.A.copy()
-        b = p.b.copy() + abs_tol
-        
-        dummy = ConvexPolytope(A, b)
-        
-        if not dummy <= r0:
-            return True
-    return False
     
 #### Helper functions ####
         
