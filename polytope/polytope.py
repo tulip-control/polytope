@@ -97,22 +97,29 @@ np.set_printoptions(precision=5, suppress = True)
 ABS_TOL = 1e-7
 
 class ConvexPolytope(object):
-    """ConvexPolytope class with following fields
+    """Convex polytope in hyperplane representation:
     
-      - `A`: a numpy array for the hyperplane normals in hyperplane
-             representation of a polytope
-      - `b`: a numpy array for the hyperplane offsets in hyperplane
-             representation of a polytope
-      - `array`: python array in the case of a union of convex polytopes
-      - `x`: coordinates of chebyshev center (if calculated)
-      - `r`: chebyshev radius (if calculated)
-      - `bbox`: bounding box (if calculated)
-      - `minrep`: if polytope is in minimal representation (after
-                  running reduce)
-      - `normalize`: if True (default), normalize given A and b arrays;
-                     else, use A and b without modification.
-      - `dim`: dimension
-      - `volume`: volume, computed on first call
+      - C{A}: hyperplane normals
+        @type A: numpy.ndarray
+      
+      - C{b}: hyperplane offsets
+        @type b: numpy.ndarray
+    
+    The following are set on first attribute access:
+    
+      - Chebyshev center and radius:
+        
+        - C{x}
+        - C{r}
+      
+      - C{dim}: dimension
+      - C{volume}
+      - C{bounding_box}
+      
+    and if in minimal representation,
+    after applying L{_reduce}:
+    
+      - C{minrep}: is set to C{True}
     
     See Also
     ========
@@ -123,7 +130,12 @@ class ConvexPolytope(object):
         minrep = False, vertices = None,
         normalize=True, abs_tol=ABS_TOL
     ):
+        """Instantiate L{ConvexPolytope}.
         
+          - C{normalize}: if True (default),
+              then normalize given C{A}, C{b}
+              otherwise don't modify them.
+        """
         self.A = A.astype(float)
         self.b = b.astype(float).flatten()
         if A.size > 0 and normalize:
