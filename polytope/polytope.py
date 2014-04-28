@@ -374,6 +374,14 @@ class ConvexPolytope(object):
             self.bbox = bounding_box(self)
         return self.bbox
     
+    def is_empty(self):
+        """Check True if A is either None or an empty matrix.
+        """
+        try:
+            return len(self.A) == 0
+        except:
+            return True
+    
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
         if color is None:
@@ -448,7 +456,7 @@ class Region(object):
             
             self.list_poly = list_poly[:]
             for poly in list_poly:
-                if is_empty(poly):
+                if poly.is_empty():
                     self.list_poly.remove(poly)
             
             self.props = set(props)
@@ -457,6 +465,7 @@ class Region(object):
             self._volume = None
             self._x = None
             self._r = None
+            self._is_empty = None
     
     def __iter__(self):
         return iter(self.list_poly)
@@ -651,6 +660,15 @@ class Region(object):
             self.bbox = bounding_box(self)
         return self.bbox
     
+    def is_empty(self):
+        if self._is_empty is None:
+            self._is_empty = False
+            for poly in self.list_poly:
+                if poly.is_empty():
+                    self._is_empty = True
+                    break
+        return self._is_empty
+    
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
         if color is None:
@@ -682,28 +700,6 @@ class Region(object):
         """Plot text at chebyshev center.
         """
         _plot_text(self, txt, ax, color)
-    
-def is_empty(polyreg):
-    """Check if the description of a polytope is empty
-    
-    @param polyreg: L{Polytope} or L{Region} instance
-    
-    @return: Boolean indicating whether polyreg is empty
-    """
-    n = len(polyreg)
-    if len(polyreg) == 0:
-        try:
-            return len(polyreg.A) == 0
-        except:
-            return True
-    else:
-        N = np.zeros(n, dtype=int)
-        for i in xrange(n):
-            N[i] = is_empty(polyreg.list_poly[i])
-        if np.all(N):
-            return True
-        else:
-            return False
             
 def is_fulldim(polyreg, abs_tol=ABS_TOL):
     """Check if a polytope or region has inner points.
@@ -750,7 +746,7 @@ def is_convex(reg, abs_tol=ABS_TOL):
     if len(reg) == 0:
         return True
     outer = envelope(reg)
-    if is_empty(outer):
+    if outer.is_empty():
         # Probably because input polytopes were so small and ugly..
         return False,None
 
@@ -915,9 +911,9 @@ def union(polyreg1,polyreg2,check_convex=False):
     """
     #logger.debug('union')
     
-    if is_empty(polyreg1):
+    if polyreg1.is_empty():
         return polyreg2
-    if is_empty(polyreg2):
+    if polyreg2.is_empty():
         return polyreg1
     
     if check_convex:
@@ -935,28 +931,28 @@ def union(polyreg1,polyreg2,check_convex=False):
         
     lst = []
     if len(s1) == 0:
-        if not is_empty(s1):
+        if not s1.is_empty():
             lst.append(s1)
     else:
         for poly in s1.list_poly:
-            if not is_empty(poly):
+            if not poly.is_empty():
                 lst.append(poly)
             
     if len(s2) == 0:
-        if not is_empty(s2):
+        if not s2.is_empty():
             lst.append(s2)
     else:
         for poly in s2.list_poly:
-            if not is_empty(poly):
+            if not poly.is_empty():
                 lst.append(poly)
             
     if s3 is not None:
         if len(s3) == 0:
-            if not is_empty(s3):
+            if not s3.is_empty():
                 lst.append(s3)
         else:
             for poly in s3.list_poly:
-                if not is_empty(poly):
+                if not poly.is_empty():
                     lst.append(poly)
     
     if check_convex:
@@ -974,7 +970,7 @@ def union(polyreg1,polyreg2,check_convex=False):
                 for poly in templist:
                     lst.remove(poly)
                 cvxpoly = reduce(envelope(Region(templist)))
-                if not is_empty(cvxpoly):
+                if not cvxpoly.is_empty():
                     final.append(reduce(cvxpoly))
                 N = len(lst)
         else:
@@ -1003,12 +999,12 @@ def cheby_ball(poly1):
     @return: rc,xc: Chebyshev radius rc (float) and center xc (numpy array)
     """
     #logger.debug('cheby ball')
-    if is_empty(poly1):
+    if poly.is_empty():
         return 0,None
 
     r = 0
     xc = None
-    A = poly1.A
+    A = poly.A
     
     c = -matrix(np.r_[np.zeros(np.shape(A)[1]),1])
     
@@ -1411,7 +1407,7 @@ def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     @rtype: L{Polytope}
     @return: Projected polytope in lower dimension
     """
-    if (poly1.dim < len(dim)) or is_empty(poly1):
+    if (poly1.dim < len(dim)) or poly1.is_empty():
         return poly1
     
     poly_dim = poly1.dim
@@ -1865,10 +1861,10 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         reg = Region([reg])
         N = 1
         
-    if is_empty(reg):
+    if reg.is_empty():
         return poly
 
-    if is_empty(poly):
+    if poly.is_empty():
         return ConvexPolytope()
     
     # Checking intersections to find Polytopes in Region
