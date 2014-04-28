@@ -140,7 +140,7 @@ class ConvexPolytope(object):
         self.minrep = minrep
         self._x = None
         self._r = 0
-        self.bbox = None
+        self._bbox = None
         self._fulldim = None
         self._volume = volume
         self.vertices = vertices
@@ -197,7 +197,7 @@ class ConvexPolytope(object):
         P._x = self._x
         P._r = self._r
         P.minrep = self.minrep
-        P.bbox = self.bbox
+        P._bbox = self._bbox
         P._fulldim = self._fulldim
         P._abs_tol = self._abs_tol
         return P
@@ -369,9 +369,9 @@ class ConvexPolytope(object):
         
         Computes the bounding box on first call.
         """
-        if self.bbox is None:
-            self.bbox = bounding_box(self)
-        return self.bbox
+        if self._bbox is None:
+            self._bbox = bounding_box(self)
+        return self._bbox
     
     def is_fulldim(self, abs_tol=ABS_TOL):
         if self._fulldim is None:
@@ -464,7 +464,7 @@ class Region(object):
                     self.list_poly.remove(poly)
             
             self.props = set(props)
-            self.bbox = None
+            self._bbox = None
             self._fulldim = None
             self._volume = None
             self._x = None
@@ -656,13 +656,30 @@ class Region(object):
     
     @property
     def bounding_box(self):
-        """Wrapper of polytope.bounding_box.
-        
-        Computes the bounding box on first call.
+        """Compute the bounding box on first call.
         """
-        if self.bbox is None:
-            self.bbox = bounding_box(self)
-        return self.bbox
+        # For regions, calculate recursively for each
+        # convex polytope and take maximum
+        if self._bbox is None:
+            lenP = len(self)
+            dimP = self.dim
+            alllower = np.zeros([lenP,dimP])
+            allupper = np.zeros([lenP,dimP])
+            
+            for i, poly in enumerate(self.list_poly):
+                ll, uu = poly.bounding_box
+                alllower[i, :] = ll.T
+                allupper[i, :] = uu.T
+            
+            l = np.zeros([dimP,1])
+            u = np.zeros([dimP,1])
+            
+            for i in xrange(0,dimP):
+                l[i] = min(alllower[:, i])
+                u[i] = max(allupper[:, i])
+            
+            self._bbox = (l, u)
+        return self._bbox
     
     def is_empty(self):
         if self._is_empty is None:
@@ -1035,9 +1052,6 @@ def cheby_ball(poly):
 def bounding_box(polyreg):
     """Return smallest hyperbox containing polytope or region.
     
-    If polyreg.bbox is not None,
-    then it is returned without update.
-    
     @type polyreg: L{Polytope} or L{Region}
     
     @return: (l, u) where:
@@ -1056,37 +1070,7 @@ def bounding_box(polyreg):
         - l = 2d array
         - u = 2d array
     """
-    if polyreg.bbox is not None:
-        return polyreg.bbox
-    
-    # For regions, calculate recursively for each
-    # convex polytope and take maximum
-    
-    if isinstance(polyreg, Region):
-        lenP = len(polyreg)
-        dimP = polyreg.dim
-        alllower = np.zeros([lenP,dimP])
-        allupper = np.zeros([lenP,dimP])
-        
-        for ii in xrange(0,lenP):
-            bbox = polyreg.list_poly[ii].bounding_box     
-            ll,uu = bbox
-            alllower[ii,:]=ll.T
-            allupper[ii,:]=uu.T
-        
-        l = np.zeros([dimP,1])
-        u = np.zeros([dimP,1])
-        
-        for ii in xrange(0,dimP):
-            l[ii] = min(alllower[:,ii])
-            u[ii] = max(allupper[:,ii])
-        polyreg.bbox = l,u
-        
-        return l,u
-        
-    # For one convex polytope, solve an optimization
-    # problem
-    
+    # For one convex polytope, solve an optimization problem
     (m, n) = np.shape(polyreg.A)
     
     In = np.eye(n)
@@ -1110,7 +1094,6 @@ def bounding_box(polyreg):
         if sol['status'] == "optimal":
             x = sol['x']
             u[i] = x[i]
-    polyreg.bbox = l,u
     
     return l,u
     
