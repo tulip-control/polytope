@@ -356,8 +356,13 @@ class ConvexPolytope(object):
         return self._x
     
     @property
-    def cheby(self):
-        return cheby_ball(self)
+    def _cheby(self):
+        x, r = cheby_ball(self)
+        
+        self._x = x
+        self._r = r
+        
+        return x, r
     
     @property
     def bounding_box(self):
@@ -612,17 +617,29 @@ class Region(object):
     
     @property
     def r(self):
-        r, xc = cheby_ball(self)
+        self.cheby(self)
         return self._r
     
     @property
     def x(self):
-        r, xc = cheby_ball(self)
+        self.cheby(self)
         return self._x
     
-    @property
-    def cheby(self):
-        return cheby_ball(self)
+    def _cheby(self):
+        if self._x is None or self._r is None:
+            maxr = 0
+            maxx = None
+            for poly in self.list_poly:
+                r = poly.r
+                
+                if r > maxr:
+                    maxr = r
+                    maxx = poly.x
+            
+            self._x = maxx
+            self._r = maxr
+        
+        return self._x, self._r
     
     @property
     def bounding_box(self):
@@ -986,23 +1003,6 @@ def cheby_ball(poly1):
     @return: rc,xc: Chebyshev radius rc (float) and center xc (numpy array)
     """
     #logger.debug('cheby ball')
-    
-    if (poly1._x is not None) and (poly1._r is not None):
-        #In case chebyshev ball already calculated and stored
-        return poly1._r, poly1._x
-
-    if isinstance(poly1, Region):
-        maxr = 0
-        maxx = None
-        for poly in poly1.list_poly:
-            rc,xc = cheby_ball(poly)
-            if rc > maxr:
-                maxr = rc
-                maxx = xc
-        poly1._x = maxx
-        poly1._r = maxr
-        return maxr,maxx
-        
     if is_empty(poly1):
         return 0,None
 
@@ -1021,15 +1021,17 @@ def cheby_ball(poly1):
     if sol['status'] == "optimal":
         r = sol['x'][-1]
         if r < 0:
-            return 0,None
+            return None, 0
         xc = sol['x'][0:-1]
     else:
         # Polytope is empty
         poly1 = ConvexPolytope(fulldim = False)
-        return 0,None   
-    poly1._x = np.array(xc)
-    poly1._r = np.double(r)
-    return poly1._r, poly1._x
+        return None, 0
+    
+    xc = np.array(xc)
+    r = np.double(r)
+    
+    return xc, r
     
 def bounding_box(polyreg):
     """Return smallest hyperbox containing polytope or region.
