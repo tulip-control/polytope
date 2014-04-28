@@ -104,8 +104,8 @@ class ConvexPolytope(object):
       - `b`: a numpy array for the hyperplane offsets in hyperplane
              representation of a polytope
       - `array`: python array in the case of a union of convex polytopes
-      - `chebXc`: coordinates of chebyshev center (if calculated)
-      - `chebR`: chebyshev radius (if calculated)
+      - `x`: coordinates of chebyshev center (if calculated)
+      - `r`: chebyshev radius (if calculated)
       - `bbox`: bounding box (if calculated)
       - `minrep`: if polytope is in minimal representation (after
                   running reduce)
@@ -138,8 +138,8 @@ class ConvexPolytope(object):
                 self.A[i,:] = self.A[i,:]*mult[i]
             self.b = self.b.flatten()*mult
         self.minrep = minrep
-        self._chebXc = chebX
-        self._chebR = chebR
+        self._x = chebX
+        self._r = chebR
         self.bbox = None
         self.fulldim = fulldim
         self._volume = volume
@@ -196,8 +196,8 @@ class ConvexPolytope(object):
         A = self.A.copy()
         b = self.b.copy()
         P = ConvexPolytope(A,b)
-        P._chebXc = self._chebXc
-        P._chebR = self._chebR
+        P._x = self._x
+        P._r = self._r
         P.minrep = self.minrep
         P.bbox = self.bbox
         P.fulldim = self.fulldim
@@ -369,14 +369,14 @@ class ConvexPolytope(object):
         return self._volume
     
     @property
-    def chebR(self):
+    def r(self):
         r, xc = cheby_ball(self)
-        return self._chebR
+        return self._r
     
     @property
-    def chebXc(self):
+    def x(self):
         r, xc = cheby_ball(self)
-        return self._chebXc
+        return self._x
     
     @property
     def cheby(self):
@@ -438,8 +438,8 @@ class Region(object):
                    fully dimensional
       - `dim`: dimension
       - `volume`: volume of region, calculated on first call
-      - `chebXc`: coordinates of maximum chebyshev center (if calculated)
-      - `chebR`: maximum chebyshev radius (if calculated)
+      - `x`: coordinates of maximum chebyshev center (if calculated)
+      - `r`: maximum chebyshev radius (if calculated)
     
     See Also
     ========
@@ -473,8 +473,8 @@ class Region(object):
             self.bbox = None
             self.fulldim = None
             self._volume = None
-            self._chebXc = None
-            self._chebR = None
+            self._x = None
+            self._r = None
     
     def __iter__(self):
         return iter(self.list_poly)
@@ -624,14 +624,14 @@ class Region(object):
         return self._volume
     
     @property
-    def chebR(self):
+    def r(self):
         r, xc = cheby_ball(self)
-        return self._chebR
+        return self._r
     
     @property
-    def chebXc(self):
+    def x(self):
         r, xc = cheby_ball(self)
-        return self._chebXc
+        return self._x
     
     @property
     def cheby(self):
@@ -986,7 +986,7 @@ def cheby_ball(poly1):
     If input is a region the largest Chebyshev ball is returned.
     
     N.B., this function will return whatever it finds in attributes
-    chebR and chbXc if not None, without (re)computing the Chebyshev ball.
+    r and x if not None, without (re)computing the Chebyshev ball.
     
     Example (low dimension):
     
@@ -1000,9 +1000,9 @@ def cheby_ball(poly1):
     """
     #logger.debug('cheby ball')
     
-    if (poly1._chebXc is not None) and (poly1._chebR is not None):
+    if (poly1._x is not None) and (poly1._r is not None):
         #In case chebyshev ball already calculated and stored
-        return poly1._chebR,poly1._chebXc
+        return poly1._r, poly1._x
 
     if isinstance(poly1, Region):
         maxr = 0
@@ -1012,8 +1012,8 @@ def cheby_ball(poly1):
             if rc > maxr:
                 maxr = rc
                 maxx = xc
-        poly1._chebXc = maxx
-        poly1._chebR = maxr
+        poly1._x = maxx
+        poly1._r = maxr
         return maxr,maxx
         
     if is_empty(poly1):
@@ -1040,9 +1040,9 @@ def cheby_ball(poly1):
         # Polytope is empty
         poly1 = ConvexPolytope(fulldim = False)
         return 0,None   
-    poly1._chebXc = np.array(xc)
-    poly1._chebR = np.double(r)
-    return poly1._chebR,poly1._chebXc
+    poly1._x = np.array(xc)
+    poly1._r = np.double(r)
+    return poly1._r, poly1._x
     
 def bounding_box(polyreg):
     """Return smallest hyperbox containing polytope or region.
