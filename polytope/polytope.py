@@ -358,17 +358,17 @@ class ConvexPolytope(object):
     
     @property
     def r(self):
-        r, xc = cheby_ball(self)
+        self._cheby(self)
         return self._r
     
     @property
     def x(self):
-        r, xc = cheby_ball(self)
+        self._cheby(self)
         return self._x
     
     @property
     def _cheby(self):
-        x, r = cheby_ball(self)
+        x, r = _cheby_ball(self)
         
         self._x = x
         self._r = r
@@ -382,7 +382,7 @@ class ConvexPolytope(object):
         Computes the bounding box on first call.
         """
         if self._bbox is None:
-            self._bbox = bounding_box(self)
+            self._bbox = _bounding_box(self)
         return self._bbox
     
     def is_fulldim(self, abs_tol=ABS_TOL):
@@ -662,12 +662,12 @@ class Polytope(object):
     
     @property
     def r(self):
-        self.cheby(self)
+        self._cheby(self)
         return self._r
     
     @property
     def x(self):
-        self.cheby(self)
+        self._cheby(self)
         return self._x
     
     def _cheby(self):
@@ -1011,7 +1011,7 @@ def union(polyreg1,polyreg2,check_convex=False):
         ret = Polytope(lst)
     return ret
 
-def cheby_ball(poly):
+def _cheby_ball(poly):
     """Calculate the Chebyshev radius and center for a polytope.
 
     If input is a region the largest Chebyshev ball is returned.
@@ -1059,7 +1059,7 @@ def cheby_ball(poly):
     
     return xc, r
     
-def bounding_box(polyreg):
+def _bounding_box(polyreg):
     """Return smallest hyperbox containing polytope or region.
     
     @type polyreg: L{Polytope} or L{Region}
@@ -1139,8 +1139,8 @@ def envelope(reg, abs_tol=ABS_TOL):
                 testA = np.vstack([poly2.A, -poly1.A[ii,:]])
                 testb = np.hstack([poly2.b, -poly1.b[ii]])
                 testP = ConvexPolytope(testA,testb)
-                rc,xc = cheby_ball(testP)
-                if rc > abs_tol:
+                
+                if testP.r > abs_tol:
                     # poly2 intersects with inequality ii -> this inequality
                     # can not be in envelope
                     outer_i[ii] = 0
@@ -1298,7 +1298,7 @@ def extreme(poly1):
         # General nD method,
         # solve a vertex enumeration problem for
         # the dual polytope
-        rmid,xmid = cheby_ball(poly1)
+        xmid = poly1.x
         A = poly1.A.copy()
         b = poly1.b.copy()
         sh = np.shape(A)
@@ -1596,7 +1596,7 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
     """Helper function implementing the "iterative hull" method.
     Works best when projecting _to_ lower dimensions.
     """
-    r,xc = cheby_ball(poly1)
+    r = poly1.r
     org_dim = poly1.A.shape[1]
             
     logger.debug("Starting iterhull projection from dim " +
@@ -1802,7 +1802,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         A_dummy = np.vstack([poly.A, poly1.A])
         b_dummy = np.hstack([poly.b, poly1.b])
         dummy = ConvexPolytope(A_dummy, b_dummy)
-        Rc[i], xc = cheby_ball(dummy)
+        Rc[i] = dummy.r
 
     N = np.sum(Rc >= intersect_tol)    
     if N == 0:
@@ -1883,7 +1883,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                 ])
                 Adummy = A[auxINDICES,:]
                 bdummy = B[auxINDICES]
-                R,xopt = cheby_ball(ConvexPolytope(Adummy,bdummy))
+                R = ConvexPolytope(Adummy,bdummy).r
                 if R > abs_tol:
                     level = j
                     counter[level] = 1
@@ -1942,7 +1942,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                         return res
                     
         test_poly = ConvexPolytope(A[INDICES,:],B[INDICES])
-        rc,xc = cheby_ball(test_poly)
+        rc = test_poly.r
         if rc > abs_tol:
             if level == N - 1:
                 res = union(res, reduce(test_poly), False)
@@ -1992,7 +1992,8 @@ def _get_patch(poly1, **kwargs):
         return
     
     V = extreme(poly1)
-    rc,xc = cheby_ball(poly1)
+    
+    xc = poly1.x
     x = V[:,1] - xc[1]
     y = V[:,0] - xc[0]
     mult = np.sqrt(x**2 + y**2)
@@ -2036,7 +2037,7 @@ def _plot_text(polyreg, txt, ax, color):
     if ax is None:
         ax, fig = newax()
     
-    rc, xc = cheby_ball(polyreg)
+    xc = polyreg.x
     ax.text(xc[0], xc[1], txt, color=color)
 
 def simplices2polytopes(points, triangles):
