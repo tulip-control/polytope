@@ -980,7 +980,7 @@ def union(polyreg1,polyreg2,check_convex=False):
         ret = Region(lst)
     return ret
 
-def cheby_ball(poly1):
+def cheby_ball(poly):
     """Calculate the Chebyshev radius and center for a polytope.
 
     If input is a region the largest Chebyshev ball is returned.
@@ -1012,7 +1012,7 @@ def cheby_ball(poly1):
     G = np.c_[A, norm2]
     G = matrix(G)
     
-    h = matrix(poly1.b)
+    h = matrix(poly.b)
     sol = solvers.lp(c, G, h, None, None, lp_solver)
     if sol['status'] == "optimal":
         r = sol['x'][-1]
