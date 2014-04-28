@@ -112,7 +112,7 @@ if check_deps:
 # load long description from README.rst
 readme_file = 'README.rst'
 if os.path.exists(readme_file):
-    long_description = open('README.txt').read()
+    long_description = open(readme_file).read()
 else:
     print('Could not find readme file to extract long_description.')
     long_description = ''
