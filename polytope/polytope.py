@@ -140,7 +140,7 @@ class ConvexPolytope(object):
         self._x = None
         self._r = 0
         self.bbox = None
-        self.fulldim = fulldim
+        self._fulldim = None
         self._volume = volume
         self.vertices = vertices
 
@@ -196,7 +196,7 @@ class ConvexPolytope(object):
         P._r = self._r
         P.minrep = self.minrep
         P.bbox = self.bbox
-        P.fulldim = self.fulldim
+        P._fulldim = self._fulldim
         return P
     
     def __contains__(self, point, abs_tol=ABS_TOL):
@@ -373,6 +373,11 @@ class ConvexPolytope(object):
             self.bbox = bounding_box(self)
         return self.bbox
     
+    def is_fulldim(self, abs_tol=ABS_TOL):
+        if self._fulldim is None:
+            self._fulldim = self.r > abs_tol
+        return self._fulldim
+    
     def is_empty(self):
         """Check True if A is either None or an empty matrix.
         """
@@ -460,7 +465,7 @@ class Region(object):
             
             self.props = set(props)
             self.bbox = None
-            self.fulldim = None
+            self._fulldim = None
             self._volume = None
             self._x = None
             self._r = None
@@ -668,6 +673,16 @@ class Region(object):
                     break
         return self._is_empty
     
+    def is_fulldim(self):
+        """Return True if there exist interior points.
+        """
+        if self._fulldim is None:
+            for poly in self:
+                if poly.is_fulldim():
+                    self._fulldim = True
+                    break
+        return self._fulldim
+    
     def is_interior(self, other, abs_tol=ABS_TOL):
         """Return True if C{other} is strictly in the interior of C{self}.
         
@@ -719,36 +734,6 @@ class Region(object):
         """Plot text at chebyshev center.
         """
         _plot_text(self, txt, ax, color)
-            
-def is_fulldim(polyreg, abs_tol=ABS_TOL):
-    """Check if a polytope or region has inner points.
-    
-    @param polyreg: L{Polytope} or L{Region} instance
-    
-    @return: Boolean that is True if inner points found, False
-        otherwise.
-    """
-    #logger.debug('is_fulldim')
-    
-    if polyreg.fulldim is not None:
-        return polyreg.fulldim
-        
-    lenP = len(polyreg)
-    
-    if lenP == 0:
-        rc,xc = cheby_ball(polyreg)
-        status = rc > abs_tol
-    
-    else:
-        status = np.zeros(lenP)
-        for ii in xrange(lenP):
-            rc,xc = cheby_ball(polyreg.list_poly[ii])
-            status[ii] = rc > abs_tol
-        status = np.sum(status)
-        status = status > 0
-    
-    polyreg.fulldim = status
-    return status
       
 def is_convex(reg, abs_tol=ABS_TOL):
     """Check if a region is convex.
