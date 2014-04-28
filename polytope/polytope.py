@@ -949,7 +949,7 @@ def union(polyreg1,polyreg2,check_convex=False):
         s3 = None
         
     lst = []
-    if len(s1) == 0:
+    if isinstance(s1, ConvexPolytope):
         if not s1.is_empty():
             lst.append(s1)
     else:
@@ -957,7 +957,7 @@ def union(polyreg1,polyreg2,check_convex=False):
             if not poly.is_empty():
                 lst.append(poly)
             
-    if len(s2) == 0:
+    if isinstance(s2, ConvexPolytope):
         if not s2.is_empty():
             lst.append(s2)
     else:
@@ -966,7 +966,7 @@ def union(polyreg1,polyreg2,check_convex=False):
                 lst.append(poly)
             
     if s3 is not None:
-        if len(s3) == 0:
+        if isinstance(s3, ConvexPolytope):
             if not s3.is_empty():
                 lst.append(s3)
         else:
@@ -1772,7 +1772,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     
     N = len(reg)
     
-    if N == 0:
+    if isinstance(reg, ConvexPolytope):
         # Hack if reg happens to be a polytope
         reg = Region([reg])
         N = 1
