@@ -32,6 +32,7 @@
 # 
 """ Polytope package
 """
+# KEEP THIS NUMBER IN SYNC WITH THAT IN setup.py
 __version__ = '0.1.0'
 
 from .polytope import Polytope, Region
