@@ -772,43 +772,38 @@ class Region(object):
         """
         _plot_text(self, txt, ax, color)
       
-def is_convex(reg, abs_tol=ABS_TOL):
-    """Check if a region is convex.
+    def is_convex(self, abs_tol=ABS_TOL):
+        """Check if a region is convex.
+        
+        @type reg: L{Region}
+        
+        @return: result,envelope: result indicating if convex.
+            If found to be convex the envelope describing
+            the convex polytope is returned.
+        """
+        # is this check a bug ?
+        if not self.is_fulldim():
+            return True
+        
+        outer = envelope(self)
+        if outer.is_empty():
+            # Probably because input polytopes
+            # were so small and ugly...
+            return False,None
     
-    @type reg: L{Region}
-    
-    @return: result,envelope: result indicating if convex. if found to
-        be convex the envelope describing the convex polytope is
-        returned.
-    """
-    if not reg.is_fulldim():
-        return True
-    
-    if len(reg) == 0:
-        return True
-    outer = envelope(reg)
-    if outer.is_empty():
-        # Probably because input polytopes were so small and ugly..
-        return False,None
-
-    Pl,Pu = reg.bounding_box
-    Ol,Ou = outer.bounding_box
-    
-    bboxP = np.hstack([Pl,Pu])
-    bboxO = np.hstack([Ol,Ou])
-    
-    if sum(abs(bboxP[:,0] - bboxO[:,0]) > abs_tol) > 0 or \
-    sum(abs(bboxP[:,1] - bboxO[:,1]) > abs_tol) > 0:
-        return False,None
-    if outer.diff(reg).is_fulldim():
-        return False,None
-    else:
-        return True,outer
-
-    
-    @rtype: bool
-    """
-    return polyreg.__contains__(point, abs_tol)
+        Pl,Pu = self.bounding_box
+        Ol,Ou = outer.bounding_box
+        
+        bboxP = np.hstack([Pl,Pu])
+        bboxO = np.hstack([Ol,Ou])
+        
+        if sum(abs(bboxP[:,0] - bboxO[:,0]) > abs_tol) > 0 or \
+        sum(abs(bboxP[:,1] - bboxO[:,1]) > abs_tol) > 0:
+            return False,None
+        if outer.diff(self).is_fulldim():
+            return False,None
+        else:
+            return True,outer
 
 def _is_subset(small, big, abs_tol=ABS_TOL):
     """Return True if small \subseteq big.
@@ -988,7 +983,7 @@ def union(polyreg1,polyreg2,check_convex=False):
                 templist = [lst[0]]
                 for ii in xrange(1,N):
                     templist.append(lst[ii])
-                    is_conv, env = is_convex(Region(templist))
+                    is_conv, env = Region(templist).is_convex()
                     if not is_conv:
                         templist.remove(lst[ii])
                 for poly in templist:
