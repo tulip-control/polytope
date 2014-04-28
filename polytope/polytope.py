@@ -120,7 +120,8 @@ class ConvexPolytope(object):
     """
     def __init__(self,
         A = np.array([]), b = np.array([]),
-        minrep = False, vertices = None, normalize=True
+        minrep = False, vertices = None,
+        normalize=True, abs_tol=ABS_TOL
     ):
         
         self.A = A.astype(float)
@@ -143,6 +144,7 @@ class ConvexPolytope(object):
         self._fulldim = None
         self._volume = volume
         self.vertices = vertices
+        self._abs_tol = abs_tol
 
     def __str__(self):
         """Return pretty-formatted H-representation of polytope(s).
@@ -197,6 +199,7 @@ class ConvexPolytope(object):
         P.minrep = self.minrep
         P.bbox = self.bbox
         P._fulldim = self._fulldim
+        P._abs_tol = self._abs_tol
         return P
     
     def __contains__(self, point, abs_tol=ABS_TOL):
@@ -436,7 +439,7 @@ class Region(object):
     ========
     L{Polytope}
     """
-    def __init__(self, list_poly=None, props=None):
+    def __init__(self, list_poly=None, props=None, abs_tol=ABS_TOL):
         if list_poly is None:
             list_poly = []
         if props is None:
@@ -467,6 +470,7 @@ class Region(object):
             self._x = None
             self._r = None
             self._is_empty = None
+            self._abs_tol = abs_tol
     
     def __iter__(self):
         return iter(self.list_poly)
