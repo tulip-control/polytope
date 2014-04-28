@@ -234,26 +234,6 @@ class ConvexPolytope(object):
     def __nonzero__(self):
         return bool(self.volume > 0)
     
-    def union(self, other, check_convex=False):
-        """Return union with Polytope or Region.
-        
-        For usage see function union.
-        
-        @type other: L{Polytope} or L{Region}
-        
-        @rtype: L{Region}
-        """
-        return union(self, other, check_convex)
-    
-    def diff(self, other):
-        """Return set difference with Polytope or Region.
-        
-        @type other: L{Polytope} or L{Region}
-        
-        @rtype: L{Region}
-        """
-        return mldivide(self, other)
-    
     def intersect(self, other, abs_tol=ABS_TOL):
         """Return intersection with Polytope or Region.
         
