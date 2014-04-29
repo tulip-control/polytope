@@ -1489,10 +1489,10 @@ def separate(reg1, abs_tol=ABS_TOL):
     """Divide a region into several regions such that they are
     all connected.
     
-    @type reg1: L{Region}
+    @type reg1: L{Polytope}
     @param abs_tol: Absolute tolerance
     
-    @return: List [] of connected Regions
+    @return: List of connected Polytopes
     """
     final = []
     ind_left = xrange(len(reg1))
@@ -1508,7 +1508,7 @@ def separate(reg1, abs_tol=ABS_TOL):
         ind_del.append(ind_left[0])
         for i in xrange(1,len(ind_left)):
             j = ind_left[i]
-            if is_adjacent(connected_reg, reg1.list_poly[j]):
+            if connected_reg.is_adjacent(reg1.list_poly[j]):
                 connected_reg = connected_reg.union(
                     reg1.list_poly[j],
                     check_convex = False
