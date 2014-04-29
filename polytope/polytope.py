@@ -127,8 +127,8 @@ class ConvexPolytope(object):
     """
     def __init__(self,
         A = np.array([]), b = np.array([]),
-        minrep = False, vertices = None,
-        normalize=True, abs_tol=ABS_TOL
+        minrep = False, normalize=True,
+        abs_tol=ABS_TOL
     ):
         """Instantiate L{ConvexPolytope}.
         
@@ -155,7 +155,7 @@ class ConvexPolytope(object):
         self._bbox = None
         self._fulldim = None
         self._volume = None
-        self.vertices = vertices
+        self._vertices = None
         self._abs_tol = abs_tol
 
     def __str__(self):
@@ -205,14 +205,23 @@ class ConvexPolytope(object):
     def __copy__(self):
         A = self.A.copy()
         b = self.b.copy()
-        P = ConvexPolytope(A,b)
-        P._x = self._x
-        P._r = self._r
+        P = ConvexPolytope(A, b)
+        
+        self._copy_expensive_attributes(P)
         P.minrep = self.minrep
-        P._bbox = self._bbox
-        P._fulldim = self._fulldim
-        P._abs_tol = self._abs_tol
+        
         return P
+        
+    def _copy_expensive_attributes(self, other):
+        """Copy those attributes that are expensive to recompute.
+        """
+        other._x = self._x
+        other._r = self._r
+        
+        other._bbox = self._bbox
+        other._vertices = self._vertices
+        other._fulldim = self._fulldim
+        other._abs_tol = self._abs_tol
     
     def __contains__(self, point, abs_tol=ABS_TOL):
         """Return True if polytope contains point.
@@ -492,6 +501,7 @@ class Polytope(object):
             self._x = None
             self._r = None
             self._is_empty = None
+            self._envelope = None
             self._abs_tol = abs_tol
     
     def __iter__(self):
@@ -632,15 +642,18 @@ class Polytope(object):
         """
         r = Polytope(self.list_poly[:], props=self.props.copy() )
         
-        r._bbox = self._bbox
-        r._fulldim = self._fulldim
-        r._volume = self._volume
-        r._x = self._x
-        r._r = self._r
-        r._is_empty = self._is_empty
-        r._abs_tol = self._abs_tol
-        
+        self._copy_expensive_attributes(r)
         return r
+        
+    def _copy_expensive_attributes(self, other):
+        other._bbox = self._bbox
+        other._fulldim = self._fulldim
+        other._volume = self._volume
+        other._x = self._x
+        other._r = self._r
+        other._envelope = self._envelope
+        other._is_empty = self._is_empty
+        other._abs_tol = self._abs_tol
     
     def copy(self):
         """Return copy of this L{Polytope}.
