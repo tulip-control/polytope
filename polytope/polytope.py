@@ -2016,6 +2016,19 @@ def box2convex_poly(box):
     """
     return ConvexPolytope.from_box(box)
 
+def boxes2poly(boxes):
+    """Return new Polytope from list of boxes.
+    
+    @param boxes: defines the Polytope
+    @type boxes: [((x1min, x1max), (x2min, x2max),...),
+                  ...]
+    """
+    polys = list()
+    for box in boxes:
+        p = box2convex_poly(box)
+        polys.append(p)
+    return Polytope(polys)
+
 def _get_patch(poly1, **kwargs):
     """Return matplotlib patch for given Polytope.
 
