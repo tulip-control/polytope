@@ -1454,26 +1454,26 @@ def _projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
         return ConvexPolytope()
     
     if solver == "esp":
-        return projection_esp(poly1,new_dim, del_dim)
+        return _projection_esp(poly1,new_dim, del_dim)
     elif solver == "exthull":
-        return projection_exthull(poly1,new_dim)
+        return _projection_exthull(poly1,new_dim)
     elif solver == "fm":
-        return projection_fm(poly1,new_dim,del_dim)
+        return _projection_fm(poly1,new_dim,del_dim)
     elif solver == "iterhull": 
-        return projection_iterhull(poly1,new_dim)
+        return _projection_iterhull(poly1,new_dim)
     elif solver is not None:
         logger.warn('unrecognized projection solver "' +
                     str(solver) + '".')
     
     if len(del_dim) <= 2:
         logger.debug("projection: using Fourier-Motzkin.")
-        return projection_fm(poly1,new_dim,del_dim)
+        return _projection_fm(poly1,new_dim,del_dim)
     elif len(org_dim) <= 4:
         logger.debug("projection: using exthull.")
-        return projection_exthull(poly1,new_dim)
+        return _projection_exthull(poly1,new_dim)
     else:
         logger.debug("projection: using iterative hull.")
-        return projection_iterhull(poly1,new_dim)
+        return _projection_iterhull(poly1,new_dim)
         
 def separate(reg1, abs_tol=ABS_TOL):
     """Divide a region into several regions such that they are
