@@ -749,7 +749,9 @@ class Polytope(object):
     def envelope(self, abs_tol=ABS_TOL):
         """Return envelope of a L{Polytope}.
         """
-        return _envelope(self, abs_tol=ABS_TOL)
+        if self._envelope is None:
+            self._envelope = _envelope(self, abs_tol=ABS_TOL)
+        return self._envelope
     
     def is_empty(self):
         if self._is_empty is None:
