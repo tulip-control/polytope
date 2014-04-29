@@ -457,23 +457,25 @@ class ConvexPolytope(object):
         _plot_text(self, txt, ax, color)
 
 class Polytope(object):
-    """Class for lists of convex polytopes
+    """Iterable container of convex polytopes.
     
-    Contains the following fields:
+    Attributes:
     
-      - `list_poly`: list of Polytope objects
-      - `props`: set of propositions inside region
-      - `bbox`: if calculated, bounding box of region (see bounding_box)
-      - `fulldim`: if calculated, boolean indicating whether region is
-                   fully dimensional
-      - `dim`: dimension
-      - `volume`: volume of region, calculated on first call
-      - `x`: coordinates of maximum chebyshev center (if calculated)
-      - `r`: maximum chebyshev radius (if calculated)
+      - C{props}: set of labels annotating the C{Polytope}.
+      
+    The following attributes are computed on first access:
+    
+      - C{dim}: dimension
+      - C{volume}
+      - C{x}: coordinates Chebyshev center
+      - C{r}: Chebyshev radius
+      
+      - C{bounding_box}
+      - C{envelope}: convex envelope
     
     See Also
     ========
-    L{Polytope}
+    L{ConvexPolytope}
     """
     def __init__(self, convex_polytopes=None,
                  props=None, abs_tol=ABS_TOL):
