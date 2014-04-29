@@ -276,7 +276,7 @@ class ConvexPolytope(object):
         iA = np.vstack([self.A, other.A])
         ib = np.hstack([self.b, other.b])
         
-        return ConvexPolytope(iA, ib).reduce(abs_tol=abs_tol)
+        return ConvexPolytope(iA, ib).reduction(abs_tol=abs_tol)
     
     def copy(self):
         """Return copy of this Polytope.
@@ -350,7 +350,7 @@ class ConvexPolytope(object):
         """
         self.b = factor * self.b
     
-    def reduce(self, abs_tol=ABS_TOL):
+    def reduction(self, abs_tol=ABS_TOL):
         p = _reduce(self, abs_tol=abs_tol)
         self._copy_expensive_attributes(p)
         return p
@@ -668,10 +668,10 @@ class Polytope(object):
         """
         return self.__copy__()
     
-    def reduce(self, abs_tol=ABS_TOL):
+    def reduction(self, abs_tol=ABS_TOL):
         new_polys = []
         for poly in self:
-            red = poly.reduce(abs_tol=abs_tol)
+            red = poly.reduction(abs_tol=abs_tol)
             
             if red.is_fulldim():
                 new_polys.append(red)
@@ -1057,9 +1057,9 @@ def _union(polyreg1, polyreg2, check_convex=False):
                         templist.remove(lst[ii])
                 for poly in templist:
                     lst.remove(poly)
-                cvxpoly = Polytope(templist).envelope().reduce()
+                cvxpoly = Polytope(templist).envelope().reduction()
                 if not cvxpoly.is_empty():
-                    final.append(cvxpoly.reduce() )
+                    final.append(cvxpoly.reduction() )
                 N = len(lst)
         else:
             final = lst
@@ -1210,7 +1210,7 @@ def _envelope(reg, abs_tol=ABS_TOL):
             Ae = np.vstack([Ae, poly1.A[ind_i,:]])
             be = np.hstack([be, poly1.b[ind_i]])
     
-    ret = ConvexPolytope(Ae,be).reduce()
+    ret = ConvexPolytope(Ae,be).reduction()
     if ret.is_fulldim():
         return Polytope([ret])
     else:
@@ -1305,7 +1305,7 @@ def _extreme(poly1):
     V = np.array([])
     R = np.array([])
     
-    poly1 = poly1.reduce() # Need to have polytope non-redundant!
+    poly1 = poly1.reduction() # Need to have polytope non-redundant!
 
     if not poly1.is_fulldim():
         return None
@@ -1597,7 +1597,7 @@ def _projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
     del_dim = -np.sort(-del_dim)
      
     if not poly1.minrep:
-        poly1 = poly1.reduce()
+        poly1 = poly1.reduction()
         
     poly = poly1.copy()
     
@@ -1630,7 +1630,7 @@ def _projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
         )
         if not poly.is_fulldim():
             return ConvexPolytope()
-        poly = poly.reduce()
+        poly = poly.reduction()
         
     return poly
     
@@ -1642,7 +1642,7 @@ def _projection_exthull(poly1,new_dim):
     if vert is None:
         # qhull failed
         return ConvexPolytope(fulldim=False, minrep=True)
-    return qhull(vert[:,new_dim]).reduce()
+    return qhull(vert[:,new_dim]).reduction()
     
 def _projection_iterhull(poly1, new_dim, max_iter=1000,
                         verbose=0, abs_tol=ABS_TOL):
@@ -1998,7 +1998,7 @@ def _region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         rc = test_poly.r
         if rc > abs_tol:
             if level == N - 1:
-                res = res.union(Polytope([test_poly.reduce()]), False)
+                res = res.union(Polytope([test_poly.reduction()]), False)
             else:
                 level = level + 1
     logger.debug('returning res from end')
