@@ -1913,7 +1913,7 @@ def _region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         
     level = 0
     res_count = 0
-    res = ConvexPolytope() # Initiate output
+    res = Polytope() # Initiate output
     while level != -1:
         if save:
             if res:
