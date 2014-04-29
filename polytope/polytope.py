@@ -517,10 +517,10 @@ class Polytope(object):
         
     def __str__(self):
         output = ''
-        for i in xrange(len(self.list_poly)):
+        for i, poly in enumerate(self):
             output += '\t Polytope number ' + str(i+1) + ':\n'
             
-            poly_str = str(self.list_poly[i])
+            poly_str = str(poly)
             poly_str = poly_str.replace('\n', '\n\t\t')
             
             output += '\t ' + poly_str + '\n'
@@ -540,7 +540,7 @@ class Polytope(object):
         if not isinstance(point, np.ndarray):
             point = np.array(point)
         
-        for poly in self.list_poly:
+        for poly in self:
             if poly.__contains__(point, abs_tol):
                 return True
         return False
@@ -638,7 +638,7 @@ class Polytope(object):
         For usage details see function: L{projection}.
         """
         proj = Polytope()
-        for poly in self.list_poly:
+        for poly in self:
             proj += poly.projection(dim, solver, abs_tol)
         return proj
     
@@ -667,7 +667,7 @@ class Polytope(object):
     
     def reduce(self, abs_tol=ABS_TOL):
         new_polys = []
-        for poly in self.list_poly:
+        for poly in self:
             red = poly.reduce(abs_tol=abs_tol)
             
             if red.is_fulldim():
@@ -683,13 +683,13 @@ class Polytope(object):
     def dim(self):
         """Return L{Polytope} dimension.
         """
-        return np.shape(self.list_poly[0].A)[1]
+        return np.shape(self[0].A)[1]
     
     @property
     def volume(self):
         if self._volume is None:
             self._volume = 0.0
-            for poly in self.list_poly:
+            for poly in self:
                 self._volume += poly.volume
         return self._volume
     
@@ -707,7 +707,7 @@ class Polytope(object):
         if self._x is None or self._r is None:
             maxr = 0
             maxx = None
-            for poly in self.list_poly:
+            for poly in self:
                 r = poly.r
                 
                 if r > maxr:
@@ -731,7 +731,7 @@ class Polytope(object):
             alllower = np.zeros([lenP,dimP])
             allupper = np.zeros([lenP,dimP])
             
-            for i, poly in enumerate(self.list_poly):
+            for i, poly in enumerate(self):
                 ll, uu = poly.bounding_box
                 alllower[i, :] = ll.T
                 allupper[i, :] = uu.T
@@ -756,7 +756,7 @@ class Polytope(object):
     def is_empty(self):
         if self._is_empty is None:
             self._is_empty = False
-            for poly in self.list_poly:
+            for poly in self:
                 if poly.is_empty():
                     self._is_empty = True
                     break
@@ -826,7 +826,7 @@ class Polytope(object):
         if ax is None:
             ax, fig = newax()
         
-        for poly2 in self.list_poly:
+        for poly2 in self:
             # TODO hatched polytopes in same region
             poly2.plot(ax, color=color, hatch=hatch, alpha=alpha)
         
@@ -1019,7 +1019,7 @@ def _union(polyreg1, polyreg2, check_convex=False):
         if not s1.is_empty():
             lst.append(s1)
     else:
-        for poly in s1.list_poly:
+        for poly in s1:
             if not poly.is_empty():
                 lst.append(poly)
             
@@ -1027,7 +1027,7 @@ def _union(polyreg1, polyreg2, check_convex=False):
         if not s2.is_empty():
             lst.append(s2)
     else:
-        for poly in s2.list_poly:
+        for poly in s2:
             if not poly.is_empty():
                 lst.append(poly)
             
@@ -1036,7 +1036,7 @@ def _union(polyreg1, polyreg2, check_convex=False):
             if not s3.is_empty():
                 lst.append(s3)
         else:
-            for poly in s3.list_poly:
+            for poly in s3:
                 if not poly.is_empty():
                     lst.append(poly)
     
@@ -1180,13 +1180,13 @@ def _envelope(reg, abs_tol=ABS_TOL):
     Ae = None
     be = None
     
-    for poly1 in reg.list_poly:
+    for poly1 in reg:
         outer_i = np.ones(poly1.A.shape[0])
         for ii in xrange(poly1.A.shape[0]):
             if outer_i[ii] == 0:
                 # If inequality already discarded
                 continue
-            for poly2 in reg.list_poly:
+            for poly2 in reg:
                 # Check for each polytope
                 # if it intersects with inequality ii
                 if poly1 is poly2:
@@ -1502,15 +1502,15 @@ def separate(reg1, abs_tol=ABS_TOL):
     while len(ind_left) > 0:
         ind_del = []
         connected_reg = Polytope(
-            [reg1.list_poly[ind_left[0]]],
+            [reg1[ind_left[0]]],
             []
         )
         ind_del.append(ind_left[0])
         for i in xrange(1,len(ind_left)):
             j = ind_left[i]
-            if connected_reg.is_adjacent(reg1.list_poly[j]):
+            if connected_reg.is_adjacent(reg1[j]):
                 connected_reg = connected_reg.union(
-                    reg1.list_poly[j],
+                    reg1[j],
                     check_convex = False
                 )
                 ind_del.append(j)
@@ -1876,10 +1876,10 @@ def _region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     HK = np.hstack([H,np.array([K]).T])
     for ii in xrange(N): 
         i = ind[ii]
-        if not reg.list_poly[i].is_fulldim():
+        if not reg[i].is_fulldim():
             continue
-        Hni = reg.list_poly[i].A.copy()
-        Kni = reg.list_poly[i].b.copy()   
+        Hni = reg[i].A.copy()
+        Kni = reg[i].b.copy()   
         
         for j in xrange(np.shape(Hni)[0]):
             HKnij = np.hstack([Hni[j,:], Kni[j]])
