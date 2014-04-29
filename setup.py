@@ -127,7 +127,7 @@ else:
 
 if perform_setup:
     # KEEP THIS NUMBER IN SYNC WITH THAT IN polytope/__init__.py
-    polytope_version = '0.1.0'
+    polytope_version = '0.1.1'
     setup(
         name = 'polytope',
         version = polytope_version,
