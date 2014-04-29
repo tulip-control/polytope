@@ -154,7 +154,7 @@ class ConvexPolytope(object):
         self._r = 0
         self._bbox = None
         self._fulldim = None
-        self._volume = volume
+        self._volume = None
         self.vertices = vertices
         self._abs_tol = abs_tol
 
@@ -324,13 +324,13 @@ class ConvexPolytope(object):
         
         return cls(A, b, minrep=True)
     
-    def project(self, dim, solver=None,
+    def projection(self, dim, solver=None,
                 abs_tol=ABS_TOL, verbose=0):
         """Return Polytope projection on selected subspace.
         
         For usage details see function: L{projection}.
         """
-        return projection(self, dim, solver, abs_tol, verbose)
+        return _projection(self, dim, solver, abs_tol, verbose)
     
     def scale(self, factor):
         """Multiply polytope by scalar factor.
@@ -353,7 +353,7 @@ class ConvexPolytope(object):
     @property
     def volume(self):
         if self._volume is None:
-            self._volume = volume(self)
+            self._volume = _volume(self)
         return self._volume
     
     @property
@@ -384,6 +384,16 @@ class ConvexPolytope(object):
         if self._bbox is None:
             self._bbox = _bounding_box(self)
         return self._bbox
+    
+    @property
+    def extreme(self):
+        """Return extreme points of convex polytope.
+        
+        Computed on first access.
+        """
+        if self._extreme is None:
+            self._extreme = _extreme(self)
+        return self._extreme
     
     def is_fulldim(self, abs_tol=ABS_TOL):
         if self._fulldim is None:
@@ -543,7 +553,7 @@ class Polytope(object):
         
         @rtype: L{Polytope}
         """
-        return union(self, other, check_convex=True)
+        return _union(self, other, check_convex=True)
     
     def __nonzero__(self):
         return bool(self.volume > 0)
@@ -557,7 +567,7 @@ class Polytope(object):
         
         @rtype: L{Polytope}
         """
-        return union(self, other, check_convex)
+        return _union(self, other, check_convex)
     
     def __sub__(self, other):
         """Return set difference with C{other}.
@@ -566,7 +576,7 @@ class Polytope(object):
         
         @rtype: L{Polytope}
         """
-        return mldivide(self, other)
+        return _mldivide(self, other)
     
     def diff(self, other):
         """Return set difference with C{other}.
@@ -575,7 +585,7 @@ class Polytope(object):
         
         @rtype: L{Region}
         """
-        return mldivide(self, other)
+        return _mldivide(self, other)
         
     def __and__(self, other):
         """Return intersection with C{other}.
@@ -604,17 +614,17 @@ class Polytope(object):
                 rp, xp = isect.cheby
             
                 if rp > abs_tol:
-                    P = union(P, isect, check_convex=True)
+                    P = _union(P, isect, check_convex=True)
         return P
     
-    def project(self, dim, solver=None, abs_tol=ABS_TOL):
+    def projection(self, dim, solver=None, abs_tol=ABS_TOL):
         """Return Polytope projection on selected subspace.
         
         For usage details see function: L{projection}.
         """
         proj = Polytope()
         for poly in self.list_poly:
-            proj += projection(poly, dim, solver, abs_tol)
+            proj += poly.projection(dim, solver, abs_tol)
         return proj
     
     def __copy__(self):
@@ -713,6 +723,11 @@ class Polytope(object):
             self._bbox = (l, u)
         return self._bbox
     
+    def envelope(self, abs_tol=ABS_TOL):
+        """Return envelope of a L{Polytope}.
+        """
+        return _envelope(self, abs_tol=ABS_TOL)
+    
     def is_empty(self):
         if self._is_empty is None:
             self._is_empty = False
@@ -797,7 +812,7 @@ class Polytope(object):
         if not self.is_fulldim():
             return True
         
-        outer = envelope(self)
+        outer = _envelope(self)
         if outer.is_empty():
             # Probably because input polytopes
             # were so small and ugly...
@@ -931,11 +946,11 @@ def _reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     polyOut.minrep = True
     return polyOut
 
-def union(polyreg1,polyreg2,check_convex=False):
+def _union(polyreg1, polyreg2, check_convex=False):
     """Compute the union of polytopes or regions
     
-    @type polyreg1: L{Polytope} or L{Region}
-    @type polyreg2: L{Polytope} or L{Region}
+    @type polyreg1: L{Polytope}
+    @type polyreg2: L{Polytope}
     @param check_convex: if True, look for convex unions and simplify
     
     @return: region of non-overlapping polytopes describing the union
@@ -1107,8 +1122,8 @@ def _bounding_box(polyreg):
     
     return l,u
     
-def envelope(reg, abs_tol=ABS_TOL):
-    """Compute envelope of a region.
+def _envelope(reg, abs_tol=ABS_TOL):
+    """Compute envelope of a L{Polytope}.
 
     The envelope is the polytope defined by all "outer" inequalities a
     x < b such that {x | a x < b} intersection P = P for all polytopes
@@ -1117,10 +1132,11 @@ def envelope(reg, abs_tol=ABS_TOL):
     
     If envelope can't be computed an empty polytope is returned
     
-    @type reg: L{Region}
+    @type reg: L{Polytope}
     @param abs_tol: Absolute tolerance for calculations
     
     @return: Envelope of input
+    @rtype: L{Polytope}
     """
     Ae = None
     be = None
@@ -1159,7 +1175,7 @@ def envelope(reg, abs_tol=ABS_TOL):
 
 count = 0
 
-def mldivide(a, b, save=False):
+def _mldivide(a, b, save=False):
     """Return set difference a \ b.
     
     @param a: L{Region}
@@ -1174,8 +1190,8 @@ def mldivide(a, b, save=False):
         #assert(not is_fulldim(P.intersection(poly) ) )
         Pdiff = poly
         for poly1 in b:
-            Pdiff = mldivide(Pdiff, poly1, save=save)
-        P = union(P, Pdiff, check_convex=True)
+            Pdiff = _mldivide(Pdiff, poly1, save=save)
+        P = _union(P, Pdiff, check_convex=True)
         
         if save:
             global count
@@ -1190,7 +1206,7 @@ def mldivide(a, b, save=False):
             ax.figure.savefig('./img/P' + str(count) + '.pdf')
     return P
     
-def volume(poly):
+def _volume(poly):
     """Approximate volume of L{ConvexPolytope}.
     
     A randomized algorithm is used.
@@ -1231,13 +1247,18 @@ def volume(poly):
     
     return vol    
             
-def extreme(poly1):
-    """Compute the extreme points of a _bounded_ polytope
+def _extreme(poly1):
+    """Compute the extreme points of a bounded convex polytope.
     
-    @param poly1: Polytope in dimension d
+    @param poly1: convex polytope in dimension d
+    @type poly1: L{ConvexPolytope}
     
-    @return: A (N x d) numpy array containing the N vertices of poly1
+    @return: array containing N vertices of C{poly1}
+    @rtype: (N x d) numpy array
     """
+    if isinstance(poly1, Polytope):
+        raise Exception("extreme: not executable for regions")
+    
     if poly1.vertices is not None:
         # In case vertices already stored
         return poly1.vertices
@@ -1337,7 +1358,7 @@ def qhull(vertices,abs_tol=ABS_TOL):
         return ConvexPolytope()
     return ConvexPolytope(A,b,minrep=True,vertices=vert)
 
-def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
+def _projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     """Projects a polytope onto lower dimensions.
     
     Available solvers are:
@@ -1352,6 +1373,8 @@ def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
         >>> P_proj = projection(P, [1,2,3])
 
     @param poly1: Polytope to project
+    @type poly1: L{ConvexPolytope}
+    
     @param dim: Dimensions on which to project
     @param solver: A solver can be specified, if left blank an attempt
         is made to choose the most suitable solver.
@@ -1451,8 +1474,7 @@ def separate(reg1, abs_tol=ABS_TOL):
         for i in xrange(1,len(ind_left)):
             j = ind_left[i]
             if is_adjacent(connected_reg, reg1.list_poly[j]):
-                connected_reg = union(
-                    connected_reg,
+                connected_reg = connected_reg.union(
                     reg1.list_poly[j],
                     check_convex = False
                 )
@@ -1536,7 +1558,7 @@ def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
     
 #### Helper functions ####
         
-def projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
+def _projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
     """Help function implementing Fourier Motzkin projection.
     Should work well for eliminating few dimensions.
     """
@@ -1581,17 +1603,17 @@ def projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
         
     return poly
     
-def projection_exthull(poly1,new_dim):
+def _projection_exthull(poly1,new_dim):
     """Help function implementing vertex projection.
     Efficient in low dimensions.
     """
-    vert = extreme(poly1)
+    vert = poly1.extreme
     if vert is None:
         # qhull failed
         return ConvexPolytope(fulldim=False, minrep=True)
     return reduce(qhull(vert[:,new_dim]))
     
-def projection_iterhull(poly1, new_dim, max_iter=1000,
+def _projection_iterhull(poly1, new_dim, max_iter=1000,
                         verbose=0, abs_tol=ABS_TOL):
     """Helper function implementing the "iterative hull" method.
     Works best when projecting _to_ lower dimensions.
@@ -1747,7 +1769,7 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
                 # Iterate
                 P1 = P2
                 
-def projection_esp(poly1,keep_dim,del_dim):
+def _projection_esp(poly1,keep_dim,del_dim):
     """Helper function implementing "Equality set projection".
     Very buggy.
     """
@@ -1758,8 +1780,8 @@ def projection_esp(poly1,keep_dim,del_dim):
     G,g,E = esp(C,D,poly1.b)
     return ConvexPolytope(G,g)
 
-def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
-                save=False):
+def _region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
+                 save=False):
     """Subtract a region from a polytope
     
     @param poly: polytope from which to subtract a region
@@ -1892,7 +1914,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
             
             if R < abs_tol:
                 level = level - 1
-                res = union(res, ConvexPolytope(A[INDICES,:],B[INDICES]), False)
+                res = res.union(ConvexPolytope(A[INDICES,:],B[INDICES]), False)
                 nzcount = np.nonzero(counter)[0]
                 for jj in xrange(len(nzcount)-1,-1,-1):
 
@@ -1945,13 +1967,13 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         rc = test_poly.r
         if rc > abs_tol:
             if level == N - 1:
-                res = union(res, reduce(test_poly), False)
+                res = res.union(Polytope([test_poly.reduce()]), False)
             else:
                 level = level + 1
     logger.debug('returning res from end')
     return res
     
-def num_bin(N, places=8):
+def _num_bin(N, places=8):
     """Return N as list of bits, zero-filled to places.
 
     E.g., given N=7, num_bin returns [1, 1, 1, 0, 0, 0, 0, 0].
@@ -1991,7 +2013,7 @@ def _get_patch(poly1, **kwargs):
         logger.warn('matplotlib not found, no plotting.')
         return
     
-    V = extreme(poly1)
+    V = poly1.extreme()
     
     xc = poly1.x
     x = V[:,1] - xc[1]
