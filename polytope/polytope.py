@@ -2008,10 +2008,10 @@ def _num_bin(N, places=8):
     """
     return [(N>>k)&0x1  for k in xrange(places)]
 
-def box2poly(box):
-    """Return new Polytope from box.
+def box2convex_poly(box):
+    """Return new ConvexPolytope from box.
     
-    @param box: defining the Polytope
+    @param box: defining the convex Polytope
     @type box: [[x1min, x1max], [x2min, x2max],...]
     """
     return ConvexPolytope.from_box(box)
