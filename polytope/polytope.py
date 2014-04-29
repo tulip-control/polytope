@@ -400,14 +400,14 @@ class ConvexPolytope(object):
         return self._bbox
     
     @property
-    def extreme(self):
+    def vertices(self):
         """Return extreme points of convex polytope.
         
         Computed on first access.
         """
-        if self._extreme is None:
-            self._extreme = _extreme(self)
-        return self._extreme
+        if self._vertices is None:
+            self._vertices = _extreme(self)
+        return self._vertices
     
     def is_fulldim(self, abs_tol=ABS_TOL):
         if self._fulldim is None:
