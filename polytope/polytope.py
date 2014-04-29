@@ -475,29 +475,32 @@ class Polytope(object):
     ========
     L{Polytope}
     """
-    def __init__(self, list_poly=None, props=None, abs_tol=ABS_TOL):
-        if list_poly is None:
-            list_poly = []
+    def __init__(self, convex_polytopes=None,
+                 props=None, abs_tol=ABS_TOL):
+        if convex_polytopes is None:
+            convex_polytopes = []
         if props is None:
             props = set()
         
-        if isinstance(list_poly, str):
+        if isinstance(convex_polytopes, str):
             # Hack to be able to use the Polytope class also for discrete
             # problems.
-            self.list_poly = list_poly
+            self._polytopes = convex_polytopes
             self.props = set(props)
         else:
-            if isinstance(list_poly, Polytope):
-                dim = list_poly[0].dim
-                for poly in list_poly:
+            if isinstance(convex_polytopes, Polytope):
+                p = convex_polytopes
+                dim = p[0].dim
+                for poly in p:
                     if poly.dim != dim:
                         raise Exception("Polytope error:"
                             " Polytopes must be of same dimension!")                    
             
-            self.list_poly = list_poly[:]
-            for poly in list_poly:
+            self._polytopes = convex_polytopes[:]
+            
+            for poly in convex_polytopes:
                 if poly.is_empty():
-                    self.list_poly.remove(poly)
+                    self._polytopes.remove(poly)
             
             self.props = set(props)
             self._bbox = None
@@ -510,10 +513,10 @@ class Polytope(object):
             self._abs_tol = abs_tol
     
     def __iter__(self):
-        return iter(self.list_poly)
+        return iter(self._polytopes)
     
     def __getitem__(self, key):
-        return self.list_poly[key]
+        return self._polytopes[key]
         
     def __str__(self):
         output = ''
@@ -528,7 +531,7 @@ class Polytope(object):
         return output  
         
     def __len__(self):
-        return len(self.list_poly)
+        return len(self._polytopes)
     
     def __contains__(self, point, abs_tol=ABS_TOL):
         """Return True if Polytope contains point.
@@ -645,7 +648,7 @@ class Polytope(object):
     def __copy__(self):
         """Return copy of this Polytope.
         """
-        r = Polytope(self.list_poly[:], props=self.props.copy() )
+        r = Polytope(self._polytopes[:], props=self.props.copy() )
         
         self._copy_expensive_attributes(r)
         return r
