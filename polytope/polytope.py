@@ -276,7 +276,7 @@ class ConvexPolytope(object):
         iA = np.vstack([self.A, other.A])
         ib = np.hstack([self.b, other.b])
         
-        return reduce(ConvexPolytope(iA, ib), abs_tol=abs_tol)
+        return ConvexPolytope(iA, ib).reduce(abs_tol=abs_tol)
     
     def copy(self):
         """Return copy of this Polytope.
@@ -349,6 +349,11 @@ class ConvexPolytope(object):
         @type factor: float
         """
         self.b = factor * self.b
+    
+    def reduce(self, abs_tol=ABS_TOL):
+        p = _reduce(self, abs_tol=abs_tol)
+        self._copy_expensive_attributes(p)
+        return p
     
     @property
     def dim(self):
@@ -660,14 +665,19 @@ class Polytope(object):
         """
         return self.__copy__()
     
-    def _reduce(self):
-        lst = []
-        for poly2 in self.list_poly:
-            red = _reduce(poly2)
+    def reduce(self, abs_tol=ABS_TOL):
+        new_polys = []
+        for poly in self.list_poly:
+            red = poly.reduce(abs_tol=abs_tol)
+            
             if red.is_fulldim():
-                lst.append(red)
+                new_polys.append(red)
         
-        return Polytope(lst, self.props)
+        p = Polytope(new_polys, self.props)
+        
+        self._copy_expensive_attributes(p)
+        
+        return p
     
     @property
     def dim(self):
@@ -868,17 +878,18 @@ def _is_subset(small, big, abs_tol=ABS_TOL):
         return False
 
 def _reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):  
-    """Removes redundant inequalities in the hyperplane representation
-    of the polytope with the algorithm described at
-    http://www.ifor.math.ethz.ch/~fukuda/polyfaq/node24.html
-    by solving one LP for each facet
+    """Removes redundant inequalities in the hyperplane representation.
+    
+    Using algorithm from:
+        http://www.ifor.math.ethz.ch/~fukuda/polyfaq/node24.html
+    by solving one LP for each facet.
 
     Warning:
       - nonEmptyBounded == 0 case is not tested much.
     
     @type poly: L{ConvexPolytope}
     
-    @return: Reduced L{Polytope} or L{Region} object
+    @return: Reduced L{ConvexPolytope}
     """
     if poly.minrep:
         # If polytope already in minimal representation
@@ -1028,9 +1039,9 @@ def _union(polyreg1, polyreg2, check_convex=False):
                         templist.remove(lst[ii])
                 for poly in templist:
                     lst.remove(poly)
-                cvxpoly = reduce(envelope(Polytope(templist)))
+                cvxpoly = Polytope(templist).envelope().reduce()
                 if not cvxpoly.is_empty():
-                    final.append(reduce(cvxpoly))
+                    final.append(cvxpoly.reduce() )
                 N = len(lst)
         else:
             final = lst
@@ -1180,11 +1191,12 @@ def _envelope(reg, abs_tol=ABS_TOL):
         else:
             Ae = np.vstack([Ae, poly1.A[ind_i,:]])
             be = np.hstack([be, poly1.b[ind_i]])
-    ret = reduce(ConvexPolytope(Ae,be))
+    
+    ret = ConvexPolytope(Ae,be).reduce()
     if ret.is_fulldim():
-        return ret
+        return Polytope([ret])
     else:
-        return ConvexPolytope()
+        return Polytope()
 
 count = 0
 
@@ -1279,10 +1291,7 @@ def _extreme(poly1):
     V = np.array([])
     R = np.array([])
     
-    if isinstance(poly1, Polytope):
-        raise Exception("extreme: not executable for regions")
-    
-    poly1 = reduce(poly1) # Need to have polytope non-redundant!
+    poly1 = poly1.reduce() # Need to have polytope non-redundant!
 
     if not poly1.is_fulldim():
         return None
@@ -1582,7 +1591,7 @@ def _projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
     del_dim = -np.sort(-del_dim)
      
     if not poly1.minrep:
-        poly1 = reduce(poly1)
+        poly1 = poly1.reduce()
         
     poly = poly1.copy()
     
@@ -1615,7 +1624,7 @@ def _projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
         )
         if not poly.is_fulldim():
             return ConvexPolytope()
-        poly = reduce(poly)
+        poly = poly.reduce()
         
     return poly
     
@@ -1627,7 +1636,7 @@ def _projection_exthull(poly1,new_dim):
     if vert is None:
         # qhull failed
         return ConvexPolytope(fulldim=False, minrep=True)
-    return reduce(qhull(vert[:,new_dim]))
+    return qhull(vert[:,new_dim]).reduce()
     
 def _projection_iterhull(poly1, new_dim, max_iter=1000,
                         verbose=0, abs_tol=ABS_TOL):
