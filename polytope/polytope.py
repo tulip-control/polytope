@@ -772,6 +772,19 @@ class Polytope(object):
                     break
         return self._fulldim
     
+    def is_adjacent(self, other, overlap=False, abs_tol=None):
+        if not isinstance(other, Polytope):
+            raise TypeError('other must be a Polytope.')
+        
+        if abs_tol is None:
+            abs_tol = self._abs_tol
+        
+        for p0 in self:
+            for p1 in other:
+                if _is_adjacent(p0, p1, overlap=overlap, abs_tol=abs_tol):
+                    return True
+        return False
+    
     def is_interior(self, other, abs_tol=ABS_TOL):
         """Return True if C{other} is strictly in the interior of C{self}.
         
@@ -1508,12 +1521,13 @@ def separate(reg1, abs_tol=ABS_TOL):
     
     return final
 
-def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
-    """Return True if two polytopes or regions are adjacent.
+def _is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
+    """Return True if convex polytopes are adjacent.
     
     Check by enlarging both slightly and checking for intersection.
     
-    @type poly1, poly2: L{Polytope}s or L{Region}s
+    @type poly1: L{ConvexPolytope}
+    @type poly2: L{ConvexPolytope}
     
     @param overlap: return True if polytopes are neighbors OR overlap
     
@@ -1521,23 +1535,15 @@ def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
     
     @return: True if polytopes are adjacent
     """
+    if not isinstance(poly1, ConvexPolytope):
+        raise TypeError('poly1 is not a ConvexPolytope.')
+    
+    if not isinstance(poly1, ConvexPolytope):
+        raise TypeError('poly2 is not a ConvexPolytope.')
+    
     if poly1.dim != poly2.dim:
         raise Exception("is_adjacent: "
             "polytopes do not have the same dimension")
-    
-    if isinstance(poly1, Polytope):
-        for p in poly1:
-            adj = is_adjacent(p, poly2, overlap=overlap, abs_tol=abs_tol)
-            if adj:
-                return True
-        return False
-    
-    if isinstance(poly2, Polytope):
-        for p in poly2:
-            adj = is_adjacent(poly1, p, overlap=overlap, abs_tol=abs_tol)
-            if adj:
-                return True
-        return False
         
     A1_arr = poly1.A.copy()
     A2_arr = poly2.A.copy()
