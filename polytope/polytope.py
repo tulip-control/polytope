@@ -1284,11 +1284,7 @@ def _extreme(poly1):
     @rtype: (N x d) numpy array
     """
     if isinstance(poly1, Polytope):
-        raise Exception("extreme: not executable for regions")
-    
-    if poly1.vertices is not None:
-        # In case vertices already stored
-        return poly1.vertices
+        raise Exception('poly1 must be a ConvexPolytope')
 
     V = np.array([])
     R = np.array([])
@@ -1367,8 +1363,7 @@ def _extreme(poly1):
             for ix in xrange(nx):
                 V[iv,ix] = H[iv,ix]/K[iv] + xmid[ix]
     
-    poly1.vertices = V.reshape((V.size/nx, nx))
-    return poly1.vertices
+    return V.reshape((V.size/nx, nx))
 
 def qhull(self, vertices, abs_tol=ABS_TOL):
     """Return convex hull of C{vertices} computed by quickhull.
