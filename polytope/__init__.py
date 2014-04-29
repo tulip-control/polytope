@@ -35,12 +35,13 @@
 # KEEP THIS NUMBER IN SYNC WITH THAT IN setup.py
 __version__ = '0.1.0'
 
-from .polytope import ConvexPolytope, Region
-from .polytope import is_empty, is_fulldim, is_convex, is_adjacent, is_subset
-from .polytope import reduce, separate, box2poly, grid_region
-from .polytope import cheby_ball, bounding_box, envelope, extreme, qhull
+from .polytope import (
+    ConvexPolytope, Polytope,
+    box2convex_poly, boxes2poly,
+    separate,grid_region, qhull
+)
 
-# to be moved to MPT namespace
-from .polytope import is_inside, union, mldivide, intersect, volume, projection
 from .plot import plot_partition, plot_transition_arrow
-from .prop2partition import Partition, MetricPartition, find_adjacent_regions
+from .prop2partition import (
+    Partition, MetricPartition, find_adjacent_regions
+)
