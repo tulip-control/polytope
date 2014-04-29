@@ -1345,18 +1345,21 @@ def _extreme(poly1):
     
     poly1.vertices = V.reshape((V.size/nx, nx))
     return poly1.vertices
+
+def qhull(self, vertices, abs_tol=ABS_TOL):
+    """Return convex hull of C{vertices} computed by quickhull.
     
-def qhull(vertices,abs_tol=ABS_TOL):
-    """Use quickhull to compute a convex hull.
+    @param vertices: N x d array containing N vertices
+        in dimension d
     
-    @param vertices: A N x d array containing N vertices in dimension d
-    
-    @return: L{Polytope} describing the convex hull
+    @return: convex hull
+    @rtype: L{Polytope}
     """
-    A,b,vert = quickhull(vertices,abs_tol=abs_tol)
+    A, b, vert = quickhull(vertices, abs_tol=abs_tol)
     if A.size == 0:
-        return ConvexPolytope()
-    return ConvexPolytope(A,b,minrep=True,vertices=vert)
+        return Polytope()
+    return Polytope([ConvexPolytope(A, b, minrep=True,
+                                    vertices=vert)])
 
 def _projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     """Projects a polytope onto lower dimensions.
