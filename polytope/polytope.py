@@ -1371,7 +1371,7 @@ def _extreme(poly1):
     
     return V.reshape((V.size/nx, nx))
 
-def qhull(self, vertices, abs_tol=ABS_TOL):
+def qhull(vertices, abs_tol=ABS_TOL):
     """Return convex hull of C{vertices} computed by quickhull.
     
     @param vertices: N x d array containing N vertices
