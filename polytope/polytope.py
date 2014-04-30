@@ -979,7 +979,7 @@ def _reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     polyOut.minrep = True
     return polyOut
 
-def _union(polyreg1, polyreg2, check_convex=False):
+def _union(p0, p1, check_convex=False):
     """Compute the union of polytopes or regions
     
     @type polyreg1: L{Polytope}
@@ -990,74 +990,71 @@ def _union(polyreg1, polyreg2, check_convex=False):
     """
     #logger.debug('union')
     
-    if polyreg1.is_empty():
-        return polyreg2
-    if polyreg2.is_empty():
-        return polyreg1
+    assert(isinstance(p0, Polytope) )
+    assert(isinstance(p1, Polytope) )
+    
+    if p0.is_empty():
+        return p1
+    if p1.is_empty():
+        return p0
     
     if check_convex:
-        s1 = polyreg1.intersection(polyreg2)
-        if s1.is_fulldim():
-            s2 = polyreg2.diff(polyreg1)
-            s3 = polyreg1.diff(polyreg2)
-        else:
-            s2 = polyreg1
-            s3 = polyreg2
-    else:
-        s1 = polyreg1
-        s2 = polyreg2
-        s3 = None
+        s1 = p0.intersection(p1)
         
-    lst = []
-    if isinstance(s1, ConvexPolytope):
-        if not s1.is_empty():
-            lst.append(s1)
-    else:
-        for poly in s1:
-            if not poly.is_empty():
-                lst.append(poly)
-            
-    if isinstance(s2, ConvexPolytope):
-        if not s2.is_empty():
-            lst.append(s2)
-    else:
-        for poly in s2:
-            if not poly.is_empty():
-                lst.append(poly)
-            
-    if s3 is not None:
-        if isinstance(s3, ConvexPolytope):
-            if not s3.is_empty():
-                lst.append(s3)
+        if s1.is_fulldim():
+            s2 = p1.diff(p0)
+            s3 = p0.diff(p1)
         else:
-            for poly in s3:
-                if not poly.is_empty():
-                    lst.append(poly)
+            s2 = p0
+            s3 = p1
+        
+        s = [s1, s2, s3]
+    else:
+        s = [p0, p1]
     
-    if check_convex:
-        final = []
-        N = len(lst)
-        if N > 1:
-            # Check convexity for each pair of polytopes
-            while N>0:
-                templist = [lst[0]]
-                for ii in xrange(1,N):
-                    templist.append(lst[ii])
-                    is_conv, env = Polytope(templist).is_convex()
-                    if not is_conv:
-                        templist.remove(lst[ii])
-                for poly in templist:
-                    lst.remove(poly)
-                cvxpoly = Polytope(templist).envelope().reduction()
-                if not cvxpoly.is_empty():
-                    final.append(cvxpoly.reduction() )
-                N = len(lst)
-        else:
-            final = lst
-        ret = Polytope(final)
-    else:
-        ret = Polytope(lst)
-    return ret
+    polys = []
+    for p in s:
+        assert(isinstance(p, Polytope) )
+        
+        for poly in p:
+            assert(isinstance(poly, ConvexPolytope) )
+            
+            if not poly.is_empty():
+                polys.append(poly)
+    
+    if not check_convex:
+        return Polytope(polys)
+    
+    if len(polys) == 1:
+        return Polytope(polys)
+    
+    # check convexity by incrementally adding polytopes
+    final = []
+    while polys:
+        cvx = [polys[0]]
+        
+        for p in polys[1:]:
+            cvx.append(p)
+            is_conv, env = Polytope(cvx).is_convex()
+            
+            # skip p if it breaks convexity
+            if not is_conv:
+                cvx.remove(p)
+        
+        # remove those that fit together convexly
+        for p in cvx:
+            polys.remove(p)
+        
+        # glue them together
+        cvxpoly = Polytope(cvx).envelope().reduction()
+        
+        if cvxpoly.is_empty():
+            continue
+        
+        assert(len(cvxpoly) == 1)
+        final.append(cvxpoly[0])
+    
+    return Polytope(final)
 
 def _cheby_ball(poly):
     """Calculate the Chebyshev radius and center for a polytope.
