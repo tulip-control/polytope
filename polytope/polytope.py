@@ -143,19 +143,28 @@ class ConvexPolytope(object):
         if b is None:
             b = np.array([])
         
-        self.A = A.astype(float)
-        self.b = b.astype(float).flatten()
+        A = A.astype(float)
+        b = b.astype(float).flatten()
+        
+        # normalize ?
         if A.size > 0 and normalize:
-            # Normalize
-            Anorm = np.sqrt(np.sum(A*A,1)).flatten()     
+            Anorm = np.sqrt(np.sum(A*A, 1)).flatten()     
             pos = np.nonzero(Anorm > 1e-10)[0]
-            self.A = self.A[pos, :]
-            self.b = self.b[pos]
+            
+            A = A[pos, :]
+            b = b[pos]
+            
             Anorm = Anorm[pos]           
-            mult = 1/Anorm
-            for i in xrange(self.A.shape[0]):
-                self.A[i,:] = self.A[i,:]*mult[i]
-            self.b = self.b.flatten()*mult
+            mult = 1 / Anorm
+            
+            for i in xrange(A.shape[0]):
+                A[i,:] = A[i,:] * mult[i]
+            
+            b = b.flatten() * mult
+        
+        self._A = A
+        self._b = b
+        
         self.minrep = minrep
         self._x = None
         self._r = 0
@@ -349,6 +358,36 @@ class ConvexPolytope(object):
         p = _reduce(self, abs_tol=abs_tol)
         self._copy_expensive_attributes(p)
         return p
+    
+    def _clear_memoized(self):
+        logger.warning('clearing memoized values')
+        
+        self._bbox = None
+        self._volume = None
+        self._vertices = None
+        self._fulldim = None
+        self._x = None
+        self._r = None
+    
+    @property
+    def A(self):
+        return self._A
+    
+    @A.setter
+    def A(self, value):
+        logger.warning("changing cvx polytope's A array")
+        self._clear_memoized()
+        self._A = value
+    
+    @property
+    def b(self):
+        return self._b
+    
+    @b.setter
+    def b(self, value):
+        logger.warning("changing cvx polytope's b array")
+        self._clear_memoized()
+        self._b = value
     
     @property
     def dim(self):
