@@ -11,8 +11,12 @@ The default value of N is 3.  Note that plotting requires matplotlib
 import polytope
 
 import numpy as np
-import matplotlib.pyplot as plt
 import sys
+
+try:
+    import matplotlib.pyplot as plt
+except:
+    plt = None
 
 
 if __name__ == "__main__":
@@ -34,5 +38,6 @@ if __name__ == "__main__":
     print("which has extreme points:")
     print(V_min)
 
-    P.plot()
-    plt.show()
+    if plt is not None:
+        P.plot()
+        plt.show()
