@@ -127,7 +127,7 @@ class ConvexPolytope(object):
     L{Polytope}
     """
     def __init__(self,
-        A = np.array([]), b = np.array([]),
+        A=None, b=None,
         minrep = False, normalize=True,
         abs_tol=ABS_TOL
     ):
@@ -137,6 +137,12 @@ class ConvexPolytope(object):
               then normalize given C{A}, C{b}
               otherwise don't modify them.
         """
+        if A is None:
+            A = np.array([])
+        
+        if b is None:
+            b = np.array([])
+        
         self.A = A.astype(float)
         self.b = b.astype(float).flatten()
         if A.size > 0 and normalize:
