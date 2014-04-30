@@ -360,12 +360,12 @@ class ConvexPolytope(object):
     
     @property
     def r(self):
-        self._cheby(self)
+        self._cheby
         return self._r
     
     @property
     def x(self):
-        self._cheby(self)
+        self._cheby
         return self._x
     
     @property
@@ -688,12 +688,12 @@ class Polytope(object):
     
     @property
     def r(self):
-        self._cheby(self)
+        self._cheby
         return self._r
     
     @property
     def x(self):
-        self._cheby(self)
+        self._cheby
         return self._x
     
     def _cheby(self):
