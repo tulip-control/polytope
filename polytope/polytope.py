@@ -1212,33 +1212,50 @@ count = 0
 def _mldivide(a, b, save=False):
     """Return set difference a \ b.
     
-    @param a: L{Region}
-    @param b: L{Region} to subtract
+    @param a: L{Polytope}
+    @param b: L{Polytope} or L{ConvexPolytope} to subtract
     
-    @return: L{Region} describing the set difference
+    @return: L{Polytope} describing the set difference
     """
-    logger.debug('mldivide got Region as minuend')
+    assert(isinstance(a, Polytope) )
     
-    P = Polytope()
-    for poly in a:
+    r = Polytope()
+    for p in a:
+        assert(isinstance(p, ConvexPolytope) )
         #assert(not is_fulldim(P.intersection(poly) ) )
-        Pdiff = poly
-        for poly1 in b:
-            Pdiff = _mldivide(Pdiff, poly1, save=save)
-        P = _union(P, Pdiff, check_convex=True)
+        
+        if isinstance(b, ConvexPolytope):
+            diff = _region_diff(p, b)
+        elif isinstance(b, Polytope):
+            diff = p
+            for q in b:
+                assert(isinstance(q, ConvexPolytope) )
+                
+                # recurse only when necessary
+                if isinstance(diff, Polytope):
+                    diff = _mldivide(diff, q)
+                elif isinstance(diff, ConvexPolytope):
+                    diff = _region_diff(diff, q)
+                else:
+                    raise TypeError('diff not polytope')
+        else:
+            raise TypeError('b not polytope')
+        
+        r = r.union(diff, check_convex=True)
         
         if save:
             global count
             count = count + 1
             
-            ax = Pdiff.plot()
+            ax = diff.plot()
             ax.axis([0.0, 1.0, 0.0, 2.0])
             ax.figure.savefig('./img/Pdiff' + str(count) + '.pdf')
             
-            ax = P.plot()
+            ax = r.plot()
             ax.axis([0.0, 1.0, 0.0, 2.0])
             ax.figure.savefig('./img/P' + str(count) + '.pdf')
-    return P
+        
+    return r
     
 def _volume(poly):
     """Approximate volume of L{ConvexPolytope}.
