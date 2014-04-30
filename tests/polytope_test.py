@@ -21,10 +21,3 @@ def comparison_test():
     assert(p <= p2)
     assert(not p2 <= p)
     assert(not p2 == p)
-    
-    r = pc.Region([p])
-    r2 = pc.Region([p2])
-    
-    assert(r <= r2)
-    assert(not r2 <= r)
-    assert(not r2 == r)

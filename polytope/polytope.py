@@ -239,18 +239,6 @@ class ConvexPolytope(object):
         test = self.A.dot(points) -self.b[:,np.newaxis] < abs_tol
         return np.all(test, axis=0)
     
-    def __eq__(self, other):
-        return self <= other and other <= self
-    
-    def __ne__(self, other):
-        return not self == other
-    
-    def __le__(self, other):
-        return _is_subset(self, other)
-    
-    def __ge__(self, other):
-        return _is_subset(other, self)
-    
     def __nonzero__(self):
         return bool(self.volume > 0)
     
