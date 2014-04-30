@@ -472,42 +472,75 @@ class Polytope(object):
     ========
     L{ConvexPolytope}
     """
-    def __init__(self, convex_polytopes=None,
-                 props=None, abs_tol=ABS_TOL):
+    def __init__(
+        self, convex_polytopes=None,
+        props=None, abs_tol=ABS_TOL,
+        A=None, b=None
+    ):
         if convex_polytopes is None:
-            convex_polytopes = []
+            polys = []
+        else:
+            polys = convex_polytopes[:]
+        
         if props is None:
             props = set()
         
-        if isinstance(convex_polytopes, str):
-            # Hack to be able to use the Polytope class also for discrete
-            # problems.
-            self._polytopes = convex_polytopes
-            self.props = set(props)
-        else:
-            if isinstance(convex_polytopes, Polytope):
-                p = convex_polytopes
-                dim = p[0].dim
-                for poly in p:
-                    if poly.dim != dim:
-                        raise Exception("Polytope error:"
-                            " Polytopes must be of same dimension!")                    
+        # add polytope (A, b)
+        if A is not None or b is not None:
+            if A is None or b is None:
+                raise Exception('A, b must be both given.')
             
-            self._polytopes = convex_polytopes[:]
+            polys += [(A, b)]
+        
+        old_dim = None
+        cvx_polys = list()
+        for poly in polys:
+            try:
+                A, b = poly
+                p = ConvexPolytope(A, b)
+                
+                logger.debug('found an (A, b) tuple')
+            except:
+                if not isinstance(poly, ConvexPolytope):
+                    raise TypeError(
+                        'convex_polytopes must be '
+                        'either ConvexPolytope or '
+                        '(A, b) tuple.'
+                    )
+                
+                p = poly
             
-            for poly in convex_polytopes:
-                if poly.is_empty():
-                    self._polytopes.remove(poly)
+            cvx_polys.append(p)
             
-            self.props = set(props)
-            self._bbox = None
-            self._fulldim = None
-            self._volume = None
-            self._x = None
-            self._r = None
-            self._is_empty = None
-            self._envelope = None
-            self._abs_tol = abs_tol
+            if old_dim is None:
+                old_dim = p.dim
+            elif old_dim != p.dim:
+                raise ValueError(
+                    'All ConvexPolytopes in a Polytope '
+                    'must have the same dimension.'
+                )
+        
+        # ignore empty ConvexPolytopes
+        nonempty_polys = list()
+        for poly in cvx_polys:
+            print(poly)
+            assert(isinstance(poly, ConvexPolytope) )
+            
+            if poly.is_empty():
+                continue
+            
+            nonempty_polys.append(poly)
+        
+        self._polytopes = nonempty_polys
+        self.props = set(props)
+        self._bbox = None
+        self._fulldim = None
+        self._volume = None
+        self._x = None
+        self._r = None
+        self._is_empty = None
+        self._envelope = None
+        self._abs_tol = abs_tol
     
     def __iter__(self):
         return iter(self._polytopes)
