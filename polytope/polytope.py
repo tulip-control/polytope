@@ -1384,8 +1384,9 @@ def qhull(vertices, abs_tol=ABS_TOL):
     A, b, vert = quickhull(vertices, abs_tol=abs_tol)
     if A.size == 0:
         return Polytope()
-    return Polytope([ConvexPolytope(A, b, minrep=True,
-                                    vertices=vert)])
+    p = ConvexPolytope(A, b, minrep=True)
+    p._vertices = vertices
+    return Polytope([p])
 
 def _projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     """Projects a polytope onto lower dimensions.
