@@ -34,7 +34,7 @@ if __name__ == "__main__":
     print("Computed the convex hull:")
     print(P)
     
-    V_min = polytope.extreme(P)
+    V_min = P[0].vertices
     print("which has extreme points:")
     print(V_min)
 
