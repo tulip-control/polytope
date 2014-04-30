@@ -115,6 +115,7 @@ class ConvexPolytope(object):
       - C{dim}: dimension
       - C{volume}
       - C{bounding_box}
+      - C{vertices}
       
     and if in minimal representation,
     after applying L{_reduce}:
@@ -1628,7 +1629,7 @@ def _projection_exthull(poly1,new_dim):
     """Help function implementing vertex projection.
     Efficient in low dimensions.
     """
-    vert = poly1.extreme
+    vert = poly1.vertices
     if vert is None:
         # qhull failed
         return ConvexPolytope(fulldim=False, minrep=True)
@@ -2047,7 +2048,7 @@ def _get_patch(poly1, **kwargs):
         logger.warn('matplotlib not found, no plotting.')
         return
     
-    V = poly1.extreme()
+    V = poly1.vertices
     
     xc = poly1.x
     x = V[:,1] - xc[1]
