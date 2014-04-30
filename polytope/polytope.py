@@ -36,7 +36,7 @@
 #
 #  Acknowledgement:
 #  The overall structure of this library and the functions in the list
-#  below are taken with permission from:
+#  below are taken (or based) with permission from:
 #
 #  M. Kvasnica, P. Grieder and M. Baotić,
 #  Multi-Parametric Toolbox (MPT),
@@ -56,7 +56,7 @@
 Computational geometry module for polytope computations.
 Suggested abbreviation:
 
->>> import tulip.polytope as pc
+>>> import polytope as pc
 """
 import logging
 logger = logging.getLogger(__name__)
@@ -1867,7 +1867,7 @@ def _region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     @return: polytope or region containing non-overlapping polytopes
     """
     if not isinstance(poly, ConvexPolytope):
-        raise Exception('poly not a Polytope, but: ' +
+        raise Exception('poly not a ConvexPolytope, but: ' +
                         str(type(poly) ) )
     poly = poly.copy()
     

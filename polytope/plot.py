@@ -38,10 +38,7 @@ logger = logging.getLogger(__name__)
 from warnings import warn
 
 import numpy as np
-from scipy import sparse as sp
 import networkx as nx
-
-from polytope import cheby_ball
 
 try:
     import matplotlib as mpl
@@ -174,8 +171,8 @@ def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
     p0 = polyreg0
     p1 = polyreg1
     
-    rc0, xc0 = cheby_ball(p0)
-    rc1, xc1 = cheby_ball(p1)
+    xc0 = p0.x
+    xc1 = p1.x
     
     if np.sum(np.abs(xc1-xc0)) < 1e-7:
         return None
