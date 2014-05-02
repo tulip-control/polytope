@@ -698,7 +698,7 @@ class Polytope(object):
         for poly0 in self:
             for poly1 in other:
                 isect = poly0.intersection(poly1, abs_tol)
-                rp, xp = isect.cheby
+                rp = isect.r
             
                 if rp > abs_tol:
                     P = P.union(Polytope([isect]), check_convex=True)
