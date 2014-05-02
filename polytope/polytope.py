@@ -167,7 +167,7 @@ class ConvexPolytope(object):
         
         self.minrep = minrep
         self._x = None
-        self._r = 0
+        self._r = None
         self._bbox = None
         self._fulldim = None
         self._volume = None
