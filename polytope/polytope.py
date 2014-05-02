@@ -701,7 +701,7 @@ class Polytope(object):
                 rp, xp = isect.cheby
             
                 if rp > abs_tol:
-                    P = _union(P, isect, check_convex=True)
+                    P = P.union(Polytope([isect]), check_convex=True)
         return P
     
     def projection(self, dim, solver=None, abs_tol=ABS_TOL):
@@ -1927,10 +1927,10 @@ def _region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         N = 1
         
     if reg.is_empty():
-        return poly
+        return Polytope([poly])
 
     if poly.is_empty():
-        return ConvexPolytope()
+        return Polytope()
     
     # Checking intersections to find Polytopes in Region
     # that intersect the Polytope
@@ -1945,7 +1945,7 @@ def _region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     if N == 0:
         logger.debug('no ConvexPolytope in the Polytope ' +
                      'intersects the given ConvexPolytope')
-        return poly
+        return Polytope([poly])
     
     # Sort radii
     Rc = -Rc
@@ -1982,7 +1982,7 @@ def _region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         
     if np.any(mi == 0):
     # If some Ri has no active constraints, Ri covers R
-        return ConvexPolytope()
+        return Polytope()
         
     M = np.sum(mi)
     
