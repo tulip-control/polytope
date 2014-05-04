@@ -35,18 +35,18 @@ print('starting timing measurements...')
 # instance creation
 start = os.times()[4]
 for i in range(N):
-    p0 = pc.Polytope(A0, b0)
+    p0 = pc.Polytope(A=A0, b=b0)
 
 end = os.times()[4]
 print('instantiation: ' + str(end - start))
 
 # intersection
-p0 = pc.Polytope(A0, b0)
-p1 = pc.Polytope(A1, b1)
+p0 = pc.Polytope(A=A0, b=b0)
+p1 = pc.Polytope(A=A1, b=b1)
 
 start = os.times()[4]
 for i in range(N):
-    union = p0.intersect(p1)
+    union = p0.intersection(p1)
 end = os.times()[4]
 print('intersection: ' + str(end - start))
 
@@ -54,7 +54,13 @@ start = os.times()[4]
 for i in range(N):
     union = p0.union(p1)
 end = os.times()[4]
-print('union: ' + str(end - start))
+print('union w/o convex check: ' + str(end - start))
+
+start = os.times()[4]
+for i in range(N):
+    union = p0.union(p1, check_convex=True)
+end = os.times()[4]
+print('union w/ convex check: ' + str(end - start))
 
 start = os.times()[4]
 for i in range(N):

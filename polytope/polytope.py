@@ -562,7 +562,6 @@ class Polytope(object):
         # ignore empty ConvexPolytopes
         nonempty_polys = list()
         for poly in cvx_polys:
-            print(poly)
             assert(isinstance(poly, ConvexPolytope) )
             
             if poly.is_empty():
@@ -2000,7 +1999,7 @@ def _region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         
     level = 0
     res_count = 0
-    res = Polytope() # Initiate output
+    res = Polytope() # initialize output
     while level != -1:
         if save:
             if res:
