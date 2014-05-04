@@ -1,4 +1,4 @@
-# Copyright (c) 2011-2014 by California Institute of Technology
+# Copyright (c) 2014 by California Institute of Technology
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 # OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
-# 
-""" Polytope package
 """
-from .version import version as __version__
+polytope package version
+"""
+version_info = (0, 1, 0)
 
-from .polytope import (
-    Polytope, Region,
-    is_empty, is_fulldim, is_convex, is_adjacent, is_subset,
-    reduce, separate, box2poly, grid_region,
-    cheby_ball, bounding_box, envelope, extreme, qhull,
-    is_inside, union, mldivide, intersect, volume, projection
-)
-from .plot import plot_partition, plot_transition_arrow
-from .prop2partition import Partition, MetricPartition, find_adjacent_regions
+version = '.'.join([str(x) for x in version_info])
