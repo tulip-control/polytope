@@ -126,8 +126,9 @@ else:
     long_description = ''
 
 if perform_setup:
-    # KEEP THIS NUMBER IN SYNC WITH THAT IN polytope/__init__.py
-    polytope_version = '0.1.0'
+    exec(open('polytope/version.py').read())
+    polytope_version = version
+    
     setup(
         name = 'polytope',
         version = polytope_version,
