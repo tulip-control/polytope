@@ -32,6 +32,6 @@
 """
 polytope package version
 """
-version_info = (0, 1, 0)
+version_info = (0, 1, 1)
 
 version = '.'.join([str(x) for x in version_info])

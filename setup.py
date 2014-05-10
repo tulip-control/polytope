@@ -128,7 +128,7 @@ else:
 if perform_setup:
     exec(open('polytope/version.py').read())
     polytope_version = version
-    
+
     setup(
         name = 'polytope',
         version = polytope_version,
