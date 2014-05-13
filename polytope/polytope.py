@@ -928,16 +928,13 @@ def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):
         G = A_arr
         h = b_arr
         h[k] += 0.1
-        sol=solvers.lp(
-            matrix(f), matrix(G), matrix(h),
-            None, None, lp_solver
-        )
+        sol,dvars = solve_lp(f, G, h, lp_solver)
         h[k] -= 0.1
-        if sol['status'] == "optimal":
-            obj = -sol['primal objective'] - h[k]
+        if sol.status == 1:
+            obj = -sol.objective.value() - h[k]
             if obj > abs_tol:
                 keep_row.append(k)
-        elif sol['status'] == "dual infeasable":
+        elif sol.status == -1:
             keep_row.append(k)
         
     polyOut = Polytope(A_arr[keep_row],b_arr[keep_row])
@@ -1066,20 +1063,19 @@ def cheby_ball(poly1):
     r = 0
     xc = None
     A = poly1.A
-    
-    c = -matrix(np.r_[np.zeros(np.shape(A)[1]),1])
+
+    c = -np.r_[np.zeros(np.shape(A)[1]),1] 
     
     norm2 = np.sqrt(np.sum(A*A, axis=1))
     G = np.c_[A, norm2]
-    G = matrix(G)
     
-    h = matrix(poly1.b)
-    sol = solvers.lp(c, G, h, None, None, lp_solver)
-    if sol['status'] == "optimal":
-        r = sol['x'][-1]
+    h = poly1.b
+    sol,dvars = solve_lp(c, G, h, lp_solver)
+    if sol.status == 1:
+        r = dvars[-1].value()
         if r < 0:
             return 0,None
-        xc = sol['x'][0:-1]
+        xc = np.array([ dvar.value() for dvar in dvars[0:-1] ])
     else:
         # Polytope is empty
         poly1 = Polytope(fulldim = False)
@@ -1150,21 +1146,23 @@ def bounding_box(polyreg):
     u = np.zeros([n,1])
     
     for i in xrange(0,n):
-        c = matrix(np.array(In[:,i]))
-        G = matrix(polyreg.A)
-        h = matrix(polyreg.b)
-        sol = solvers.lp(c, G, h, None, None, lp_solver)
-        if sol['status'] == "optimal":
-            x = sol['x']
+        c = np.array(In[:,i])
+        G = polyreg.A
+        h = polyreg.b
+        sol,dvars = solve_lp(c, G, h, lp_solver)
+        if sol.status == 1:
+            x = [ dvar.value() for dvar in dvars ]
+            x = np.array(x)
             l[i] = x[i]
             
     for i in xrange(0,n):
-        c = matrix(-np.array(In[:,i]))
-        G = matrix(polyreg.A)
-        h = matrix(polyreg.b)
-        sol = solvers.lp(c, G, h, None, None, lp_solver)
-        if sol['status'] == "optimal":
-            x = sol['x']
+        c = -np.array(In[:,i])
+        G = polyreg.A
+        h = polyreg.b
+        sol,dvars = solve_lp(c, G, h, lp_solver)
+        if sol.status == 1:
+            x = [ dvar.value() for dvar in dvars ]
+            x = np.array(x)
             u[i] = x[i]
     polyreg.bbox = l,u
     
@@ -1510,15 +1508,15 @@ def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     # Compute cheby ball in lower dim to see if projection exists
     norm = np.sum(poly1.A*poly1.A, axis=1).flatten()
     norm[del_dim] = 0
-    c = matrix(np.zeros(len(org_dim)+1, dtype=float))
+    c = np.zeros(len(org_dim)+1, dtype=float)
     c[len(org_dim)] = -1
-    G = matrix(np.hstack([poly1.A, norm.reshape(norm.size,1)]))
-    h = matrix(poly1.b)
-    sol = solvers.lp(c,G,h,None,None,lp_solver)
-    if sol['status'] != "optimal":
+    G = np.hstack([poly1.A, norm.reshape(norm.size,1)]) 
+    h = poly1.b
+    sol,dvars = solve_lp(c, G, h, lp_solver)
+    if sol.status != 1:
         # Projection not fulldim
         return Polytope()
-    if sol['x'][-1] < abs_tol:
+    if dvars[-1].value() < abs_tol:
         return Polytope()
     
     if solver == "esp":
