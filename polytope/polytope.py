@@ -62,7 +62,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import numpy as np
-from cvxopt import matrix, solvers
+import pulp
 
 try:
     import matplotlib as mpl
@@ -75,18 +75,23 @@ except Exception, e:
 from .quickhull import quickhull
 from .esp import esp
 
-# Find a lp solver to use
-try:
-    import cvxopt.glpk
-    lp_solver = 'glpk'
-except:
-    logger.warn("GLPK (GNU Linear Programming Kit) solver for CVXOPT not found, "
-           "reverting to CVXOPT's own solver. This may be slow")
-    lp_solver = None
+# List of LP solver classes and LP solver instances in PuLP. Both lists must be
+# in the same order.
+pulp_classes = [ pulp.GUROBI, pulp.CPLEX, pulp.PYGLPK, pulp.GLPK ]
+pulp_solvers = [ pulp.GUROBI(), pulp.CPLEX(), pulp.PYGLPK(), pulp.GLPK() ]
+
+# Pick a solver
+lp_solver = None
+for ind, solver_class in enumerate(pulp_classes):
+    if solver_class.available(pulp_solvers[ind]):
+        lp_solver = pulp_solvers[ind]
+        break
+if lp_solver is None:
+    raise OSError("No LP solver found")
 
 # Hide optimizer output
-solvers.options['show_progress'] = False
-solvers.options['LPX_K_MSGLEV'] = 0
+#solvers.options['show_progress'] = False
+#solvers.options['LPX_K_MSGLEV'] = 0
 
 # Nicer numpy output
 np.set_printoptions(precision=5, suppress = True)
@@ -95,6 +100,45 @@ np.set_printoptions(precision=5, suppress = True)
 # to enable changing it code w/o passing arguments,
 # so that magic methods can still be used
 ABS_TOL = 1e-7
+
+def solve_lp(ct, G, H, solver):
+    """Solves an LP of the form:
+
+        minimize       c^T * x
+        subject to     G*x <= h
+
+    @param c:
+    @type c: np.array
+    @param G:
+    @type G: np.array
+
+    """
+
+    # Check that matrices have consistent dimensions
+    dim = np.shape(ct)[0]
+    num_constraints = np.shape(G)[0]
+    assert(dim == np.shape(G)[1])
+    assert(np.shape(G)[0] == np.shape(H)[0])
+
+    # Create PuLP Problem
+    prob = pulp.LpProblem("prob", pulp.LpMinimize)
+
+    # Create PuLP variables
+    dvars = [ pulp.LpVariable("x" + str(i)) for i in xrange(dim) ]
+
+    # Objective Function
+    prob += pulp.LpAffineExpression([(dvars[i], ct[i]) for i in xrange(dim)])
+    
+    # Inequality Constraints
+    for j in xrange(num_constraints):
+        row = G[j,:]
+        prob += pulp.LpAffineExpression([(dvars[i], row[i]) 
+                                         for i in xrange(dim)]) <= H[j]
+
+    # Solve problem
+    prob.solve(solver)
+    return prob,dvars
+
 
 class Polytope(object):
     """Polytope class with following fields
