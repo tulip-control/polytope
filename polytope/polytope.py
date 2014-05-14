@@ -111,7 +111,7 @@ def solve_lp(ct, G, H, solver):
     @param h: a 1d vector
     @type h: 1d np.array or 1d list
 
-    @return: instance of pulp.LpProblem and a list of pulp.LpVariable 
+    @return: instance of pulp.LpProblem and a list of pulp.LpVariable
     containing the decision variables.
     """
     # Check that matrices have consistent dimensions
