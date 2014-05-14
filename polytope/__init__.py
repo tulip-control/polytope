@@ -36,7 +36,7 @@
 __version__ = '0.1.1'
 
 from .polytope import (
-    Polytope, Region, ABS_TOL
+    Polytope, Region, ABS_TOL,
     is_empty, is_fulldim, is_convex, is_adjacent, is_subset,
     reduce, separate, box2poly, grid_region,
     cheby_ball, bounding_box, envelope, extreme, qhull,
