@@ -89,9 +89,6 @@ for ind, solver_class in enumerate(pulp_classes):
 if lp_solver is None:
     raise OSError("No LP solver found")
 
-# Hide optimizer output
-#solvers.options['show_progress'] = False
-#solvers.options['LPX_K_MSGLEV'] = 0
 
 # Nicer numpy output
 np.set_printoptions(precision=5, suppress = True)
@@ -113,7 +110,6 @@ def solve_lp(ct, G, H, solver):
     @type G: np.array
 
     """
-
     # Check that matrices have consistent dimensions
     dim = np.shape(ct)[0]
     num_constraints = np.shape(G)[0]
@@ -128,11 +124,11 @@ def solve_lp(ct, G, H, solver):
 
     # Objective Function
     prob += pulp.LpAffineExpression([(dvars[i], ct[i]) for i in xrange(dim)])
-    
-    # Inequality Constraints
+
+    # Inequality constraints
     for j in xrange(num_constraints):
         row = G[j,:]
-        prob += pulp.LpAffineExpression([(dvars[i], row[i]) 
+        prob += pulp.LpAffineExpression([(dvars[i], row[i])
                                          for i in xrange(dim)]) <= H[j]
 
     # Solve problem
@@ -1286,7 +1282,7 @@ def intersect(poly1,poly2,abs_tol=ABS_TOL):
         raise Exception(msg)
     
     return poly1.intersect(poly2)
-    
+   
 def volume(polyreg):
     """Approximately compute the volume of a Polytope or Region.
     
@@ -1745,18 +1741,14 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
     if len(new_dim) == 1:
         f1 = np.zeros(poly1.A.shape[1])
         f1[new_dim] = 1
-        sol = solvers.lp(
-            matrix(f1), matrix(poly1.A), matrix(poly1.b),
-            None, None, lp_solver
-        )
-        if sol['status'] == "optimal":
-            vert1 = sol['x']
-        sol = solvers.lp(
-            matrix(-f1), matrix(poly1.A), matrix(poly1.b),
-            None, None, lp_solver
-        )
-        if sol['status'] == "optimal":
-            vert2 = sol['x']
+        sol,dvars = solve_lp(f1, poly1.A, poly1.b, lp_solver)
+        if sol.status == 1:
+            vert1 = np.array([ dvar.value() for dvar in dvars ])
+            vert1 = np.reshape(vert1, (len(vert1),1))
+        sol,dvars = solve_lp(-f1, poly1.A, poly1.b, lp_solver)
+        if sol.status == 1:
+            vert2 = np.array([ dvar.value() for dvar in dvars ])
+            vert2 = np.reshape(vert2, (len(vert2),1))
         vert = np.vstack([vert1,vert2])
         return qhull(vert)
         
@@ -1775,11 +1767,8 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
             f1 = np.random.rand(len(new_dim)).flatten() - 0.5
             f = np.zeros(org_dim)
             f[new_dim]=f1
-            sol = solvers.lp(
-                matrix(-f), matrix(poly1.A), matrix(poly1.b),
-                None, None, lp_solver
-            )
-            xopt = np.array(sol['x']).flatten()  
+            sol,dvars = solve_lp(-f, poly1.A, poly1.b, lp_solver)
+            xopt = np.array([dvar.value() for dvar in dvars]).flatten()
             if Vert is None:
                 Vert = xopt.reshape(1,xopt.size)
             else:
@@ -1791,7 +1780,6 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
                         break
                 if k.size == 0:
                     Vert = np.vstack([Vert,xopt])
-            
             if Vert.shape[0] > len(new_dim):
                 u, s, v = np.linalg.svd(
                     np.transpose(Vert[:,new_dim] - Vert[0,new_dim])
@@ -1847,14 +1835,11 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
                     # Solving optimization to find new vertex
                     f = np.zeros(poly1.A.shape[1])
                     f[new_dim]=f1
-                    sol = solvers.lp(
-                        matrix(-f), matrix(poly1.A), matrix(poly1.b),
-                        None, None, lp_solver
-                    )
-                    if sol['status'] != 'optimal':
+                    sol,dvars = solve_lp(-f, poly1.A, poly1.b, lp_solver)
+                    if sol.status != 1:
                         logger.error("iterhull: LP failure")
                         continue
-                    xopt = np.array(sol['x']).flatten()
+                    xopt = np.array([dvar.value() for dvar in dvars]).flatten()
                     add = np.hstack([f2, np.round(xopt/abs_tol)*abs_tol])
                     
                     # Add new half plane information
