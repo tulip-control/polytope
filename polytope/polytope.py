@@ -99,16 +99,20 @@ np.set_printoptions(precision=5, suppress = True)
 ABS_TOL = 1e-7
 
 def solve_lp(ct, G, H, solver):
-    """Solves an LP of the form:
+    """Solves an LP of the form by calling PuLP:
 
         minimize       c^T * x
         subject to     G*x <= h
 
-    @param c:
-    @type c: np.array
-    @param G:
+    @param c: A 1d vector
+    @type c: 1d np.array or 1d list
+    @param G: A matrix
     @type G: np.array
+    @param h: a 1d vector
+    @type h: 1d np.array or 1d list
 
+    @return: instance of pulp.LpProblem and a list of pulp.LpVariable 
+    containing the decision variables.
     """
     # Check that matrices have consistent dimensions
     dim = np.shape(ct)[0]
