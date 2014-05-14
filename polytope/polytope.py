@@ -77,8 +77,12 @@ from .esp import esp
 
 # List of LP solver classes and LP solver instances in PuLP. Both lists must be
 # in the same order.
-pulp_classes = [ pulp.GUROBI, pulp.CPLEX, pulp.PYGLPK, pulp.GLPK ]
-pulp_solvers = [ pulp.GUROBI(), pulp.CPLEX(), pulp.PYGLPK(), pulp.GLPK() ]
+pulp_classes = [ pulp.GUROBI, pulp.CPLEX, pulp.CPLEX_CMD, pulp.XPRESS,
+                 pulp.COIN, pulp.COIN_CMD, pulp.PYGLPK, pulp.GLPK,
+                 pulp.LpSolver ]
+pulp_solvers = [ pulp.GUROBI(msg=0), pulp.CPLEX(msg=0), pulp.CPLEX_CMD(msg=0),
+                 pulp.XPRESS(msg=0), pulp.COIN(msg=0), pulp.COIN_CMD(msg=0),
+                 pulp.PYGLPK(msg=0), pulp.GLPK(msg=0), pulp.LpSolver(msg=0) ]
 
 # Pick a solver
 lp_solver = None
