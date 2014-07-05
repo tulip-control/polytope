@@ -32,12 +32,13 @@ def check_mpl():
     return True
 
 # Handle "dry-check" argument to check for dependencies without
-# installing the tulip package; checking occurs by default if
+# installing the polytope package; checking occurs by default if
 # "install" is given, unless both "install" and "nocheck" are given
 # (but typical users do not need "nocheck").
 
-# You *must* have these to run TuLiP.  Each item in other_depends must
-# be treated specially; thus other_depends is a dictionary with
+# You *must* have these to use the polytope package.  Each item in
+# other_depends must be treated specially; thus other_depends is a
+# dictionary with
 #
 #   keys   : names of dependency;
 
