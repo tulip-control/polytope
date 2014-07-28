@@ -1243,7 +1243,7 @@ def intersect(poly1,poly2,abs_tol=ABS_TOL):
         msg += 'Got instead: ' + str(type(poly1) )
         raise Exception(msg)
     
-    return poly1.intersect(poly2)
+    return poly1.intersect(poly2, abs_tol)
     
 def volume(polyreg):
     """Approximately compute the volume of a Polytope or Region.
