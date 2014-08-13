@@ -42,5 +42,5 @@ from .polytope import (
     cheby_ball, bounding_box, envelope, extreme, qhull,
     is_inside, union, mldivide, intersect, volume, projection
 )
-from .plot import plot_partition, plot_transition_arrow
+#from .plot import plot_partition, plot_transition_arrow
 from .prop2partition import Partition, MetricPartition, find_adjacent_regions

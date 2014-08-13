@@ -64,14 +64,6 @@ logger = logging.getLogger(__name__)
 import numpy as np
 from cvxopt import matrix, solvers
 
-try:
-    import matplotlib as mpl
-    from tulip.graphics import newax, dom2vec
-except Exception, e:
-    logger.error(e)
-    mpl = None
-    newax = None
-
 from .quickhull import quickhull
 from .esp import esp
 
@@ -95,6 +87,12 @@ np.set_printoptions(precision=5, suppress = True)
 # to enable changing it code w/o passing arguments,
 # so that magic methods can still be used
 ABS_TOL = 1e-7
+
+# inline imports:
+#
+# from tulip.graphics import newax
+# import matplotlib as mpl
+# from tulip.graphics import dom2vec
 
 class Polytope(object):
     """Polytope class with following fields
@@ -394,6 +392,12 @@ class Polytope(object):
     
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
+        try:
+            from tulip.graphics import newax
+        except Exception, e:
+            logger.error(e)
+            newax = None
+        
         if color is None:
             color = np.random.rand(3)
         
@@ -649,6 +653,12 @@ class Region(object):
     
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
+        try:
+            from tulip.graphics import newax
+        except Exception, e:
+            logger.error(e)
+            newax = None
+        
         if color is None:
             color = np.random.rand(3)
         
@@ -2084,7 +2094,9 @@ def _get_patch(poly1, **kwargs):
     @param kwargs: any keyword arguments valid for
         matplotlib.patches.Polygon
     """
-    if mpl is None:
+    try:
+        import matplotlib as mpl
+    except:
         logger.warn('matplotlib not found, no plotting.')
         return
     
@@ -2110,6 +2122,12 @@ def grid_region(polyreg, res=None):
     
     @param res: resolution of grid
     """
+    try:
+        from tulip.graphics import dom2vec
+    except:
+        logger.error('pyvectorized not found')
+        return
+    
     bbox = polyreg.bounding_box
     bbox = np.hstack(bbox)
     dom = bbox.flatten()
@@ -2126,9 +2144,11 @@ def grid_region(polyreg, res=None):
     return (x, res)
 
 def _plot_text(polyreg, txt, ax, color):
-    if newax is None:
-        logger.warn('pyvectorized not found. No plotting.')
-        return None
+    try:
+        from tulip.graphics import newax
+    except:
+        logger.error('pyvectorized not found')
+        return
     
     if ax is None:
         ax, fig = newax()

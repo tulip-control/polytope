@@ -37,20 +37,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 import warnings
-import copy
 
 import numpy as np
 from scipy import sparse as sp
 import networkx as nx
 
 import polytope as pc
-from .plot import plot_partition
-
-try:
-    import matplotlib as mpl
-except Exception, e:
-    logger.error(e)
-    mpl = None
 
 _hl = 40 * '-'
 
