@@ -79,6 +79,7 @@ except:
 # Hide optimizer output
 solvers.options['show_progress'] = False
 solvers.options['LPX_K_MSGLEV'] = 0
+solvers.options['msg_lev'] = 'GLP_MSG_OFF'
 
 # Nicer numpy output
 np.set_printoptions(precision=5, suppress = True)
@@ -1253,7 +1254,7 @@ def intersect(poly1,poly2,abs_tol=ABS_TOL):
         msg += 'Got instead: ' + str(type(poly1) )
         raise Exception(msg)
     
-    return poly1.intersect(poly2)
+    return poly1.intersect(poly2, abs_tol)
     
 def volume(polyreg):
     """Approximately compute the volume of a Polytope or Region.
