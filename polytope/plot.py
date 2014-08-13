@@ -35,22 +35,16 @@ Functions for plotting Partitions.
 """
 import logging
 logger = logging.getLogger(__name__)
-from warnings import warn
 
 import numpy as np
 import networkx as nx
 
-try:
-    import matplotlib as mpl
-except Exception, e:
-    logger.error(e)
-    mpl = None
+from polytope import cheby_ball
 
-try:
-    from tulip.graphics import newax
-except Exception, e:
-    logger.error(e)
-    mpl = None
+# inline imports:
+#
+# import matplotlib as mpl
+# from tulip.graphics import newax
 
 def plot_partition(
     ppp, trans=None, ppp2trans=None, only_adjacent=False,
@@ -86,8 +80,14 @@ def plot_partition(
     @param ppp2trans: order mapping ppp indices to trans states
     @type ppp2trans: list of trans states
     """
-    if mpl is None:
-        warn('matplotlib not found')
+    if not show:
+        return
+    
+    try:
+        import matplotlib as mpl
+        from tulip.graphics import newax
+    except:
+        logger.error('failed to import matplotlib')
         return
     
     # needs to be converted to adjacency matrix ?
@@ -139,8 +139,7 @@ def plot_partition(
     
     # not show trans ?
     if trans is 'none':
-        if show:
-            mpl.pyplot.show()
+        mpl.pyplot.show()
         return ax
     
     # plot transition arrows between patches
@@ -153,8 +152,7 @@ def plot_partition(
         
         plot_transition_arrow(ppp.regions[i], ppp.regions[j], ax, arr_size)
     
-    if show:
-        mpl.pyplot.show()
+    mpl.pyplot.show()
     
     return ax
 
@@ -167,6 +165,12 @@ def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
     
     @return: arrow object
     """
+    try:
+        import matplotlib as mpl
+    except:
+        logger.error('failed to import matplotlib')
+        return
+    
     # brevity
     p0 = polyreg0
     p1 = polyreg1
