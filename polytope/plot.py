@@ -48,7 +48,7 @@ from polytope import cheby_ball
 
 def plot_partition(
     ppp, trans=None, ppp2trans=None, only_adjacent=False,
-    ax=None, plot_numbers=True, color_seed=None, show=False
+    ax=None, plot_numbers=True, color_seed=None
 ):
     """Plot partition with arrows from digraph.
     
@@ -69,10 +69,6 @@ def plot_partition(
     @param plot_numbers: If True,
         then annotate each Region center with its number.
     
-    @param show: If True, then show the plot.
-        Otherwise return axis object.
-        Axis object is good for creating custom plots.
-    
     @param ax: axes where to plot
     
     @param color_seed: seed for reproducible random coloring
@@ -80,9 +76,6 @@ def plot_partition(
     @param ppp2trans: order mapping ppp indices to trans states
     @type ppp2trans: list of trans states
     """
-    if not show:
-        return
-    
     try:
         import matplotlib as mpl
         from tulip.graphics import newax
