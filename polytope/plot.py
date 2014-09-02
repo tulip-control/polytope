@@ -159,7 +159,7 @@ def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
     @return: arrow object
     """
     try:
-        import matplotlib as mpl
+        from matplotlib import patches
     except:
         logger.error('failed to import matplotlib')
         return
@@ -183,7 +183,7 @@ def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
     y = xc0[1]
     dx = xc1[0] - xc0[0]
     dy = xc1[1] - xc0[1]
-    arrow = mpl.patches.Arrow(
+    arrow = patches.Arrow(
         float(x), float(y), float(dx), float(dy),
         width=arr_size, color='black'
     )
