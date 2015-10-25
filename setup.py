@@ -200,6 +200,7 @@ if perform_setup:
         author = 'Caltech Control and Dynamical Systems',
         author_email = 'polytope@tulip-control.org',
         url = 'http://tulip-control.org',
+        bugtrack_url='http://github.com/tulip-control/polytope/issues',
         license = 'BSD',
         requires = ['numpy', 'scipy', 'networkx', 'cvxopt'],
         install_requires = [
