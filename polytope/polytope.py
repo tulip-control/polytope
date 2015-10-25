@@ -62,24 +62,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 import numpy as np
-from cvxopt import matrix, solvers
 
 from .quickhull import quickhull
-from .esp import esp
 
 # Find a lp solver to use
 try:
+    from cvxopt import matrix, solvers
     import cvxopt.glpk
+    from .esp import esp
     lp_solver = 'glpk'
-except:
-    logger.warn("GLPK (GNU Linear Programming Kit) solver for CVXOPT not found, "
-           "reverting to CVXOPT's own solver. This may be slow")
-    lp_solver = None
-
-# Hide optimizer output
-solvers.options['show_progress'] = False
-solvers.options['LPX_K_MSGLEV'] = 0
-solvers.options['msg_lev'] = 'GLP_MSG_OFF'
+    # Hide optimizer output
+    solvers.options['show_progress'] = False
+    solvers.options['LPX_K_MSGLEV'] = 0
+    solvers.options['msg_lev'] = 'GLP_MSG_OFF'
+except ImportError:
+    from scipy import optimize
+    lp_solver = 'scipy'
 
 # Nicer numpy output
 np.set_printoptions(precision=5, suppress = True)
@@ -895,16 +893,13 @@ def reduce(poly,nonEmptyBounded=1, abs_tol=ABS_TOL):
         G = A_arr
         h = b_arr
         h[k] += 0.1
-        sol=solvers.lp(
-            matrix(f), matrix(G), matrix(h),
-            None, None, lp_solver
-        )
+        sol = lpsolve(f, G, h)
         h[k] -= 0.1
-        if sol['status'] == "optimal":
-            obj = -sol['primal objective'] - h[k]
+        if sol['status'] == 0:
+            obj = -sol['fun'] - h[k]
             if obj > abs_tol:
                 keep_row.append(k)
-        elif sol['status'] == "dual infeasable":
+        elif sol['status'] == 3:
             keep_row.append(k)
         
     polyOut = Polytope(A_arr[keep_row],b_arr[keep_row])
@@ -1033,16 +1028,13 @@ def cheby_ball(poly1):
     r = 0
     xc = None
     A = poly1.A
-    
-    c = -matrix(np.r_[np.zeros(np.shape(A)[1]),1])
-    
+    c = np.negative(np.r_[np.zeros(np.shape(A)[1]),1])
     norm2 = np.sqrt(np.sum(A*A, axis=1))
     G = np.c_[A, norm2]
-    G = matrix(G)
+    h = poly1.b
+    sol = lpsolve(c, G, h)
     
-    h = matrix(poly1.b)
-    sol = solvers.lp(c, G, h, None, None, lp_solver)
-    if sol['status'] == "optimal":
+    if sol['status'] == 0:
         r = sol['x'][-1]
         if r < 0:
             return 0,None
@@ -1117,20 +1109,20 @@ def bounding_box(polyreg):
     u = np.zeros([n,1])
     
     for i in xrange(0,n):
-        c = matrix(np.array(In[:,i]))
-        G = matrix(polyreg.A)
-        h = matrix(polyreg.b)
-        sol = solvers.lp(c, G, h, None, None, lp_solver)
-        if sol['status'] == "optimal":
+        c = np.array(In[:,i])
+        G = polyreg.A
+        h = polyreg.b
+        sol = lpsolve(c, G, h)
+        if sol['status'] == 0:
             x = sol['x']
             l[i] = x[i]
             
     for i in xrange(0,n):
-        c = matrix(-np.array(In[:,i]))
-        G = matrix(polyreg.A)
-        h = matrix(polyreg.b)
-        sol = solvers.lp(c, G, h, None, None, lp_solver)
-        if sol['status'] == "optimal":
+        c = np.negative(np.array(In[:,i]))
+        G = polyreg.A
+        h = polyreg.b
+        sol = lpsolve(c, G, h)
+        if sol['status'] == 0:
             x = sol['x']
             u[i] = x[i]
     polyreg.bbox = l,u
@@ -1477,17 +1469,17 @@ def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     # Compute cheby ball in lower dim to see if projection exists
     norm = np.sum(poly1.A*poly1.A, axis=1).flatten()
     norm[del_dim] = 0
-    c = matrix(np.zeros(len(org_dim)+1, dtype=float))
+    c = np.zeros(len(org_dim)+1, dtype=float)
     c[len(org_dim)] = -1
-    G = matrix(np.hstack([poly1.A, norm.reshape(norm.size,1)]))
-    h = matrix(poly1.b)
-    sol = solvers.lp(c,G,h,None,None,lp_solver)
-    if sol['status'] != "optimal":
+    G = np.hstack([poly1.A, norm.reshape(norm.size,1)])
+    h = poly1.b
+    sol = lpsolve(c, G, h)
+    if sol['status'] != 0:
         # Projection not fulldim
         return Polytope()
     if sol['x'][-1] < abs_tol:
         return Polytope()
-    
+
     if solver == "esp":
         return projection_esp(poly1,new_dim, del_dim)
     elif solver == "exthull":
@@ -1714,17 +1706,11 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
     if len(new_dim) == 1:
         f1 = np.zeros(poly1.A.shape[1])
         f1[new_dim] = 1
-        sol = solvers.lp(
-            matrix(f1), matrix(poly1.A), matrix(poly1.b),
-            None, None, lp_solver
-        )
-        if sol['status'] == "optimal":
+        sol = lpsolve(f1, poly1.A, poly1)
+        if sol['status'] == 0:
             vert1 = sol['x']
-        sol = solvers.lp(
-            matrix(-f1), matrix(poly1.A), matrix(poly1.b),
-            None, None, lp_solver
-        )
-        if sol['status'] == "optimal":
+        sol = lpsolve(np.negative(f1), poly1.A, poly1.b)
+        if sol['status'] == 0:
             vert2 = sol['x']
         vert = np.vstack([vert1,vert2])
         return qhull(vert)
@@ -1744,11 +1730,8 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
             f1 = np.random.rand(len(new_dim)).flatten() - 0.5
             f = np.zeros(org_dim)
             f[new_dim]=f1
-            sol = solvers.lp(
-                matrix(-f), matrix(poly1.A), matrix(poly1.b),
-                None, None, lp_solver
-            )
-            xopt = np.array(sol['x']).flatten()  
+            sol = lpsolve(np.negative(f), poly1.A, poly1.b)
+            xopt = np.array(sol['x']).flatten()
             if Vert is None:
                 Vert = xopt.reshape(1,xopt.size)
             else:
@@ -1816,11 +1799,8 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
                     # Solving optimization to find new vertex
                     f = np.zeros(poly1.A.shape[1])
                     f[new_dim]=f1
-                    sol = solvers.lp(
-                        matrix(-f), matrix(poly1.A), matrix(poly1.b),
-                        None, None, lp_solver
-                    )
-                    if sol['status'] != 'optimal':
+                    sol = lpsolve(np.negative(f), npoly1.A, poly1.b)
+                    if sol['status'] != 0:
                         logger.error("iterhull: LP failure")
                         continue
                     xopt = np.array(sol['x']).flatten()
@@ -1860,6 +1840,10 @@ def projection_esp(poly1,keep_dim,del_dim):
     """Helper function implementing "Equality set projection".
     Very buggy.
     """
+    if lp_solver != 'glpk':
+        raise Exception("projection_esp error:"
+                    " Equality set projection requires cvxopt to run.")
+
     C = poly1.A[:,keep_dim]
     D = poly1.A[:,del_dim]
     if not is_fulldim(poly1):
@@ -2179,3 +2163,38 @@ def simplices2polytopes(points, triangles):
         
         polytopes += [poly]
     return polytopes
+
+def lpsolve(c, G, h):
+    result = {}
+    if lp_solver == 'glpk':
+        sol = solvers.lp(
+            matrix(c), matrix(G),
+            matrix(h), None,
+            None, lp_solver
+        )
+        if sol['status'] == "optimal":
+            result['status'] = 0
+        elif sol['status'] == "primal infeasable":
+            result['status'] = 2
+        elif sol['status'] == "dual infeasable":
+            result['status'] = 3
+        else:
+            result['status'] = 4
+        result['x'] = sol['x']
+        result['fun'] = sol['primal objective']
+    elif lp_solver == 'scipy':
+        sol = optimize.linprog(
+            c, G, np.transpose(h),
+            None, None, bounds=(None,None)
+        )
+        result['status'] = sol.status
+        result['x'] = sol.x
+        result['fun'] = sol.fun
+    else:
+        raise Exception("lpsolve error:"
+                        " Unknown solver selected.")
+
+    return result
+
+
+
