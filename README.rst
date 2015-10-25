@@ -8,13 +8,18 @@ available in the directories ``doc/`` and ``examples/``.
 Installation
 ------------
 
-It suffices to::
+From `PyPI <https://pypi.python.org/pypi/polytope>`_::
+
+  pip install polytope
+
+From source::
 
   python setup.py install
 
-To avoid checking for optional dependencies, add the option "nocheck"::
+If this fails, because ``setuptools`` attempts to install
+``scipy`` before ``numpy``, then::
 
-  python setup.py install nocheck
+  pip install .
 
 Dependencies
 ------------
