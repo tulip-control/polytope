@@ -24,8 +24,7 @@ If this fails, because ``setuptools`` attempts to install
 Dependencies
 ------------
 Required: ``numpy``, ``scipy``, ``cvxopt``, ``networkx``.
-
-Optional: ``matplotlib``.
+For more details, see ``requirements.txt``.
 
 License
 -------
