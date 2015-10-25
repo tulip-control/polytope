@@ -33,6 +33,13 @@ def check_mpl():
         return False
     return True
 
+def check_cvxopt():
+    try:
+        import cvxopt
+    except ImportError:
+        return False
+    return True
+
 # Handle "dry-check" argument to check for dependencies without
 # installing the polytope package; checking occurs by default if
 # "install" is given, unless both "install" and "nocheck" are given
@@ -56,6 +63,10 @@ mpl_msg = (
     'matplotlib not found.\n'
     'For many graphics drawing features, you must install\n'
     'matplotlib (http://matplotlib.org/).')
+cvxopt_msg = (
+    'CVXOPT not found.\n'
+    'To utilize CVXOPT as the default linear program solver,\n'
+    'please install from http://cvxopt.org')
 
 # These are nice to have but not necessary. Each item is of the form
 #
@@ -65,6 +76,7 @@ mpl_msg = (
 #           found); we interpret the return value True to be success,
 #           and False failure.
 optionals = dict(
+    cvxopt=[check_cvxopt, 'CVXOPT found.', cvxopt_msg],
     glpk=[check_glpk, 'GLPK found.', glpk_msg],
     matplotlib=[check_mpl, 'matplotlib found.', mpl_msg])
 
@@ -141,9 +153,9 @@ if check_deps:
             print('ERROR: NetworkX not found.')
             raise
         try:
-            import cvxopt
+            import scipy
         except:
-            print('ERROR: CVXOPT not found.')
+            print('ERROR: SciPy not found.')
             raise
         # Other dependencies
         for (dep_key, dep_val) in other_depends.items():
@@ -194,12 +206,11 @@ if perform_setup:
         url='http://tulip-control.org',
         bugtrack_url='http://github.com/tulip-control/polytope/issues',
         license='BSD',
-        requires=['numpy', 'scipy', 'networkx', 'cvxopt'],
+        requires=['numpy', 'scipy', 'networkx'],
         install_requires=[
             'numpy >= 1.6',
-            'scipy',
-            'networkx >= 1.6',
-            'cvxopt == 1.1.7'],
+            'scipy >= 0.16',
+            'networkx >= 1.6'],
         tests_require=[
             'nose',
             'matplotlib'],
