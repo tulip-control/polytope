@@ -199,7 +199,7 @@ if perform_setup:
             'numpy >= 1.6',
             'scipy',
             'networkx >= 1.6',
-            'cvxopt'],
+            'cvxopt == 1.1.7'],
         packages=[
             'polytope'],
         package_dir=dict(polytope='polytope'),
