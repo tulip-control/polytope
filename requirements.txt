@@ -1,3 +1,4 @@
+# usage: `pip install -r requirements.txt`
 numpy
 scipy
 networkx
