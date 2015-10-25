@@ -200,6 +200,9 @@ if perform_setup:
             'scipy',
             'networkx >= 1.6',
             'cvxopt == 1.1.7'],
+        tests_require=[
+            'nose',
+            'matplotlib'],
         packages=[
             'polytope'],
         package_dir=dict(polytope='polytope'),
