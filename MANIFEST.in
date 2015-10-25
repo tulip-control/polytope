@@ -4,3 +4,4 @@ include run_tests.py
 include tests/*.py
 include doc/*
 include README.rst LICENSE AUTHORS ChangeLog
+include requirements.txt

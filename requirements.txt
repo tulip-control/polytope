@@ -1,0 +1,8 @@
+numpy
+scipy
+networkx
+cvxopt==1.1.7
+
+# optional
+nose
+matplotlib
