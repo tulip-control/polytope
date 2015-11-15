@@ -2189,7 +2189,6 @@ def lpsolve(c, G, h):
         result['x'] = sol.x
         result['fun'] = sol.fun
     else:
-        raise Exception("lpsolve error:"
-                        " Unknown solver selected.")
-
+        raise Exception(
+            'unknown LP solver "{s}".'.format(s=lp_solver))
     return result
