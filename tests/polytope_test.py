@@ -17,14 +17,14 @@ b = Ab[:, 2]
 def comparison_test():
     p = pc.Polytope(A, b)
     p2 = pc.Polytope(A, 2*b)
-    
+
     assert(p <= p2)
     assert(not p2 <= p)
     assert(not p2 == p)
-    
+
     r = pc.Region([p])
     r2 = pc.Region([p2])
-    
+
     assert(r <= r2)
     assert(not r2 <= r)
     assert(not r2 == r)
