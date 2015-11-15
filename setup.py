@@ -26,13 +26,6 @@ def check_glpk():
     return True
 
 
-def check_mpl():
-    try:
-        import matplotlib
-    except ImportError:
-        return False
-    return True
-
 def check_cvxopt():
     try:
         import cvxopt
@@ -50,10 +43,6 @@ glpk_msg = (
     'GLPK seems to be missing\n'
     'and thus apparently not used by your installation of CVXOPT.\n'
     'If you\'re interested, see http://www.gnu.org/s/glpk/')
-mpl_msg = (
-    'matplotlib not found.\n'
-    'For many graphics drawing features, you must install\n'
-    'matplotlib (http://matplotlib.org/).')
 cvxopt_msg = (
     'CVXOPT not found.\n'
     'To utilize CVXOPT as the default linear program solver,\n'
@@ -68,8 +57,7 @@ cvxopt_msg = (
 #           and False failure.
 optionals = dict(
     cvxopt=[check_cvxopt, 'CVXOPT found.', cvxopt_msg],
-    glpk=[check_glpk, 'GLPK found.', glpk_msg],
-    matplotlib=[check_mpl, 'matplotlib found.', mpl_msg])
+    glpk=[check_glpk, 'GLPK found.', glpk_msg])
 
 
 def retrieve_git_info():
