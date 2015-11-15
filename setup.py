@@ -45,7 +45,6 @@ def retrieve_git_info():
     return sha1
 
 
-perform_setup = True
 classifiers = [
     'Development Status :: 2 - Pre-Alpha',
     'Intended Audience :: Developers',
@@ -58,14 +57,15 @@ classifiers = [
     'Topic :: Scientific/Engineering',
     'Topic :: Software Development']
 
-# load long description from README.rst
-readme_file = 'README.rst'
-if os.path.exists(readme_file):
-    long_description = open(readme_file).read()
-else:
-    print('Could not find readme file to extract long_description.')
-    long_description = ''
-if perform_setup:
+
+def run_setup():
+    # load long description from README.rst
+    readme_file = 'README.rst'
+    if os.path.exists(readme_file):
+        long_description = open(readme_file).read()
+    else:
+        print('Could not find readme file to extract long_description.')
+        long_description = ''
     # If .git directory is present, create commit_hash.txt accordingly
     # to indicate version information
     if os.path.exists('.git'):
@@ -108,3 +108,7 @@ if perform_setup:
         package_dir=dict(polytope='polytope'),
         package_data=dict(polytope=['commit_hash.txt']),
         classifiers=classifiers)
+
+
+if __name__ == '__main__':
+    run_setup()
