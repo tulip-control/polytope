@@ -25,7 +25,11 @@ If this fails, because ``setuptools`` attempts to install
 
 Dependencies
 ------------
-Required: ``numpy``, ``scipy``, ``cvxopt``, ``networkx``.
+Required: ``numpy``, ``scipy``, ``networkx``.
+Optionally, if ``cvxopt`` is installed and
+linked to `GLPK <https://en.wikipedia.org/wiki/GNU_Linear_Programming_Kit>`_,
+then ``polytope`` will prefer GLPK,
+because it is faster than ``scipy``.
 For more details, see ``requirements.txt``.
 
 
