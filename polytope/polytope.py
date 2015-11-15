@@ -2170,7 +2170,7 @@ def lpsolve(c, G, h):
     if lp_solver == 'glpk':
         sol = solvers.lp(
             matrix(c), matrix(G), matrix(h),
-            None, None, lp_solver)
+            None, None, 'glpk')
         if sol['status'] == 'optimal':
             result['status'] = 0
         elif sol['status'] == 'primal infeasable':
