@@ -11,29 +11,6 @@ import imp
 import os
 from setuptools import setup
 import subprocess
-import sys
-
-
-###########################################
-# Dependency or optional-checking functions
-###########################################
-# (see notes below.)
-
-# Handle "dry-check" argument to check for dependencies without
-# installing the polytope package; checking occurs by default if
-# "install" is given, unless both "install" and "nocheck" are given
-# (but typical users do not need "nocheck").
-
-other_depends = dict()
-
-# These are nice to have but not necessary. Each item is of the form
-#
-#   keys   : name of optional package;
-#   values : list of callable and two strings, first string printed on
-#           success, second printed on failure (i.e. package not
-#           found); we interpret the return value True to be success,
-#           and False failure.
-optionals = dict()
 
 
 def retrieve_git_info():
@@ -76,31 +53,7 @@ def retrieve_git_info():
     return sha1
 
 
-check_deps = False
-if 'install' in sys.argv[1:] and 'nocheck' not in sys.argv[1:]:
-    check_deps = True
-elif 'dry-check' in sys.argv[1:]:
-    perform_setup = False
-    check_deps = True
-# Pull "dry-check" and "nocheck" from argument list, if present, to play
-# nicely with Distutils setup.
-try:
-    sys.argv.remove('dry-check')
-except ValueError:
-    pass
-try:
-    sys.argv.remove('nocheck')
-except ValueError:
-    pass
-if check_deps:
-    # Optional stuff
-    for (opt_key, opt_val) in optionals.items():
-        print('Probing for optional ' + opt_key + '...')
-        if opt_val[0]():
-            print('\t' + opt_val[1])
-        else:
-            print('\t' + opt_val[2])
-
+perform_setup = True
 classifiers = [
     'Development Status :: 2 - Pre-Alpha',
     'Intended Audience :: Developers',
