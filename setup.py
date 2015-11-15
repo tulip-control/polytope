@@ -45,15 +45,6 @@ def check_cvxopt():
 # "install" is given, unless both "install" and "nocheck" are given
 # (but typical users do not need "nocheck").
 
-# You *must* have these to use the polytope package.  Each item in
-# other_depends must be treated specially; thus other_depends is a
-# dictionary with
-#
-#   keys   : names of dependency;
-
-#   values : list of callable and string, which is printed on failure
-#           (i.e. package not found); we interpret the return value
-#           True to be success, and False failure.
 other_depends = dict()
 glpk_msg = (
     'GLPK seems to be missing\n'
@@ -121,7 +112,6 @@ def retrieve_git_info():
     return sha1
 
 
-perform_setup = True
 check_deps = False
 if 'install' in sys.argv[1:] and 'nocheck' not in sys.argv[1:]:
     check_deps = True
@@ -139,14 +129,6 @@ try:
 except ValueError:
     pass
 if check_deps:
-    if not perform_setup:
-        print('Checking for required dependencies...')
-        # Python package dependencies
-        # Other dependencies
-        for (dep_key, dep_val) in other_depends.items():
-            if not dep_val[0]():
-                print(dep_val[1])
-                raise Exception('Failed dependency: ' + dep_key)
     # Optional stuff
     for (opt_key, opt_val) in optionals.items():
         print('Probing for optional ' + opt_key + '...')
