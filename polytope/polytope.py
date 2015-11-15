@@ -65,7 +65,6 @@ import numpy as np
 
 from .quickhull import quickhull
 
-# Find a lp solver to use
 try:
     from cvxopt import matrix, solvers
     import cvxopt.glpk
