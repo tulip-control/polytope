@@ -1706,7 +1706,7 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
     if len(new_dim) == 1:
         f1 = np.zeros(poly1.A.shape[1])
         f1[new_dim] = 1
-        sol = lpsolve(f1, poly1.A, poly1)
+        sol = lpsolve(f1, poly1.A, poly1.b)
         if sol['status'] == 0:
             vert1 = sol['x']
         sol = lpsolve(np.negative(f1), poly1.A, poly1.b)
@@ -1799,7 +1799,7 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
                     # Solving optimization to find new vertex
                     f = np.zeros(poly1.A.shape[1])
                     f[new_dim]=f1
-                    sol = lpsolve(np.negative(f), npoly1.A, poly1.b)
+                    sol = lpsolve(np.negative(f), poly1.A, poly1.b)
                     if sol['status'] != 0:
                         logger.error("iterhull: LP failure")
                         continue
