@@ -56,7 +56,7 @@
 Computational geometry module for polytope computations.
 Suggested abbreviation:
 
->>> import tulip.polytope as pc
+>>> import polytope as pc
 """
 import logging
 logger = logging.getLogger(__name__)
