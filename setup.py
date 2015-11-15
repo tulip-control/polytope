@@ -169,6 +169,19 @@ if check_deps:
             print('\t' + opt_val[1])
         else:
             print('\t' + opt_val[2])
+
+classifiers = [
+    'Development Status :: 2 - Pre-Alpha',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 2.7',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Software Development']
+
 # load long description from README.rst
 readme_file = 'README.rst'
 if os.path.exists(readme_file):
@@ -217,4 +230,5 @@ if perform_setup:
         packages=[
             'polytope'],
         package_dir=dict(polytope='polytope'),
-        package_data=dict(polytope=['commit_hash.txt']))
+        package_data=dict(polytope=['commit_hash.txt']),
+        classifiers=classifiers)
