@@ -2166,6 +2166,11 @@ def simplices2polytopes(points, triangles):
 
 
 def lpsolve(c, G, h):
+    """Try to solve linear program with `cvxopt.glpk`, else `scipy`.
+
+    @return: solution with status as in `scipy.optimize.linprog`
+    @rtype: `dict(status=int, x=argmin, fun=min_value)`
+    """
     result = dict()
     if lp_solver == 'glpk':
         sol = solvers.lp(
