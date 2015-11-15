@@ -52,16 +52,13 @@
 #  projection_interhull
 #  projection_exthull
 #
-"""
-Computational geometry module for polytope computations.
+"""Computational geometry module for polytope computations.
 Suggested abbreviation:
 
 >>> import polytope as pc
 """
 from __future__ import absolute_import
 import logging
-logger = logging.getLogger(__name__)
-
 import numpy as np
 from polytope.quickhull import quickhull
 try:
@@ -77,8 +74,10 @@ except ImportError:
     from scipy import optimize
     lp_solver = 'scipy'
 
+
+logger = logging.getLogger(__name__)
 # Nicer numpy output
-np.set_printoptions(precision=5, suppress = True)
+np.set_printoptions(precision=5, suppress=True)
 
 # global default absolute tolerance,
 # to enable changing it code w/o passing arguments,
@@ -90,6 +89,7 @@ ABS_TOL = 1e-7
 # from tulip.graphics import newax
 # import matplotlib as mpl
 # from tulip.graphics import dom2vec
+
 
 class Polytope(object):
     """Polytope class with following fields
