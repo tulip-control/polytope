@@ -2164,19 +2164,18 @@ def simplices2polytopes(points, triangles):
         polytopes += [poly]
     return polytopes
 
+
 def lpsolve(c, G, h):
-    result = {}
+    result = dict()
     if lp_solver == 'glpk':
         sol = solvers.lp(
-            matrix(c), matrix(G),
-            matrix(h), None,
-            None, lp_solver
-        )
-        if sol['status'] == "optimal":
+            matrix(c), matrix(G), matrix(h),
+            None, None, lp_solver)
+        if sol['status'] == 'optimal':
             result['status'] = 0
-        elif sol['status'] == "primal infeasable":
+        elif sol['status'] == 'primal infeasable':
             result['status'] = 2
-        elif sol['status'] == "dual infeasable":
+        elif sol['status'] == 'dual infeasable':
             result['status'] = 3
         else:
             result['status'] = 4
@@ -2185,8 +2184,7 @@ def lpsolve(c, G, h):
     elif lp_solver == 'scipy':
         sol = optimize.linprog(
             c, G, np.transpose(h),
-            None, None, bounds=(None,None)
-        )
+            None, None, bounds=(None, None))
         result['status'] = sol.status
         result['x'] = sol.x
         result['fun'] = sol.fun
@@ -2195,6 +2193,3 @@ def lpsolve(c, G, h):
                         " Unknown solver selected.")
 
     return result
-
-
-
