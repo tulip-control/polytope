@@ -1,12 +1,4 @@
 #!/usr/bin/env python
-
-# for testing on https://testpypi.python.org use:
-#
-# pip install -i https://testpypi.python.org/pypi polytope
-#             --extra-index-url https://pypi.python.org/pypi
-#
-# so that dependencies can be found and installed,
-# when testing in a clean virtualenv.
 import imp
 import os
 from setuptools import setup
