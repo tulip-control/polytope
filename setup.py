@@ -5,6 +5,19 @@ from setuptools import setup
 import subprocess
 
 
+classifiers = [
+    'Development Status :: 2 - Pre-Alpha',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 2.7',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Software Development']
+
+
 def retrieve_git_info():
     """Return commit hash of HEAD, or "release", or None if failure.
 
@@ -43,19 +56,6 @@ def retrieve_git_info():
     p.wait()
     sha1 = p.stdout.read()
     return sha1
-
-
-classifiers = [
-    'Development Status :: 2 - Pre-Alpha',
-    'Intended Audience :: Developers',
-    'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: BSD License',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 2',
-    'Programming Language :: Python :: 2.7',
-    'Topic :: Scientific/Engineering',
-    'Topic :: Software Development']
 
 
 def run_setup():
