@@ -2178,9 +2178,9 @@ def lpsolve(c, G, h):
             None, None, 'glpk')
         if sol['status'] == 'optimal':
             result['status'] = 0
-        elif sol['status'] == 'primal infeasable':
+        elif sol['status'] == 'primal infeasible':
             result['status'] = 2
-        elif sol['status'] == 'dual infeasable':
+        elif sol['status'] == 'dual infeasible':
             result['status'] = 3
         else:
             result['status'] = 4
