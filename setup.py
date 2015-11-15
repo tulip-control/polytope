@@ -25,14 +25,6 @@ def check_glpk():
         return False
     return True
 
-
-def check_cvxopt():
-    try:
-        import cvxopt
-    except ImportError:
-        return False
-    return True
-
 # Handle "dry-check" argument to check for dependencies without
 # installing the polytope package; checking occurs by default if
 # "install" is given, unless both "install" and "nocheck" are given
@@ -43,10 +35,6 @@ glpk_msg = (
     'GLPK seems to be missing\n'
     'and thus apparently not used by your installation of CVXOPT.\n'
     'If you\'re interested, see http://www.gnu.org/s/glpk/')
-cvxopt_msg = (
-    'CVXOPT not found.\n'
-    'To utilize CVXOPT as the default linear program solver,\n'
-    'please install from http://cvxopt.org')
 
 # These are nice to have but not necessary. Each item is of the form
 #
@@ -56,7 +44,6 @@ cvxopt_msg = (
 #           found); we interpret the return value True to be success,
 #           and False failure.
 optionals = dict(
-    cvxopt=[check_cvxopt, 'CVXOPT found.', cvxopt_msg],
     glpk=[check_glpk, 'GLPK found.', glpk_msg])
 
 
