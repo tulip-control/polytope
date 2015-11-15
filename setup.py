@@ -18,12 +18,6 @@ import sys
 # Dependency or optional-checking functions
 ###########################################
 # (see notes below.)
-def check_glpk():
-    try:
-        import cvxopt.glpk
-    except ImportError:
-        return False
-    return True
 
 # Handle "dry-check" argument to check for dependencies without
 # installing the polytope package; checking occurs by default if
@@ -31,10 +25,6 @@ def check_glpk():
 # (but typical users do not need "nocheck").
 
 other_depends = dict()
-glpk_msg = (
-    'GLPK seems to be missing\n'
-    'and thus apparently not used by your installation of CVXOPT.\n'
-    'If you\'re interested, see http://www.gnu.org/s/glpk/')
 
 # These are nice to have but not necessary. Each item is of the form
 #
@@ -43,8 +33,7 @@ glpk_msg = (
 #           success, second printed on failure (i.e. package not
 #           found); we interpret the return value True to be success,
 #           and False failure.
-optionals = dict(
-    glpk=[check_glpk, 'GLPK found.', glpk_msg])
+optionals = dict()
 
 
 def retrieve_git_info():

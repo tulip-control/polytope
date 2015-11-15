@@ -61,6 +61,7 @@ from __future__ import absolute_import
 import logging
 import numpy as np
 from polytope.quickhull import quickhull
+logger = logging.getLogger(__name__)
 try:
     from cvxopt import matrix, solvers
     import cvxopt.glpk
@@ -73,9 +74,11 @@ try:
 except ImportError:
     from scipy import optimize
     lp_solver = 'scipy'
+    logger.warn(
+        '`polytope` failed to import `cvxopt.glpk`.\n'
+        'Will use `scipy.optimize.linprog`.')
 
 
-logger = logging.getLogger(__name__)
 # Nicer numpy output
 np.set_printoptions(precision=5, suppress=True)
 
