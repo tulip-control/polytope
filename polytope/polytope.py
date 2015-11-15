@@ -58,17 +58,16 @@ Suggested abbreviation:
 
 >>> import polytope as pc
 """
+from __future__ import absolute_import
 import logging
 logger = logging.getLogger(__name__)
 
 import numpy as np
-
-from .quickhull import quickhull
-
+from polytope.quickhull import quickhull
 try:
     from cvxopt import matrix, solvers
     import cvxopt.glpk
-    from .esp import esp
+    from polytope.esp import esp
     lp_solver = 'glpk'
     # Hide optimizer output
     solvers.options['show_progress'] = False
