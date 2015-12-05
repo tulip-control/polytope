@@ -93,6 +93,7 @@ class Partition(object):
         the python builtin set function.
         """
         self.domain = domain
+        self.regions = list()
 
     def __len__(self):
         return len(self.regions)
