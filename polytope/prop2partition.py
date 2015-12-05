@@ -245,6 +245,10 @@ class MetricPartition(Partition):
     then volume information is used for diagnostic purposes.
     """
 
+    def __init__(self, domain):
+        self.adj = None  # `sp.lil_matrix`
+        super().__init__(domain)
+
     def compute_adj(self):
         """Update the adjacency matrix by checking all region pairs.
 
