@@ -46,9 +46,6 @@ Created by P. Nilsson, 8/2/11
 
 import numpy as np
 
-numpy_ver = np.version.version.split('.')
-numpy_ver = float(numpy_ver[0] + str('.') + numpy_ver[1])
-
 class Facet: 
     """A class describing a facet (n-1 dimensional face) of an n dimensional polyhedron with the 
     following fields:
@@ -187,7 +184,7 @@ def quickhull(POINTS, abs_tol=1e-7):
     
     unassigned_points = POINTS[np.setdiff1d(range(npt),ind),:]
                 
-    # Center starting simplex around origo by translation
+    # Center starting simplex around origin by translation
     xc = np.zeros(dim)
     for ii in range(dim+1):
         xc += startsimplex[ii,:]/(dim+1)
@@ -214,10 +211,7 @@ def quickhull(POINTS, abs_tol=1e-7):
             vert[ np.ix_(range(ii*dim,(ii+1)*dim)), : ] = Forg[ii].vertices + xc
             A[ii,:] = Forg[ii].normal.flatten()
             b[ii] = Forg[ii].distance
-        if numpy_ver > 1.59:
-            vert = np.unique(vert.view([('',vert.dtype)]*vert.shape[1])).view(vert.dtype).reshape(-1,vert.shape[1])
-        else:
-            vert = np.unique1d(vert.view([('',vert.dtype)]*vert.shape[1])).view(vert.dtype).reshape(-1,vert.shape[1])
+        vert = np.unique(vert.view([('',vert.dtype)]*vert.shape[1])).view(vert.dtype).reshape(-1,vert.shape[1])
         b = b.flatten() + np.dot(A,xc.flatten())  
         return A,b.flatten(),vert
         
@@ -381,10 +375,7 @@ def quickhull(POINTS, abs_tol=1e-7):
         vert[ np.ix_(range(ii*dim,(ii+1)*dim)), : ] = Forg[ii].vertices + xc
         A[ii,:] = Forg[ii].normal.flatten()
         b[ii] = Forg[ii].distance
-    if numpy_ver > 1.59:
-        vert = np.unique(vert.view([('',vert.dtype)]*vert.shape[1])).view(vert.dtype).reshape(-1,vert.shape[1])
-    else:
-        vert = np.unique1d(vert.view([('',vert.dtype)]*vert.shape[1])).view(vert.dtype).reshape(-1,vert.shape[1])
+    vert = np.unique(vert.view([('',vert.dtype)]*vert.shape[1])).view(vert.dtype).reshape(-1,vert.shape[1])
     b = b.flatten() + np.dot(A,xc.flatten())
 
     return A,b.flatten(),vert
