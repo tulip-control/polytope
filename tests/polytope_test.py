@@ -28,3 +28,12 @@ def comparison_test():
     assert(r <= r2)
     assert(not r2 <= r)
     assert(not r2 == r)
+
+    # test H-rep -> V-rep -> H-rep
+    v = pc.extreme(p)
+    p3 = pc.qhull(v)
+    assert(p3 == p)
+
+    # test V-rep -> H-rep with d+1 points
+    p4 = pc.qhull(np.array([[0,0], [1,0], [0,1]]))
+    assert(p4 == pc.Polytope(np.array([[1,1], [0,-1], [0,-1]]), np.array([1,0,0])))

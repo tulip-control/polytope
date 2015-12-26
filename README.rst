@@ -5,6 +5,7 @@ This is the source repository for ``polytope``, a toolbox for geometric
 operations on polytopes in any dimension.  Documentation and examples are
 available in the directories ``doc/`` and ``examples/``.
 
+
 Installation
 ------------
 
@@ -21,15 +22,22 @@ If this fails, because ``setuptools`` attempts to install
 
   pip install .
 
+
 Dependencies
 ------------
-Required: ``numpy``, ``scipy``, ``cvxopt``, ``networkx``.
+Required: ``numpy``, ``scipy``, ``networkx``.
+Optionally, if ``cvxopt`` is installed and
+linked to `GLPK <https://en.wikipedia.org/wiki/GNU_Linear_Programming_Kit>`_,
+then ``polytope`` will prefer GLPK,
+because it is faster than ``scipy``.
 For more details, see ``requirements.txt``.
+
 
 License
 -------
 Polytope is licensed under the 3-clause BSD license.  The full statement is
 provided in the file named `LICENSE`.
+
 
 Acknowledgment
 --------------
