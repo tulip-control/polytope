@@ -2,7 +2,7 @@ sudo: false
 
 language: python
 python:
-  - "2.7_with_system_site_packages"
+  - "2.7"
 
 addons:
   apt:
@@ -13,10 +13,17 @@ addons:
     - liblapack-dev
     - libgmp-dev
     - libmpfr-dev
-    - python-numpy
 
 before_install:
-  - travis_wait 30 pip install scipy
+  - curl -sO https://repo.continuum.io/miniconda/Miniconda2-4.0.5-Linux-x86_64.sh
+    && echo 'ada5b7942e519829bc5e8e638d525e009676a7a598cf3dd80f041f6d5e39ddbb  Miniconda2-4.0.5-Linux-x86_64.sh'
+    | shasum -a 256 -c -
+  - bash Miniconda2-4.0.5-Linux-x86_64.sh -b -p ${HOME}/miniconda
+  - source ${HOME}/miniconda/bin/activate root
+  - conda update -q -y --all
+  - conda install -q -y nomkl
+  - conda install -q -y numpy scipy
+  - conda info -a
   - pip install matplotlib
   - pip install nose
 
