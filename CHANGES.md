@@ -1,6 +1,14 @@
 # Polytope package update history
 
 
+## version 0.1.2 - 12 July 2016
+
+- require `scipy >= 0.16`
+- use `scipy.optimize.linprog` if `cvxopt.glpk` fails to import
+- PEP440-compliant version identifier `vX.Y.Z.dev0+commithash`
+- test on Travis CI
+
+
 ## version 0.1.1 - 25 October 2015
 
 - silence GLPK solver's output in `cvxopt`
