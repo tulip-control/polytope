@@ -44,3 +44,7 @@ def comparison_test():
     # test V-rep -> H-rep with d+1 points
     p4 = pc.qhull(np.array([[0,0], [1,0], [0,1]]))
     assert(p4 == pc.Polytope(np.array([[1,1], [0,-1], [0,-1]]), np.array([1,0,0])))
+
+
+if __name__ == '__main__':
+    comparison_test()
