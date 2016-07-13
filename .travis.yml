@@ -29,10 +29,10 @@ before_install:
   - pip install nose
 
 install:
-  - pip install .
+  - python setup.py sdist
+  - pip install dist/polytope-*.tar.gz
 
 script: ./run_tests.py
 
 notifications:
   email: false
-
