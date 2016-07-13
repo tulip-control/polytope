@@ -2,7 +2,14 @@
 """
 Tests for the polytope subpackage.
 """
+import logging
+
 import numpy as np
+
+log = logging.getLogger('polytope.polytope')
+log.setLevel(logging.INFO)
+log.addHandler(logging.StreamHandler())
+
 import polytope as pc
 
 # unit square
