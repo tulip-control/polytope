@@ -71,6 +71,7 @@ try:
     solvers.options['show_progress'] = False
     solvers.options['LPX_K_MSGLEV'] = 0
     solvers.options['msg_lev'] = 'GLP_MSG_OFF'
+    logger.info('will use `cvxopt.glpk` solver')
 except ImportError:
     from scipy import optimize
     lp_solver = 'scipy'
