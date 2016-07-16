@@ -4,6 +4,6 @@ scipy>=0.16
 networkx
 
 # optional
-cvxopt==1.1.7
+cvxopt==1.1.8
 nose
 matplotlib
