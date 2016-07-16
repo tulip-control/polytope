@@ -61,8 +61,10 @@ try:
 except:
     lp_solver = None
 
-solvers.options['show_progress']=False
-solvers.options['LPX_K_MSGLEV'] = 0
+
+solvers.options['show_progress'] = False
+solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
+
 
 class Ridge:
     '''Contains the following information:

@@ -69,8 +69,7 @@ try:
     lp_solver = 'glpk'
     # Hide optimizer output
     solvers.options['show_progress'] = False
-    solvers.options['LPX_K_MSGLEV'] = 0
-    solvers.options['msg_lev'] = 'GLP_MSG_OFF'
+    solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
     logger.info('will use `cvxopt.glpk` solver')
 except ImportError:
     from scipy import optimize
