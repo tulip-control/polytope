@@ -395,7 +395,7 @@ class Polytope(object):
              hatch=None, alpha=1.0):
         try:
             from tulip.graphics import newax
-        except Exception, e:
+        except Exception as e:
             logger.error(e)
             newax = None
 
@@ -656,7 +656,7 @@ class Region(object):
              hatch=None, alpha=1.0):
         try:
             from tulip.graphics import newax
-        except Exception, e:
+        except Exception as e:
             logger.error(e)
             newax = None
 
