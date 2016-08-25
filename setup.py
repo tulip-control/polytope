@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import unicode_literals
 import imp
 import os
 from setuptools import setup
@@ -55,7 +56,7 @@ def retrieve_git_info():
         stdout=subprocess.PIPE)
     p.wait()
     sha1 = p.stdout.read()
-    return sha1
+    return sha1.decode('utf-8')
 
 
 def run_setup():
