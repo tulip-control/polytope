@@ -78,7 +78,10 @@ except ImportError:
     logger.warn(
         '`polytope` failed to import `cvxopt.glpk`.\n'
         'Will use `scipy.optimize.linprog`.')
-
+try:
+    xrange
+except NameError:
+    xrange = range
 
 # Nicer numpy output
 np.set_printoptions(precision=5, suppress=True)
