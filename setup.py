@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import unicode_literals
 import imp
 import os
 from setuptools import setup
@@ -42,7 +43,7 @@ def retrieve_git_info():
         stderr=subprocess.STDOUT)
     p.wait()
     if p.returncode == 0:
-        tag = p.stdout.read()
+        tag = p.stdout.read().decode('utf-8')
         if len(tag) >= 2 and tag.startswith('v'):
             try:
                 int(tag[1])
@@ -54,7 +55,7 @@ def retrieve_git_info():
         ['git', 'log', '-1', '--format=%H'],
         stdout=subprocess.PIPE)
     p.wait()
-    sha1 = p.stdout.read()
+    sha1 = p.stdout.read().decode('utf-8')
     return sha1
 
 
