@@ -5,8 +5,10 @@ import matplotlib.patches
 import polytope as pc
 from polytope import plot
 
-# fake
+
 class Axes(object):
+    """Mock class."""
+
     def add_patch(self, x):
         pass
 

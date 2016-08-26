@@ -17,8 +17,9 @@ Ab = np.array([[0.0, 1.0, 1.0],
                [1.0, 0.0, 1.0],
                [-1.0, 0.0, 0.0]])
 
-A = Ab[:,0:2]
+A = Ab[:, 0:2]
 b = Ab[:, 2]
+
 
 def comparison_test():
     p = pc.Polytope(A, b)
@@ -41,8 +42,10 @@ def comparison_test():
     assert(p3 == p)
 
     # test V-rep -> H-rep with d+1 points
-    p4 = pc.qhull(np.array([[0,0], [1,0], [0,1]]))
-    assert(p4 == pc.Polytope(np.array([[1,1], [0,-1], [0,-1]]), np.array([1,0,0])))
+    p4 = pc.qhull(np.array([[0, 0], [1, 0], [0, 1]]))
+    assert(p4 == pc.Polytope(
+        np.array([[1, 1], [0, -1], [0, -1]]),
+        np.array([1, 0, 0])))
 
 
 if __name__ == '__main__':

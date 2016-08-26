@@ -176,7 +176,7 @@ def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
 
     if arr_size is None:
         l,u = polyreg1.bounding_box
-        arr_size = (u[0,0]-l[0,0])/25.0
+        arr_size = (u[0, 0] - l[0, 0]) / 25.0
 
     #TODO: 3d
     x = xc0[0]

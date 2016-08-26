@@ -83,7 +83,9 @@ if __name__ == "__main__":
         imp.load_module("polytope", *modtuple)
     except ImportError:
         if require_nonlocaldir_polytope:
-            raise ImportError("polytope package not found, besides in the local directory")
+            raise ImportError(
+                "polytope package not found, "
+                "besides in the local directory")
         else:
             raise
 
@@ -91,14 +93,18 @@ if __name__ == "__main__":
     if skip_slow:
         argv.append("--attr=!slow")
     if measure_coverage:
-        argv.extend(["--with-coverage", "--cover-html", "--cover-package=polytope"])
+        argv.extend([
+            "--with-coverage",
+            "--cover-html",
+            "--cover-package=polytope"])
     testfiles = []
     excludefiles = []
     for basename in sys.argv[1:]:  # Only add extant file names
         if os.path.exists(os.path.join(tests_dir, basename+"_test.py")):
             testfiles.append(basename+"_test.py")
         elif basename[0] == "-":
-            if os.path.exists(os.path.join(tests_dir, basename[1:]+"_test.py")):
+            if os.path.exists(
+                    os.path.join(tests_dir, basename[1:]+"_test.py")):
                 excludefiles.append(basename[1:]+"_test.py")
             else:
                 argv.append(basename)
