@@ -31,6 +31,8 @@
 # SUCH DAMAGE.
 #
 """Functions for plotting Partitions."""
+from __future__ import absolute_import
+from __future__ import division
 import logging
 
 import numpy as np
@@ -148,6 +150,7 @@ def plot_partition(
     mpl.pyplot.show()
 
     return ax
+
 
 def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
     """Plot arrow starting from polyreg0 and ending at polyreg1.

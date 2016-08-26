@@ -40,6 +40,9 @@ C. Bradford Barber, David P. Dobkin, Hannu Huhdanpa,
     Volume 22 Issue 4, Dec. 1996
 """
 # Created by P. Nilsson, 8/2/11
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import numpy as np
 

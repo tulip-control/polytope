@@ -7,6 +7,7 @@ Sample N points in the unit square, compute hull and plot.
 The default value of N is 3.  Note that plotting requires matplotlib
 (http://matplotlib.org), which is an optional dependency.
 """
+from __future__ import print_function
 import sys
 
 import numpy as np
