@@ -31,8 +31,6 @@
 # SUCH DAMAGE.
 """Proposition preserving partition module."""
 import logging
-logger = logging.getLogger(__name__)
-
 import warnings
 
 import numpy as np
@@ -41,7 +39,10 @@ import networkx as nx
 
 import polytope as pc
 
+
+logger = logging.getLogger(__name__)
 _hl = 40 * '-'
+
 
 def find_adjacent_regions(partition):
     """Return region pairs that are spatially adjacent.

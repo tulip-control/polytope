@@ -32,17 +32,19 @@
 #
 """Functions for plotting Partitions."""
 import logging
-logger = logging.getLogger(__name__)
 
 import numpy as np
 import networkx as nx
 
 from polytope import cheby_ball
-
 # inline imports:
 #
 # import matplotlib as mpl
 # from tulip.graphics import newax
+
+
+logger = logging.getLogger(__name__)
+
 
 def plot_partition(
     ppp, trans=None, ppp2trans=None, only_adjacent=False,

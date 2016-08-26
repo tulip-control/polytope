@@ -53,14 +53,19 @@
 #  projection_exthull
 #
 """Computational geometry module for polytope computations.
+
 Suggested abbreviation:
 
 >>> import polytope as pc
 """
 from __future__ import absolute_import
 import logging
+
 import numpy as np
+
 from polytope.quickhull import quickhull
+
+
 logger = logging.getLogger(__name__)
 try:
     from cvxopt import matrix, solvers

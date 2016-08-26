@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Installation script."""
 from __future__ import unicode_literals
+
 import imp
 import os
 from setuptools import setup

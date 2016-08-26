@@ -8,7 +8,9 @@ TuLiP (http://tulip-control.org).
 import imp
 import sys
 import os.path
+
 import nose
+
 
 if __name__ == "__main__":
     if ("-h" in sys.argv) or ("--help" in sys.argv):

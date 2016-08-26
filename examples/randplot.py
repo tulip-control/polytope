@@ -7,11 +7,11 @@ Sample N points in the unit square, compute hull and plot.
 The default value of N is 3.  Note that plotting requires matplotlib
 (http://matplotlib.org), which is an optional dependency.
 """
-import polytope
+import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
-import sys
+import polytope
 
 
 if __name__ == "__main__":

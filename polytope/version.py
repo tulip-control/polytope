@@ -30,6 +30,8 @@
 # OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 """polytope package version"""
+import os.path
+
 version_info = (0, 1, 3)
 
 version = '.'.join([str(x) for x in version_info])
@@ -40,7 +42,6 @@ version = '.'.join([str(x) for x in version_info])
 # An empty (modulo comments and blank lines) commit_hash.txt is used
 # to indicate a release, in which case nothing is appended to version
 # string as defined above.
-import os.path
 path_to_hashfile = os.path.join(os.path.dirname(__file__), "commit_hash.txt")
 if os.path.exists(path_to_hashfile):
     commit_hash = ""

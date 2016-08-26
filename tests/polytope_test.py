@@ -3,12 +3,13 @@
 import logging
 
 import numpy as np
+import polytope as pc
+
 
 log = logging.getLogger('polytope.polytope')
 log.setLevel(logging.INFO)
 log.addHandler(logging.StreamHandler())
 
-import polytope as pc
 
 # unit square
 Ab = np.array([[0.0, 1.0, 1.0],

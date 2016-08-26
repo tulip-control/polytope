@@ -46,9 +46,10 @@ Colin N. Jones, Eric C. Kerrigan and Jan M. Maciejowski,
     2004
 """
 # Created by P. Nilsson, 8/2/11
+from cvxopt import matrix
+from cvxopt import solvers
 import numpy as np
 from scipy import linalg
-from cvxopt import matrix, solvers
 
 # Find a lp solver to use
 try:
