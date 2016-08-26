@@ -67,7 +67,7 @@ solvers.options['show_progress'] = False
 solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
 
 
-class Ridge:
+class Ridge(object):
     '''Contains the following information:
     `E_0`: Equality set of a facet
     `af,bf`: Affine hull of the facet s.t. P_{E_0} = P intersection {x | af x = bf}.
@@ -77,7 +77,7 @@ class Ridge:
         self.ar = a
         self.br = b
 
-class Ridge_Facet:
+class Ridge_Facet(object):
     '''Contains the following information:
 
         - `E_r`: Equality set of a ridge

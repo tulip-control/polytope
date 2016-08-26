@@ -47,7 +47,7 @@ from __future__ import print_function
 import numpy as np
 
 
-class Facet:
+class Facet(object):
     """A class describing a facet (n-1 dimensional face) of an n dimensional polyhedron with the
     following fields:
     N.B. Polyhedron is assumed to contain the origin (inside and outside are defined accordingly)
@@ -105,7 +105,7 @@ class Facet:
             del self.outside[inddel]
             return p0
 
-class Outside_point:
+class Outside_point(object):
     """Class containing the coordinates of a point and the distance to the
     facet to which the point is assigned"""
     def __init__(self, coordinates, distance):
