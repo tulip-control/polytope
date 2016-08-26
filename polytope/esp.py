@@ -48,7 +48,6 @@ Very unstable, can not handle complex polytopes.
 
 Created by P. Nilsson, 8/2/11'''
 
-import sys, os
 
 import numpy as np
 from scipy import linalg
