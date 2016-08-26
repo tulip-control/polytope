@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Installation script."""
 from __future__ import unicode_literals
 import imp
 import os
@@ -60,6 +61,7 @@ def retrieve_git_info():
 
 
 def run_setup():
+    """Get version from git, then install."""
     # load long description from README.rst
     readme_file = 'README.rst'
     if os.path.exists(readme_file):
