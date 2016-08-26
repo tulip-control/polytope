@@ -76,7 +76,7 @@ def run_setup():
         sha1 = retrieve_git_info()
         if sha1 is None:
             sha1 = 'unknown-commit'
-        elif sha1 is 'release':
+        elif sha1 == 'release':
             sha1 = ''
         commit_hash_header = (
             '# DO NOT EDIT!  '
