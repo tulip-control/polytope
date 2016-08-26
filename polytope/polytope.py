@@ -239,8 +239,10 @@ class Polytope(object):
     def __ge__(self, other):
         return is_subset(other, self)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.volume > 0)
+
+    __nonzero__ = __bool__
 
     def union(self, other, check_convex=False):
         """Return union with Polytope or Region.
@@ -551,8 +553,10 @@ class Region(object):
         """
         return union(self, other, check_convex=True)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.volume > 0)
+
+    __nonzero__ = __bool__
 
     def union(self, other, check_convex=False):
         """Return union with Polytope or Region.
