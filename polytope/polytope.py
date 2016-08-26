@@ -77,7 +77,10 @@ except ImportError:
     logger.warn(
         '`polytope` failed to import `cvxopt.glpk`.\n'
         'Will use `scipy.optimize.linprog`.')
-
+try:
+    xrange
+except NameError:
+    xrange = range
 
 # Nicer numpy output
 np.set_printoptions(precision=5, suppress=True)
@@ -394,7 +397,7 @@ class Polytope(object):
              hatch=None, alpha=1.0):
         try:
             from tulip.graphics import newax
-        except Exception, e:
+        except Exception as e:
             logger.error(e)
             newax = None
 
@@ -655,7 +658,7 @@ class Region(object):
              hatch=None, alpha=1.0):
         try:
             from tulip.graphics import newax
-        except Exception, e:
+        except Exception as e:
             logger.error(e)
             newax = None
 
