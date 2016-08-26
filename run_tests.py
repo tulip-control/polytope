@@ -5,7 +5,6 @@ Driver script for testing polytope package.  Try calling it with "-h" flag.
 This script was originally copied from one by the same name in
 TuLiP (http://tulip-control.org).
 """
-
 import imp
 import sys
 import os.path

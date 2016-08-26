@@ -29,9 +29,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 # OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
-"""
-polytope package version
-"""
+"""polytope package version"""
 version_info = (0, 1, 3)
 
 version = '.'.join([str(x) for x in version_info])

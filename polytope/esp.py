@@ -29,26 +29,23 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 # OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
-#
-#
-#  Reference:
-#
-#  Colin N. Jones, Eric C. Kerrigan and Jan M. Maciejowski,
-#  Equality Set Projection: A new algorithm for the projection of polytopes
-#  in halfspace representation,
-#  http://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
-#  2004
-#
+"""Equality Set Projection (ESP).
 
-'''Implementing the non-vertex polytope projection method
-Equality Set Projection (ESP) from
-http://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
+Non-vertex polytope projection method from
+    http://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
 
 Very unstable, can not handle complex polytopes.
 
-Created by P. Nilsson, 8/2/11'''
+Reference
+=========
 
-
+Colin N. Jones, Eric C. Kerrigan and Jan M. Maciejowski,
+    "Equality Set Projection: A new algorithm for the projection of polytopes
+     in halfspace representation"
+    http://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
+    2004
+"""
+# Created by P. Nilsson, 8/2/11
 import numpy as np
 from scipy import linalg
 from cvxopt import matrix, solvers

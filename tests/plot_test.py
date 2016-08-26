@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""
-Tests for plotting.
-"""
+"""Tests for plotting."""
 import polytope as pc
 from polytope import plot
 

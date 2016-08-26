@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""
-Tests for the polytope subpackage.
-"""
+"""Tests for the polytope subpackage."""
 import logging
 
 import numpy as np
