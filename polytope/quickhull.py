@@ -7,16 +7,16 @@
 #
 # 1. Redistributions of source code must retain the above copyright
 #    notice, this list of conditions and the following disclaimer.
-# 
+#
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 
+#
 # 3. Neither the name of the California Institute of Technology nor
 #    the names of its contributors may be used to endorse or promote
 #    products derived from this software without specific prior
 #    written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -46,27 +46,28 @@ Created by P. Nilsson, 8/2/11
 
 import numpy as np
 
-class Facet: 
-    """A class describing a facet (n-1 dimensional face) of an n dimensional polyhedron with the 
+
+class Facet:
+    """A class describing a facet (n-1 dimensional face) of an n dimensional polyhedron with the
     following fields:
     N.B. Polyhedron is assumed to contain the origin (inside and outside are defined accordingly)
-    
+
       - `outside`: a list of points outside the facet
       - `vertices`: the vertices of the facet in a n*n matrix where each row denotes a vertex
       - `neighbors`: a list of other facets with which the facet shares n-1 vertices
       - `normal`: a normalized vector perpendicular to the facet, pointing "out"
       - `distance`: the normal distance of the facet from origo
     """
-    
-    
+
+
     def __init__(self,points):
-        
+
         self.outside = []
         self.vertices = points
         self.neighbors = []
         self.normal = None
         self.distance = None
-        
+
         sh = np.shape(points)
         A0 = np.hstack([points,np.ones([sh[0],1])])
         b0 = np.zeros([sh[0],1])
@@ -80,13 +81,13 @@ class Facet:
         mult = np.sqrt(np.sum(xx**2))
         n = xx/mult
         d = sol[sh[1]]/mult
-        
+
         # Test to check that n is >outer< normal
         if np.sum(n.flatten()*points[0]) < 0:
             n = -n
         self.normal = n
         self.distance = -d
-    
+
     def get_furthest(self):
         """Returns the point in outside the furthest away from the facet"""
         N = len(self.outside)
@@ -103,7 +104,7 @@ class Facet:
                     inddel = i
             del self.outside[inddel]
             return p0
-            
+
 class Outside_point:
     """Class containing the coordinates of a point and the distance to the
     facet to which the point is assigned"""
@@ -116,52 +117,52 @@ def distance(p,fac1):
     n = fac1.normal
     d = fac1.distance
     return np.sum(n.flatten()*p.flatten()) - d
-    
+
 def is_neighbor(fac1, fac2, abs_tol=1e-7):
     """Determine if two facets share d-1 vertices"""
     vert1 = fac1.vertices
     vert2 = fac2.vertices
     sh = np.shape(vert1)
     dim = sh[1]
-    
+
     same = 0
     for ii in range(dim):
         v1 = vert1[ii,:]
         for jj in range(dim):
-            v2 = vert2[jj,:]           
+            v2 = vert2[jj,:]
             if np.all(np.abs(v1-v2) < abs_tol):
                 same += 1
                 break
-    return (same == dim - 1)                
+    return (same == dim - 1)
 
 def quickhull(POINTS, abs_tol=1e-7):
     """Compute the convex hull of a set of points
-    
+
     @param POINTS: a n*d np array where each row denotes a point
-    
+
     @return: A,b,vertices: `A` and `b describing the convex hull
         polytope as A x <= b (H-representation). `vertices is a list
         of all the points in the convex hull (V-representation).
     """
-    
+
     POINTS = POINTS.astype('float')
     sh = np.shape(POINTS)
     dim = sh[1]
     npt = sh[0]
-    
+
     if npt <= dim:
         # Convex hull is empty
         return np.array([]),np.array([]),None
-    
+
     # Check if convex hull is fully dimensional
     u, s, v = np.linalg.svd(np.transpose(POINTS - POINTS[0,:]))
     rank = np.sum(s > 1e-15)
-    
+
     if rank < dim:
         print("Warning: " +
             "convex hull is not fully dimensional, returning empty polytope")
         return np.array([]),np.array([]),None
-    
+
     # Choose starting simplex by choosing maximum points in random directions
     rank = 0
     while rank < dim:
@@ -178,30 +179,30 @@ def quickhull(POINTS, abs_tol=1e-7):
                 b = index[i] in ind
             ind.append(index[i])
             d += 1
-        startsimplex = POINTS[ind,:]  
+        startsimplex = POINTS[ind,:]
         u, s, v = np.linalg.svd(np.transpose(startsimplex - startsimplex[0,:]))
         rank = np.sum(s > 1e-10)
-    
+
     unassigned_points = POINTS[np.setdiff1d(range(npt),ind),:]
-                
+
     # Center starting simplex around origin by translation
     xc = np.zeros(dim)
     for ii in range(dim+1):
         xc += startsimplex[ii,:]/(dim+1)
-    
+
     startsimplex = startsimplex - xc
     unassigned_points = unassigned_points - xc
-    
+
     Forg = []
     F = []
     R = []
-    
+
     for i in range(dim+1):
         ind = np.setdiff1d(np.arange(dim+1),[i])
-        fac = Facet(startsimplex[ind,:]) 
-        Forg.append(fac)     
+        fac = Facet(startsimplex[ind,:])
+        Forg.append(fac)
 
-    if npt == dim+1:  
+    if npt == dim+1:
         # If only d+1 facets, we already have convex hull
         num = len(Forg)
         A = np.zeros([num,dim])
@@ -212,78 +213,78 @@ def quickhull(POINTS, abs_tol=1e-7):
             A[ii,:] = Forg[ii].normal.flatten()
             b[ii] = Forg[ii].distance
         vert = np.unique(vert.view([('',vert.dtype)]*vert.shape[1])).view(vert.dtype).reshape(-1,vert.shape[1])
-        b = b.flatten() + np.dot(A,xc.flatten())  
+        b = b.flatten() + np.dot(A,xc.flatten())
         return A,b.flatten(),vert
-        
-    for ii in range(len(Forg)):               
+
+    for ii in range(len(Forg)):
         # In the starting simplex, all facets are neighbors
         for jj in range(ii+1,len(Forg)):
             fac1 = Forg[ii]
             fac2 = Forg[jj]
             ind = np.setdiff1d(np.arange(dim+1),[ii,jj])
             fac1.neighbors.append(fac2)
-            fac2.neighbors.append(fac1)       
-             
+            fac2.neighbors.append(fac1)
+
     for fac1 in Forg:
-        # Assign outside points to facets        
+        # Assign outside points to facets
         npt = np.shape(unassigned_points)[0]
         keep_list = np.ones(npt, dtype=int)
-                
+
         for ii in range(npt):
             if npt == 1:
                 pu = unassigned_points
             else:
                 pu = unassigned_points[ii,:]
-            
+
             d = distance(pu,fac1)
             if d > abs_tol:
                 op = Outside_point(pu.flatten(), d)
                 fac1.outside.append(op)
                 keep_list[ii] = 0
-        
+
         if len(fac1.outside) > 0:
             F.append(fac1)
         ind = np.nonzero(keep_list)[0]
-    
+
         if len(ind) > 0:
             unassigned_points = unassigned_points[ind,:]
         else:
             unassigned_points = None
             break
-        
+
     # We now have a collection F of facets with outer points!
     # Selecting the point furthest away from a facet
     while len(F) > 0:
-        
+
         facet = F[0]
         p = facet.get_furthest().coordinates
-                    
+
         V = []      # Initialize visible set
                     # Want to add all facets that are visible from p
         Ncoll = []  # Set of unvisited neighbors
         visited = []
-                
+
         V.append(facet)             # facet itself is visible by definition
         visited.append(facet)       # facet is visited
         for N in facet.neighbors:   # add all neighbors for visit
             Ncoll.append(N)
-        
+
         while len(Ncoll) > 0:       # Visit all neighbours
             N = Ncoll[0]
             visited.append(N)
-            
+
             if distance(p,N) > abs_tol:
                 V.append(N)
                 for neighbor in N.neighbors:
                     if (neighbor not in visited) & (neighbor not in Ncoll):
                         Ncoll.append(neighbor)
             del Ncoll[0]
-        
-        # Should now have all visible facets in V     
-                
-        NV = []                     
+
+        # Should now have all visible facets in V
+
+        NV = []
         unassigned_points = None
-        
+
         for fac1 in V:
             # Move points from facets in V to the set unassigned_points
             N = len(fac1.outside)
@@ -292,11 +293,11 @@ def quickhull(POINTS, abs_tol=1e-7):
                     unassigned_points = np.array([fac1.outside[ii].coordinates])
                 else:
                     unassigned_points = np.vstack([unassigned_points,fac1.outside[ii].coordinates])
-            
-        for fac1 in V:                
-            # Figure out the boundary of V, and create new facets            
+
+        for fac1 in V:
+            # Figure out the boundary of V, and create new facets
             for fac2 in fac1.neighbors:
-                if not (fac2 in V):                  
+                if not (fac2 in V):
                     # fac1 is on the boundary!
                     # Create new facet from intersection between fac1 and fac2
                     # and p
@@ -308,15 +309,15 @@ def quickhull(POINTS, abs_tol=1e-7):
                         if not np.any(test==dim):
                             ind = np.setdiff1d(np.arange(dim),np.array([ii]))
                             points = vert1[ind]
-                            break 
+                            break
                     points = np.vstack([p,points])
-                                        
+
                     # Vertex points are in points
                     R = Facet(points)
-                    
+
                     R.neighbors.append(fac2)
                     fac2.neighbors.append(R)
-                    
+
                     NV.append(R)
 
         # Establish other neighbor relations in NV
@@ -334,18 +335,18 @@ def quickhull(POINTS, abs_tol=1e-7):
                 continue
             npt = np.shape(unassigned_points)[0]
             keep_list = np.ones(npt, dtype=int)
-            
+
             for ii in range(npt):
                 if npt == 1:
                     pu = unassigned_points
                 else:
                     pu = unassigned_points[ii,:]
-                d = distance(pu,fac1) 
+                d = distance(pu,fac1)
                 if d > abs_tol:
                     op = Outside_point(pu.flatten(), d)
                     fac1.outside.append(op)
                     keep_list[ii] = 0
-            
+
             if len(fac1.outside) > 0:
                 F.append(fac1)
                 Forg.append(fac1)
@@ -356,18 +357,18 @@ def quickhull(POINTS, abs_tol=1e-7):
                 unassigned_points = unassigned_points[ind[0],:]
             else:
                 unassigned_points = None
-        
+
         # Delete facets in V, and neighbor references
         for fac1 in V:
             for fac2 in fac1.neighbors:
                 fac2.neighbors.remove(fac1)
             if fac1 in F:
                 F.remove(fac1)
-            Forg.remove(fac1)       
+            Forg.remove(fac1)
             fac1.neighbors = []
         V = []
-    
-    num = len(Forg)   
+
+    num = len(Forg)
     A = np.zeros([num,dim])
     b = np.zeros([num,1])
     vert = np.zeros([num*dim,dim])

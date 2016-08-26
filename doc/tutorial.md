@@ -42,7 +42,7 @@ p = pc.box2poly([[0, 2], [0, 1]])
 To verify we got what we wanted `print(p)` shows:
 
 ```python
-Single polytope 
+Single polytope
  [[ 1.  0.] |    [[ 2.]
   [ 0.  1.] x <=  [ 1.]
   [-1. -0.] |     [ 0.]
