@@ -1402,7 +1402,10 @@ def extreme(poly1):
             for ix in xrange(nx):
                 V[iv,ix] = H[iv,ix]/K[iv] + xmid[ix]
 
-    poly1.vertices = V.reshape((V.size/nx, nx))
+    a = V.size / nx
+    assert a.is_integer(), a
+    a = int(a)
+    poly1.vertices = V.reshape((a, nx))
     return poly1.vertices
 
 def qhull(vertices,abs_tol=ABS_TOL):
