@@ -1,6 +1,12 @@
 # Polytope package update history
 
 
+## version 0.1.3 - 31 August 2016
+
+- support Python 3
+- silence `cvxopt >= 1.1.8`
+
+
 ## version 0.1.2 - 12 July 2016
 
 - require `scipy >= 0.16`
