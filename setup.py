@@ -103,6 +103,7 @@ def run_setup():
         url='http://tulip-control.org',
         bugtrack_url='http://github.com/tulip-control/polytope/issues',
         license='BSD',
+        setup_requires=['setuptools >= 23.0.0'],
         install_requires=[
             'numpy >= 1.6',
             'scipy >= 0.16',
