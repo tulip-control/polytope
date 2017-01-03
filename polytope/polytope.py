@@ -290,6 +290,16 @@ class Polytope(object):
 
         return reduce(Polytope(iA, ib), abs_tol=abs_tol)
 
+    def translate(self, d):
+        """Translates the polytope by a given vector.
+        """
+        # A, b, bbox, cheby, cheby
+
+    def rotate(self, u, v, theta=None):
+        """Rotates this Polytope.
+        """
+        rotate(self, u, v, theta)
+
     def copy(self):
         """Return copy of this Polytope.
         """
@@ -440,6 +450,73 @@ class Polytope(object):
         """Plot text at chebyshev center.
         """
         _plot_text(self, txt, ax, color)
+
+
+def rotate(polyreg, u, v, theta=None, R=None):
+    """Rotation of the polytope. Only simple rotations are implemented at this time.
+
+    Simple rotations, by definition, occur only in 2 of the N dimensions; the other N-2 dimensions are invariant with the rotation. Any rotations thus require specification of the plane(s) of rotation. This function has two different ways to specify this plane:
+
+    (1) Providing the indicies [0, N) of the orthogonal basis vectors which define the plane of rotation and an angle of rotation (theta) between them. This allows easy construction of the Givens rotation matrix. The right hand rule defines the positive rotation direction.
+
+    (2) Providing two unit vectors with no angle. The two vectors are contained within a plane and the degree of rotation is the angle which moves the first vector into alignment with the second vector.
+
+    (3) Providing an NxN rotation matrix.
+
+    Further Reading
+    https://en.wikipedia.org/wiki/Plane_of_rotation
+
+    @type polyreg: L{Polytope} or L{Region}
+    """
+    # determine the rotation matrix based on inputs
+    if R is not None:
+        pass  # rotation matrix is predefined
+    elif theta is None:
+        logger.debug("Rotation from 2 vectors.")
+        # TODO: assert vectors are non-zero and non-parallel aka exterior product is non-zero
+        raise NotImplementedError
+    else:
+        logger.debug("Rotation from indicies and angle.")
+        if u == v:
+            raise ValueError("Must provide two unique basis vectors.")
+        R = np.identity(polyreg.dim)
+        c = np.cos(theta)
+        s = np.sin(theta)
+        R[u, u] = c
+        R[v, v] = c
+        R[u, v] = -s
+        R[v, u] = s
+
+    if isinstance(polyreg, Polytope):
+        # Ensure that half space is normalized before rotation
+        n, p = hessian_normal(polyreg.A, polyreg.b)
+
+        # Rotate the hyperplane normals
+        polyreg.A = np.inner(n, R)
+        polyreg.b = p
+    else:
+        # Rotate subregions
+        for poly in polyreg.list_poly:
+            rotate(poly, None, None, R=R)
+
+    # transform bbox and cheby
+    if polyreg.bbox is not None:
+        polyreg.bbox = (np.inner(polyreg.bbox[0].T, R).T, np.inner(polyreg.bbox[1].T, R).T)
+    if polyreg._chebXc is not None:
+        polyreg._chebXc = np.inner(polyreg._chebXc, R)
+
+
+def hessian_normal(A, b):
+    """Normalizes a half space representation according to hessian normal form.
+    """
+    L2 = np.reshape(np.linalg.norm(A, axis=1), (-1, 1))  # needs to be column
+    if any(L2 == 0):
+        raise ValueError('One of the rows of A is a zero vector.')
+
+    n = A / L2  # hyperplane normals
+    p = b / L2.flatten()  # hyperplane distances from origin
+
+    return n, p
 
 
 class Region(object):
@@ -619,6 +696,11 @@ class Region(object):
                 if rp > abs_tol:
                     P = union(P, isect, check_convex=True)
         return P
+
+    def rotate(self, u, v, theta=None):
+        """Rotates this Region.
+        """
+        rotate(self, u, v, theta)
 
     def __copy__(self):
         """Return copy of this Region."""
