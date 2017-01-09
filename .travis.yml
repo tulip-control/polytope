@@ -37,7 +37,7 @@ install:
 script:
   - ./run_tests.py --outofsource
   - export CVXOPT_BUILD_GLPK=1
-  - pip install cvxopt
+  - pip install cvxopt==1.1.8
   - python -c "import cvxopt.glpk"
   - ./run_tests.py --outofsource
 
