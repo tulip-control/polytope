@@ -291,9 +291,9 @@ class Polytope(object):
         return reduce(Polytope(iA, ib), abs_tol=abs_tol)
 
     def translate(self, d):
-        """Translates the polytope by a given vector.
+        """Translates the Polytope by a given vector.
         """
-        # A, b, bbox, cheby, cheby
+        translate(self, d)
 
     def rotate(self, u, v, theta=None):
         """Rotates this Polytope.
@@ -452,6 +452,27 @@ class Polytope(object):
         _plot_text(self, txt, ax, color)
 
 
+def translate(polyreg, d):
+    """Translates a polytope by a vector.
+    @type polyreg: L{Polytope} or L{Region}
+    """
+
+    if isinstance(polyreg, Polytope):
+        # Translate hyperplanes
+        polyreg.b = polyreg.b + np.dot(polyreg.A, d)
+    else:
+        # Translate subregions
+        for poly in polyreg.list_poly:
+            translate(poly, d)
+
+    # Translate bbox and cheby
+    if polyreg.bbox is not None:
+        polyreg.bbox = (polyreg.bbox[0] + d,
+                        polyreg.bbox[1] + d)
+    if polyreg._chebXc is not None:
+        polyreg._chebXc = polyreg._chebXc + d
+
+
 def rotate(polyreg, u, v, theta=None, R=None):
     """Rotation of the polytope. Only simple rotations are implemented at this time.
 
@@ -501,7 +522,8 @@ def rotate(polyreg, u, v, theta=None, R=None):
 
     # transform bbox and cheby
     if polyreg.bbox is not None:
-        polyreg.bbox = (np.inner(polyreg.bbox[0].T, R).T, np.inner(polyreg.bbox[1].T, R).T)
+        polyreg.bbox = (np.inner(polyreg.bbox[0].T, R).T,
+                        np.inner(polyreg.bbox[1].T, R).T)
     if polyreg._chebXc is not None:
         polyreg._chebXc = np.inner(polyreg._chebXc, R)
 
@@ -701,6 +723,11 @@ class Region(object):
         """Rotates this Region.
         """
         rotate(self, u, v, theta)
+
+    def translate(self, d):
+        """Translate this Region.
+        """
+        translate(self, d)
 
     def __copy__(self):
         """Return copy of this Region."""

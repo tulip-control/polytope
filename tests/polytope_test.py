@@ -110,7 +110,6 @@ def polytope_rotation_test():
     assert(not p == p1)
     assert_allclose(p.chebXc, [-0.5, 0.5])
 
-
     p.rotate(0, 1, np.pi/2)
     assert(p == p3)
     assert_allclose(p.chebXc, [-0.5, -0.5])
@@ -122,6 +121,30 @@ def polytope_rotation_test():
     p.rotate(0, 1, np.pi/2)
     assert(p == p1)
     assert_allclose(p.chebXc, [0.5, 0.5])
+
+
+def region_translate_test():
+    p = pc.Region([pc.Polytope(A, b)])
+    p1 = pc.Region([pc.Polytope(A, b)])
+    p2 = pc.Region([pc.Polytope(Ab2[:, 0:2], Ab2[:, 2])])
+
+    p.translate([-1, 0])
+    assert(p == p2)
+    assert(not p == p1)
+    p.translate([1, 0])
+    assert(p == p1)
+
+
+def polytope_translate_test():
+    p = pc.Polytope(A, b)
+    p1 = pc.Polytope(A, b)
+    p2 = pc.Polytope(Ab2[:, 0:2], Ab2[:, 2])
+
+    p.translate([-1, 0])
+    assert(p == p2)
+    assert(not p == p1)
+    p.translate([1, 0])
+    assert(p == p1)
 
 if __name__ == '__main__':
     comparison_test()
