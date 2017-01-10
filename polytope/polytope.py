@@ -1930,7 +1930,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     H = A.copy()
     K = B.copy()
     m = np.shape(A)[0]
-    mi = np.zeros([N,1], dtype=int)
+    mi = np.zeros(N, dtype=int)
 
     # Finding constraints that are not in original polytope
     HK = np.hstack([H,np.array([K]).T])
