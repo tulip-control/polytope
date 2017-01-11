@@ -2192,8 +2192,8 @@ def lpsolve(c, G, h):
     result = dict()
     if lp_solver == 'glpk':
         sol = solvers.lp(
-            matrix(c), matrix(G), matrix(h),
-            None, None, 'glpk')
+            c=matrix(c), G=matrix(G), h=matrix(h),
+            A=None, b=None, solver='glpk')
         if sol['status'] == 'optimal':
             result['status'] = 0
         elif sol['status'] == 'primal infeasible':
