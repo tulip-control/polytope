@@ -291,12 +291,13 @@ class Polytope(object):
         return reduce(Polytope(iA, ib), abs_tol=abs_tol)
 
     def translate(self, d):
-        """Translates the Polytope by a given vector.
+        """Translate the Polytope by a given vector.
         """
         translate(self, d)
 
     def rotate(self, u, v, theta=None):
-        """Rotates this Polytope.
+        """Rotate the polytope. Only simple rotations are implemented at this
+        time.
         """
         rotate(self, u, v, theta)
 
@@ -453,7 +454,8 @@ class Polytope(object):
 
 
 def translate(polyreg, d):
-    """Translates a polytope by a vector.
+    """Translate a polyreg by a vector in place. Does not return a copy.
+
     @type polyreg: L{Polytope} or L{Region}
     """
 
@@ -474,13 +476,22 @@ def translate(polyreg, d):
 
 
 def rotate(polyreg, u, v, theta=None, R=None):
-    """Rotation of the polytope. Only simple rotations are implemented at this time.
+    """Rotate this polyreg in place. Does not return a copy.
 
-    Simple rotations, by definition, occur only in 2 of the N dimensions; the other N-2 dimensions are invariant with the rotation. Any rotations thus require specification of the plane(s) of rotation. This function has two different ways to specify this plane:
+    Simple rotations, by definition, occur only in 2 of the N dimensions; the
+    other N-2 dimensions are invariant with the rotation. Any rotations thus
+    require specification of the plane(s) of rotation. This function has two
+    different ways to specify this plane:
 
-    (1) Providing the indicies [0, N) of the orthogonal basis vectors which define the plane of rotation and an angle of rotation (theta) between them. This allows easy construction of the Givens rotation matrix. The right hand rule defines the positive rotation direction.
+    (1) Providing the indicies [0, N) of the orthogonal basis vectors which
+    define the plane of rotation and an angle of rotation (theta) between them.
+    This allows easy construction of the Givens rotation matrix. The right hand
+    rule defines the positive rotation direction.
 
-    (2) Providing two unit vectors with no angle. The two vectors are contained within a plane and the degree of rotation is the angle which moves the first vector into alignment with the second vector.
+    (2) Providing two unit vectors with no angle. The two vectors are contained
+    within a plane and the degree of rotation is the angle which moves the
+    first vector into alignment with the second vector. NOTE: This method is
+    not implemented at this time.
 
     (3) Providing an NxN rotation matrix.
 
@@ -491,13 +502,17 @@ def rotate(polyreg, u, v, theta=None, R=None):
     """
     # determine the rotation matrix based on inputs
     if R is not None:
+        logger.info("rotate via predefined matrix.")
         pass  # rotation matrix is predefined
     elif theta is None:
-        logger.debug("Rotation from 2 vectors.")
-        # TODO: assert vectors are non-zero and non-parallel aka exterior product is non-zero
-        raise NotImplementedError
+        logger.info("rotate via 2 vectors.")
+        # TODO: Assert vectors are non-zero and non-parallel aka exterior
+        # product is non-zero; then autocalculate the complex rotation required
+        # to align the first vector with the second.
+        raise NotImplementedError("Rotation via 2 vectors is not currently "
+                                  "available. See source for TODO.")
     else:
-        logger.debug("Rotation from indicies and angle.")
+        logger.info("rotate via indicies and angle.")
         if u == v:
             raise ValueError("Must provide two unique basis vectors.")
         R = np.identity(polyreg.dim)
@@ -720,12 +735,13 @@ class Region(object):
         return P
 
     def rotate(self, u, v, theta=None):
-        """Rotates this Region.
+        """Rotate this Region. Only simple rotations are implemented at this
+        time.
         """
         rotate(self, u, v, theta)
 
     def translate(self, d):
-        """Translate this Region.
+        """Translate this Region by a given vector.
         """
         translate(self, d)
 
