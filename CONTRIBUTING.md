@@ -1,0 +1,1 @@
+This project is a derivative of `tulip-control/tulip-control`. As such, the maintainers expect contributions to `polytope` to follow the same procedures and style described in the [development guide](https://tulip-control.sourceforge.io/doc/dev_guide.html) for `tulip-control`.
