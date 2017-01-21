@@ -36,8 +36,13 @@ install:
 
 script:
   - ./run_tests.py --outofsource
+  - curl -sO http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-4.5.4.tar.gz
+    && echo '698b5c455645bb1ad29a185f0d52025f3bd7cb7261e182c8878b0eb60567a714  SuiteSparse-4.5.4.tar.gz'
+    | shasum -a 256 -c -
+  - tar -xzf SuiteSparse-4.5.4.tar.gz
+  - export CVXOPT_SUITESPARSE_SRC_DIR=`pwd`/SuiteSparse
   - export CVXOPT_BUILD_GLPK=1
-  - pip install cvxopt==1.1.8
+  - pip install cvxopt
   - python -c "import cvxopt.glpk"
   - ./run_tests.py --outofsource
 
