@@ -290,16 +290,20 @@ class Polytope(object):
 
         return reduce(Polytope(iA, ib), abs_tol=abs_tol)
 
-    def translate(self, d):
+    def translation(self, d):
         """Translate the Polytope by a given vector.
         """
-        translate(self, d)
+        newpoly = self.copy()
+        _translate(newpoly, d)
+        return newpoly
 
-    def rotate(self, u, v, theta=None):
-        """Rotate the polytope. Only simple rotations are implemented at this
+    def rotation(self, u, v, theta=None):
+        """Rotate the Polytope. Only simple rotations are implemented at this
         time.
         """
-        rotate(self, u, v, theta)
+        newpoly = self.copy()
+        _rotate(newpoly, u, v, theta)
+        return newpoly
 
     def copy(self):
         """Return copy of this Polytope.
@@ -453,7 +457,7 @@ class Polytope(object):
         _plot_text(self, txt, ax, color)
 
 
-def translate(polyreg, d):
+def _translate(polyreg, d):
     """Translate a polyreg by a vector in place. Does not return a copy.
 
     @type polyreg: L{Polytope} or L{Region}
@@ -465,7 +469,7 @@ def translate(polyreg, d):
     else:
         # Translate subregions
         for poly in polyreg.list_poly:
-            translate(poly, d)
+            _translate(poly, d)
 
     # Translate bbox and cheby
     if polyreg.bbox is not None:
@@ -475,7 +479,7 @@ def translate(polyreg, d):
         polyreg._chebXc = polyreg._chebXc + d
 
 
-def rotate(polyreg, u, v, theta=None, R=None):
+def _rotate(polyreg, u, v, theta=None, R=None):
     """Rotate this polyreg in place. Does not return a copy.
 
     Simple rotations, by definition, occur only in 2 of the N dimensions; the
@@ -525,7 +529,7 @@ def rotate(polyreg, u, v, theta=None, R=None):
 
     if isinstance(polyreg, Polytope):
         # Ensure that half space is normalized before rotation
-        n, p = hessian_normal(polyreg.A, polyreg.b)
+        n, p = _hessian_normal(polyreg.A, polyreg.b)
 
         # Rotate the hyperplane normals
         polyreg.A = np.inner(n, R)
@@ -533,7 +537,7 @@ def rotate(polyreg, u, v, theta=None, R=None):
     else:
         # Rotate subregions
         for poly in polyreg.list_poly:
-            rotate(poly, None, None, R=R)
+            _rotate(poly, None, None, R=R)
 
     # transform bbox and cheby
     if polyreg.bbox is not None:
@@ -543,7 +547,7 @@ def rotate(polyreg, u, v, theta=None, R=None):
         polyreg._chebXc = np.inner(polyreg._chebXc, R)
 
 
-def hessian_normal(A, b):
+def _hessian_normal(A, b):
     """Normalizes a half space representation according to hessian normal form.
     """
     L2 = np.reshape(np.linalg.norm(A, axis=1), (-1, 1))  # needs to be column
@@ -734,16 +738,20 @@ class Region(object):
                     P = union(P, isect, check_convex=True)
         return P
 
-    def rotate(self, u, v, theta=None):
+    def rotation(self, u, v, theta=None):
         """Rotate this Region. Only simple rotations are implemented at this
         time.
         """
-        rotate(self, u, v, theta)
+        newreg = self.copy()
+        _rotate(newreg, u, v, theta)
+        return newreg
 
-    def translate(self, d):
+    def translation(self, d):
         """Translate this Region by a given vector.
         """
-        translate(self, d)
+        newreg = self.copy()
+        _translate(newreg, d)
+        return newreg
 
     def __copy__(self):
         """Return copy of this Region."""
