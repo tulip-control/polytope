@@ -101,6 +101,7 @@ ABS_TOL = 1e-7
 #
 # from tulip.graphics import newax
 # import matplotlib as mpl
+# from matplotlib import pyplot as plt
 # from tulip.graphics import dom2vec
 
 
@@ -2177,6 +2178,16 @@ def _plot_text(polyreg, txt, ax, color):
 
     rc, xc = cheby_ball(polyreg)
     ax.text(xc[0], xc[1], txt, color=color)
+
+
+def _newax(ax):
+    """Add subplot to current figure and return axes."""
+    from matplotlib import pyplot as plt
+    if ax is not None:
+        return ax
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    return ax
 
 
 def simplices2polytopes(points, triangles):
