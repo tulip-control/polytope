@@ -101,7 +101,6 @@ ABS_TOL = 1e-7
 #
 # import matplotlib as mpl
 # from matplotlib import pyplot as plt
-# from tulip.graphics import dom2vec
 
 
 class Polytope(object):
@@ -2116,12 +2115,6 @@ def grid_region(polyreg, res=None):
 
     @param res: resolution of grid
     """
-    try:
-        from tulip.graphics import dom2vec
-    except:
-        logger.error('pyvectorized not found')
-        return
-
     bbox = polyreg.bounding_box
     bbox = np.hstack(bbox)
     dom = bbox.flatten()
@@ -2132,7 +2125,14 @@ def grid_region(polyreg, res=None):
         for i in xrange(0, dom.size, 2):
             L = dom[i+1] - dom[i]
             res += [density * L]
-    x = dom2vec(dom, res)
+    linspaces = list()
+    for i, n in enumerate(res):
+        a = dom[2 * i]
+        b = dom[2 * i + 1]
+        r = np.linspace(a, b, n)
+        linspaces.append(r)
+    points = np.meshgrid(*linspaces)
+    x = np.vstack(map(np.ravel, points))
     x = x[:, polyreg.are_inside(x)]
 
     return (x, res)
