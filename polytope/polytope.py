@@ -413,15 +413,12 @@ class Polytope(object):
         poly = _get_patch(
             self, facecolor=color, hatch=hatch,
             alpha=alpha, linestyle='dashed', linewidth=3,
-            edgecolor='black'
-        )
+            edgecolor='black')
         ax.add_patch(poly)
-
         return ax
 
     def text(self, txt, ax=None, color='black'):
-        """Plot text at chebyshev center.
-        """
+        """Plot text at chebyshev center."""
         _plot_text(self, txt, ax, color)
 
 
@@ -650,7 +647,7 @@ class Region(object):
 
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
-        #TODO optional arg for text label
+        # TODO optional arg for text label
         if self.dim != 2:
             raise Exception("Cannot plot region of dimension larger than 2")
         if not is_fulldim(self):
@@ -662,7 +659,6 @@ class Region(object):
         for poly2 in self.list_poly:
             # TODO hatched polytopes in same region
             poly2.plot(ax, color=color, hatch=hatch, alpha=alpha)
-
         return ax
 
     def text(self, txt, ax=None, color='black'):
@@ -2107,18 +2103,18 @@ def grid_region(polyreg, res=None):
     """Grid within polytope or region.
 
     @type polyreg: L{Polytope} or L{Region}
-
     @param res: resolution of grid
     """
+    # grid corners
     bbox = polyreg.bounding_box
     bbox = np.hstack(bbox)
     dom = bbox.flatten()
-
+    # grid resolution
     density = 8
     if res is None:
         res = list()
         for i in xrange(0, dom.size, 2):
-            L = dom[i+1] - dom[i]
+            L = dom[i + 1] - dom[i]
             res += [density * L]
     linspaces = list()
     for i, n in enumerate(res):
@@ -2129,7 +2125,6 @@ def grid_region(polyreg, res=None):
     points = np.meshgrid(*linspaces)
     x = np.vstack(map(np.ravel, points))
     x = x[:, polyreg.are_inside(x)]
-
     return (x, res)
 
 

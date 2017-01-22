@@ -48,9 +48,8 @@ logger = logging.getLogger(__name__)
 
 
 def plot_partition(
-    ppp, trans=None, ppp2trans=None, only_adjacent=False,
-    ax=None, plot_numbers=True, color_seed=None
-):
+        ppp, trans=None, ppp2trans=None, only_adjacent=False,
+        ax=None, plot_numbers=True, color_seed=None):
     """Plot partition with arrows from digraph.
 
     For filtering edges based on label use L{plot_ts_on_partition}.
@@ -85,10 +84,8 @@ def plot_partition(
             msg += 'so ppp2trans required to define state order,\n'
             msg += 'used when converting the graph to an adjacency matrix.'
             raise Exception(msg)
-
         trans = nx.to_numpy_matrix(trans, nodelist=ppp2trans)
         trans = np.array(trans)
-
     l,u = ppp.domain.bounding_box
     arr_size = (u[0,0]-l[0,0])/50.0
     ax = pc._newax()
@@ -100,16 +97,13 @@ def plot_partition(
         trans = 'none'
     else:
         ax.set_title('Adjacency from given Transitions')
-
     ax.set_xlim(l[0,0],u[0,0])
     ax.set_ylim(l[1,0],u[1,0])
-
     # repeatable coloring ?
     if color_seed is not None:
         prng = np.random.RandomState(color_seed)
     else:
         prng = np.random.RandomState()
-
     # plot polytope patches
     for i, reg in enumerate(ppp.regions):
         # select random color,
@@ -120,12 +114,10 @@ def plot_partition(
         reg.plot(color=col, ax=ax)
         if plot_numbers:
             reg.text(str(i), ax, color='red')
-
     # not show trans ?
     if trans is 'none':
         mpl.pyplot.show()
         return ax
-
     # plot transition arrows between patches
     rows, cols = np.nonzero(trans)
     for i, j in zip(rows, cols):
@@ -135,9 +127,7 @@ def plot_partition(
                 continue
 
         plot_transition_arrow(ppp.regions[i], ppp.regions[j], ax, arr_size)
-
     mpl.pyplot.show()
-
     return ax
 
 
@@ -154,17 +144,13 @@ def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
     # brevity
     p0 = polyreg0
     p1 = polyreg1
-
     rc0, xc0 = pc.cheby_ball(p0)
     rc1, xc1 = pc.cheby_ball(p1)
-
     if np.sum(np.abs(xc1-xc0)) < 1e-7:
         return None
-
     if arr_size is None:
         l,u = polyreg1.bounding_box
         arr_size = (u[0, 0] - l[0, 0]) / 25.0
-
     #TODO: 3d
     x = xc0[0]
     y = xc0[1]
@@ -172,8 +158,6 @@ def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
     dy = xc1[1] - xc0[1]
     arrow = patches.Arrow(
         float(x), float(y), float(dx), float(dy),
-        width=arr_size, color='black'
-    )
+        width=arr_size, color='black')
     ax.add_patch(arrow)
-
     return arrow
