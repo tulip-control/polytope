@@ -2115,7 +2115,7 @@ def grid_region(polyreg, res=None):
     dom = bbox.flatten()
 
     density = 8
-    if not res:
+    if res is None:
         res = []
         for i in xrange(0, dom.size, 2):
             L = dom[i+1] - dom[i]
