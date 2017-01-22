@@ -402,17 +402,14 @@ class Polytope(object):
 
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
+        if self.dim != 2:
+            raise Exception("Cannot plot polytopes of dimension larger than 2")
         if color is None:
             color = np.random.rand(3)
         ax = _newax(ax)
         if not is_fulldim(self):
             logger.error("Cannot plot empty polytope")
             return ax
-
-        if self.dim != 2:
-            logger.error("Cannot plot polytopes of dimension larger than 2")
-            return ax
-
         poly = _get_patch(
             self, facecolor=color, hatch=hatch,
             alpha=alpha, linestyle='dashed', linewidth=3,
@@ -656,12 +653,10 @@ class Region(object):
         if color is None:
             color = np.random.rand(3)
         #TODO optional arg for text label
+        if self.dim != 2:
+            raise Exception("Cannot plot region of dimension larger than 2")
         if not is_fulldim(self):
             logger.error("Cannot plot empty region")
-            return
-
-        if self.dim != 2:
-            logger.error("Cannot plot region of dimension larger than 2")
             return
         ax = _newax(ax)
         for poly2 in self.list_poly:
