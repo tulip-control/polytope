@@ -647,6 +647,7 @@ class Region(object):
 
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
+        """Plot a `polytope` on axes `ax`."""
         # TODO optional arg for text label
         if self.dim != 2:
             raise Exception("Cannot plot region of dimension larger than 2")
@@ -2100,7 +2101,7 @@ def _get_patch(poly1, **kwargs):
 
 
 def grid_region(polyreg, res=None):
-    """Grid within polytope or region.
+    """Return bounding box grid points within `polyreg`.
 
     @type polyreg: L{Polytope} or L{Region}
     @param res: resolution of grid
