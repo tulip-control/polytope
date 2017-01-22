@@ -2119,12 +2119,7 @@ def _get_patch(poly1, **kwargs):
     @param kwargs: any keyword arguments valid for
         matplotlib.patches.Polygon
     """
-    try:
-        import matplotlib as mpl
-    except:
-        logger.warn('matplotlib not found, no plotting.')
-        return
-
+    import matplotlib as mpl
     V = extreme(poly1)
     rc, xc = cheby_ball(poly1)
     x = V[:, 1] - xc[1]

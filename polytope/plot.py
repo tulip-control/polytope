@@ -78,8 +78,8 @@ def plot_partition(
     @param ppp2trans: order mapping ppp indices to trans states
     @type ppp2trans: list of trans states
     """
+    import matplotlib as mpl
     try:
-        import matplotlib as mpl
         from tulip.graphics import newax
     except:
         logger.error('failed to import matplotlib')
@@ -161,12 +161,7 @@ def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
 
     @return: arrow object
     """
-    try:
-        from matplotlib import patches
-    except:
-        logger.error('failed to import matplotlib')
-        return
-
+    from matplotlib import patches
     # brevity
     p0 = polyreg0
     p1 = polyreg1
