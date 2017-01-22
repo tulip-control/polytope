@@ -2116,7 +2116,7 @@ def grid_region(polyreg, res=None):
 
     density = 8
     if res is None:
-        res = []
+        res = list()
         for i in xrange(0, dom.size, 2):
             L = dom[i+1] - dom[i]
             res += [density * L]
