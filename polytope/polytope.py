@@ -99,7 +99,6 @@ ABS_TOL = 1e-7
 
 # inline imports:
 #
-# from tulip.graphics import newax
 # import matplotlib as mpl
 # from matplotlib import pyplot as plt
 # from tulip.graphics import dom2vec
@@ -404,22 +403,9 @@ class Polytope(object):
 
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
-        try:
-            from tulip.graphics import newax
-        except Exception as e:
-            logger.error(e)
-            newax = None
-
         if color is None:
             color = np.random.rand(3)
-
-        if newax is None:
-            logger.warn('newax not imported. No Polytope plotting.')
-            return
-
-        if ax is None:
-            ax, fig = newax()
-
+        ax = _newax(ax)
         if not is_fulldim(self):
             logger.error("Cannot plot empty polytope")
             return ax
@@ -668,19 +654,8 @@ class Region(object):
 
     def plot(self, ax=None, color=None,
              hatch=None, alpha=1.0):
-        try:
-            from tulip.graphics import newax
-        except Exception as e:
-            logger.error(e)
-            newax = None
-
         if color is None:
             color = np.random.rand(3)
-
-        if newax is None:
-            logger.warn('pyvectorized not found. No plotting.')
-            return None
-
         #TODO optional arg for text label
         if not is_fulldim(self):
             logger.error("Cannot plot empty region")
@@ -689,10 +664,7 @@ class Region(object):
         if self.dim != 2:
             logger.error("Cannot plot region of dimension larger than 2")
             return
-
-        if ax is None:
-            ax, fig = newax()
-
+        ax = _newax(ax)
         for poly2 in self.list_poly:
             # TODO hatched polytopes in same region
             poly2.plot(ax, color=color, hatch=hatch, alpha=alpha)
@@ -2167,15 +2139,8 @@ def grid_region(polyreg, res=None):
 
 
 def _plot_text(polyreg, txt, ax, color):
-    try:
-        from tulip.graphics import newax
-    except:
-        logger.error('pyvectorized not found')
-        return
-
-    if ax is None:
-        ax, fig = newax()
-
+    """Annotate center of Chebyshev ball with `txt`."""
+    ax = _newax(ax)
     rc, xc = cheby_ball(polyreg)
     ax.text(xc[0], xc[1], txt, color=color)
 
