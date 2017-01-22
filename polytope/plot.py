@@ -42,7 +42,6 @@ import polytope as pc
 # inline imports:
 #
 # import matplotlib as mpl
-# from tulip.graphics import newax
 
 
 logger = logging.getLogger(__name__)
@@ -79,12 +78,6 @@ def plot_partition(
     @type ppp2trans: list of trans states
     """
     import matplotlib as mpl
-    try:
-        from tulip.graphics import newax
-    except:
-        logger.error('failed to import matplotlib')
-        return
-
     # needs to be converted to adjacency matrix ?
     if isinstance(trans, nx.MultiDiGraph):
         if trans is not None and ppp2trans is None:
@@ -98,11 +91,7 @@ def plot_partition(
 
     l,u = ppp.domain.bounding_box
     arr_size = (u[0,0]-l[0,0])/50.0
-
-    # new figure ?
-    if ax is None:
-        ax, fig = newax()
-
+    ax = pc._newax()
     # no trans given: use partition's
     if trans is True and ppp.adj is not None:
         ax.set_title('Adjacency from Partition')
