@@ -409,7 +409,7 @@ class Polytope(object):
         ax = _newax(ax)
         if not is_fulldim(self):
             logger.error("Cannot plot empty polytope")
-            return ax
+            return None
         poly = _get_patch(
             self, facecolor=color, hatch=hatch,
             alpha=alpha, linestyle='dashed', linewidth=3,
@@ -657,7 +657,7 @@ class Region(object):
             raise Exception("Cannot plot region of dimension larger than 2")
         if not is_fulldim(self):
             logger.error("Cannot plot empty region")
-            return
+            return None
         ax = _newax(ax)
         for poly2 in self.list_poly:
             # TODO hatched polytopes in same region
