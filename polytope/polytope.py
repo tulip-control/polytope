@@ -2360,7 +2360,7 @@ def lpsolve(c, G, h):
             result['status'] = 3
         else:
             result['status'] = 4
-        result['x'] = sol['x']
+        result['x'] = np.squeeze(sol['x'])
         result['fun'] = sol['primal objective']
     elif lp_solver == 'scipy':
         sol = optimize.linprog(
