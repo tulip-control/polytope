@@ -479,53 +479,72 @@ def _translate(polyreg, d):
         polyreg._chebXc = polyreg._chebXc + d
 
 
-def _rotate(polyreg, u, v, theta=None, R=None):
-    """Rotate this polyreg in place. Does not return a copy.
+def _rotate(polyreg, u=None, v=None, theta=None, R=None):
+    """Rotate this polyreg in place. Return the rotation matrix.
 
     Simple rotations, by definition, occur only in 2 of the N dimensions; the
     other N-2 dimensions are invariant with the rotation. Any rotations thus
-    require specification of the plane(s) of rotation. This function has two
+    require specification of the plane(s) of rotation. This function has three
     different ways to specify this plane:
 
-    (1) Providing the indicies [0, N) of the orthogonal basis vectors which
+    (1) Providing the indices [0, N) of the orthogonal basis vectors which
     define the plane of rotation and an angle of rotation (theta) between them.
     This allows easy construction of the Givens rotation matrix. The right hand
     rule defines the positive rotation direction.
 
     (2) Providing two unit vectors with no angle. The two vectors are contained
     within a plane and the degree of rotation is the angle which moves the
-    first vector into alignment with the second vector. NOTE: This method is
-    not implemented at this time.
+    first vector, u, into alignment with the second vector, v. NOTE: This
+    method is not implemented at this time.
 
-    (3) Providing an NxN rotation matrix.
+    (3) Providing an NxN rotation matrix, R. WARNING: No checks are made to
+    determine whether the provided transformation matrix is a valid rotation.
 
     Further Reading
     https://en.wikipedia.org/wiki/Plane_of_rotation
 
     @type polyreg: L{Polytope} or L{Region}
+    @param polyreg: The polytope or region to be rotated.
+    @type u: number, 1d array
+    @param u: The first index or vector describing the plane of rotation.
+    @type v: number, 1d array
+    @param u: The second index or vector describing the plane of rotation.
+    @type theta: number
+    @param theta: The radian angle to rotate the polyreg in the plane defined
+                  by u and v.
+    @type R: 2d array
+    @param R: A predefined rotation matrix.
+
+    @rtype: 2d array
+    @return: The matrix used to rotate the polyreg.
     """
     # determine the rotation matrix based on inputs
     if R is not None:
         logger.info("rotate via predefined matrix.")
-        pass  # rotation matrix is predefined
-    elif theta is None:
-        logger.info("rotate via 2 vectors.")
-        # TODO: Assert vectors are non-zero and non-parallel aka exterior
-        # product is non-zero; then autocalculate the complex rotation required
-        # to align the first vector with the second.
-        raise NotImplementedError("Rotation via 2 vectors is not currently "
-                                  "available. See source for TODO.")
+
+    elif u is not None and v is not None:
+        if theta is not None:
+            logger.info("rotate via indices and angle.")
+            if u == v:
+                raise ValueError("Must provide two unique basis vectors.")
+            R = np.identity(polyreg.dim)
+            c = np.cos(theta)
+            s = np.sin(theta)
+            R[u, u] = c
+            R[v, v] = c
+            R[u, v] = -s
+            R[v, u] = s
+
+        else:  # theta is None
+            logger.info("rotate via 2 vectors.")
+            # TODO: Assert vectors are non-zero and non-parallel aka exterior
+            # product is non-zero; then autocalculate the complex rotation
+            # required to align the first vector with the second.
+            raise NotImplementedError("Rotation via 2 vectors is not currently"
+                                      " available. See source for TODO.")
+
     else:
-        logger.info("rotate via indicies and angle.")
-        if u == v:
-            raise ValueError("Must provide two unique basis vectors.")
-        R = np.identity(polyreg.dim)
-        c = np.cos(theta)
-        s = np.sin(theta)
-        R[u, u] = c
-        R[v, v] = c
-        R[u, v] = -s
-        R[v, u] = s
+        raise ValueError("R or (u and v) must be defined.")
 
     if isinstance(polyreg, Polytope):
         # Ensure that half space is normalized before rotation
@@ -545,6 +564,8 @@ def _rotate(polyreg, u, v, theta=None, R=None):
                         np.inner(polyreg.bbox[1].T, R).T)
     if polyreg._chebXc is not None:
         polyreg._chebXc = np.inner(polyreg._chebXc, R)
+
+    return R
 
 
 def _hessian_normal(A, b):
