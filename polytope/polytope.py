@@ -292,6 +292,14 @@ class Polytope(object):
 
     def translation(self, d):
         """Translate the Polytope by a given vector.
+
+        Consult L{polytope.polytope._translate} for implementation details.
+
+        @type d: 1d array
+        @param d: The translation vector.
+
+        @rtype: L{Polytope}
+        @return: A translated copy of the Polytope.
         """
         newpoly = self.copy()
         _translate(newpoly, d)
@@ -300,6 +308,9 @@ class Polytope(object):
     def rotation(self, u, v, theta=None):
         """Rotate the Polytope. Only simple rotations are implemented at this
         time.
+
+        @rtype: L{Polytope}
+        @return: A rotated copy of the Polytope.
         """
         newpoly = self.copy()
         _rotate(newpoly, u, v, theta)
@@ -460,7 +471,11 @@ class Polytope(object):
 def _translate(polyreg, d):
     """Translate a polyreg by a vector in place. Does not return a copy.
 
+    @type d: 1d array
+    @param d: The translation vector.
+
     @type polyreg: L{Polytope} or L{Region}
+    @param polyreg: The polytope or region to be translated.
     """
 
     if isinstance(polyreg, Polytope):
@@ -762,6 +777,9 @@ class Region(object):
     def rotation(self, u, v, theta=None):
         """Rotate this Region. Only simple rotations are implemented at this
         time.
+
+        @rtype: L{Region}
+        @return: A translated copy of the Region.
         """
         newreg = self.copy()
         _rotate(newreg, u, v, theta)
@@ -769,6 +787,14 @@ class Region(object):
 
     def translation(self, d):
         """Translate this Region by a given vector.
+
+        Consult L{polytope.polytope._translate} for implementation details.
+
+        @type d: 1d array
+        @param d: The translation vector.
+
+        @rtype: L{Region}
+        @return: A translated copy of the Region.
         """
         newreg = self.copy()
         _translate(newreg, d)
