@@ -310,7 +310,7 @@ class Polytope(object):
         (1) u and v are the indicies (0, N] of two basis vectors, and theta is
         the angle of rotation.
 
-        (2) u and v are two unit vectors, angle of rotation is the angle
+        (2) u and v are two vectors, angle of rotation is TWICE the angle
         between them from u to v. NOTE: This method is not implemented at this
         time.
 
@@ -518,10 +518,9 @@ def _rotate(polyreg, u=None, v=None, theta=None, R=None):
     between them. This method contructs the Givens rotation matrix. The right
     hand rule defines the positive rotation direction.
 
-    (2) Provide two unit vectors, The two vectors define the plane of rotation
-    and angle of rotation is the angle which moves the first vector, u, into
-    alignment with the second vector, v. NOTE: This method is not implemented
-    at this time.
+    (2) Provide two vectors, the two vectors define the plane of rotation
+    and angle of rotation is TWICE the angle from the first vector, u, to
+    the second vector, v. NOTE: This method is not implemented at this time.
 
     (3) Provide an NxN rotation matrix, R. WARNING: No checks are made to
     determine whether the provided transformation matrix is a valid rotation.
@@ -791,7 +790,7 @@ class Region(object):
         (1) u and v are the indicies (0, N] of two basis vectors, and theta is
         the angle of rotation.
 
-        (2) u and v are two unit vectors, angle of rotation is the angle
+        (2) u and v are two vectors, angle of rotation is TWICE the angle
         between them from u to v. NOTE: This method is not implemented at this
         time.
 
