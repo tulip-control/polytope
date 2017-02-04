@@ -291,26 +291,34 @@ class Polytope(object):
         return reduce(Polytope(iA, ib), abs_tol=abs_tol)
 
     def translation(self, d):
-        """Translate the Polytope by a given vector.
+        """Returns a copy of C{self} translated by the vector C{d}.
 
         Consult L{polytope.polytope._translate} for implementation details.
 
         @type d: 1d array
-        @param d: The translation vector.
-
-        @rtype: L{Polytope}
-        @return: A translated copy of the Polytope.
         """
         newpoly = self.copy()
         _translate(newpoly, d)
         return newpoly
 
     def rotation(self, u, v, theta=None):
-        """Rotate the Polytope. Only simple rotations are implemented at this
+        """Returns a rotated copy of C{self}.
+
+        Use one of two methods that to describe the plane of rotation and the
+        angle of rotation (in radians) with u, v, and theta.
+
+        (1) u and v are the indicies (0, N] of two basis vectors, and theta is
+        the angle of rotation.
+
+        (2) u and v are two unit vectors, angle of rotation is the angle
+        between them from u to v. NOTE: This method is not implemented at this
         time.
 
-        @rtype: L{Polytope}
-        @return: A rotated copy of the Polytope.
+        Consult L{polytope.polytope._rotate} for more detail.
+
+        @type u: number, 1d array
+        @type v: number, 1d array
+        @type theta: number
         """
         newpoly = self.copy()
         _rotate(newpoly, u, v, theta)
@@ -469,13 +477,9 @@ class Polytope(object):
 
 
 def _translate(polyreg, d):
-    """Translate a polyreg by a vector in place. Does not return a copy.
+    """Translate C{polyreg} by the vector C{d}. Modifies C{polyreg} in-place.
 
     @type d: 1d array
-    @param d: The translation vector.
-
-    @type polyreg: L{Polytope} or L{Region}
-    @param polyreg: The polytope or region to be translated.
     """
 
     if isinstance(polyreg, Polytope):
@@ -495,43 +499,47 @@ def _translate(polyreg, d):
 
 
 def _rotate(polyreg, u=None, v=None, theta=None, R=None):
-    """Rotate this polyreg in place. Return the rotation matrix.
+    """Rotate C{polyreg} in-place. Return the rotation matrix.
 
-    Simple rotations, by definition, occur only in 2 of the N dimensions; the
-    other N-2 dimensions are invariant with the rotation. Any rotations thus
-    require specification of the plane(s) of rotation. This function has three
-    different ways to specify this plane:
+    There are two types of rotation: simple and compound. For simple rotations,
+    by definition, all motion can be projected as circles in a single plane;
+    the other N-2 dimensions are invariant. Therefore any simple rotation can
+    be parameterized by its plane of rotation. Compound rotations are the
+    combination of multiple simple rotations; they have more than one plane of
+    rotation. For N > 3 dimensions, a compound rotation may be necessary to map
+    one orientation to another (Euler's rotation theory no longer applies).
 
-    (1) Providing the indices [0, N) of the orthogonal basis vectors which
-    define the plane of rotation and an angle of rotation (theta) between them.
-    This allows easy construction of the Givens rotation matrix. The right hand
-    rule defines the positive rotation direction.
+    Use one of the following three methods to specify rotation. The first two
+    can only express simple rotation, but simple rotations may be applied in a
+    sequence to acheive a compound rotation.
 
-    (2) Providing two unit vectors with no angle. The two vectors are contained
-    within a plane and the degree of rotation is the angle which moves the
-    first vector, u, into alignment with the second vector, v. NOTE: This
-    method is not implemented at this time.
+    (1) Provide the indices [0, N) of the orthogonal basis vectors, u and v,
+    which define the plane of rotation and a radian angle of rotation, theta,
+    between them. This method contructs the Givens rotation matrix. The right
+    hand rule defines the positive rotation direction.
 
-    (3) Providing an NxN rotation matrix, R. WARNING: No checks are made to
+    (2) Provide two unit vectors, The two vectors define the plane of rotation
+    and angle of rotation is the angle which moves the first vector, u, into
+    alignment with the second vector, v. NOTE: This method is not implemented
+    at this time.
+
+    (3) Provide an NxN rotation matrix, R. WARNING: No checks are made to
     determine whether the provided transformation matrix is a valid rotation.
 
     Further Reading
     https://en.wikipedia.org/wiki/Plane_of_rotation
 
-    @type polyreg: L{Polytope} or L{Region}
     @param polyreg: The polytope or region to be rotated.
-    @type u: number, 1d array
+    @type polyreg: L{Polytope} or L{Region}
     @param u: The first index or vector describing the plane of rotation.
-    @type v: number, 1d array
-    @param u: The second index or vector describing the plane of rotation.
-    @type theta: number
+    @type u: number, 1d array
+    @param u: The second index or vector describing the plane of rotation
+    @type v: number, 1d array.
     @param theta: The radian angle to rotate the polyreg in the plane defined
                   by u and v.
-    @type R: 2d array
+    @type theta: number
     @param R: A predefined rotation matrix.
-
-    @rtype: 2d array
-    @return: The matrix used to rotate the polyreg.
+    @type R: 2d array
     """
     # determine the rotation matrix based on inputs
     if R is not None:
@@ -775,26 +783,34 @@ class Region(object):
         return P
 
     def rotation(self, u, v, theta=None):
-        """Rotate this Region. Only simple rotations are implemented at this
+        """Returns a rotated copy of C{self}.
+
+        Use one of two methods that to describe the plane of rotation and the
+        angle of rotation (in radians) with u, v, and theta.
+
+        (1) u and v are the indicies (0, N] of two basis vectors, and theta is
+        the angle of rotation.
+
+        (2) u and v are two unit vectors, angle of rotation is the angle
+        between them from u to v. NOTE: This method is not implemented at this
         time.
 
-        @rtype: L{Region}
-        @return: A translated copy of the Region.
+        Consult L{polytope.polytope._rotate} for more detail.
+
+        @type u: number, 1d array
+        @type v: number, 1d array
+        @type theta: number
         """
         newreg = self.copy()
         _rotate(newreg, u, v, theta)
         return newreg
 
     def translation(self, d):
-        """Translate this Region by a given vector.
+        """Returns a copy of C{self} translated by the vector C{d}.
 
         Consult L{polytope.polytope._translate} for implementation details.
 
         @type d: 1d array
-        @param d: The translation vector.
-
-        @rtype: L{Region}
-        @return: A translated copy of the Region.
         """
         newreg = self.copy()
         _translate(newreg, d)
