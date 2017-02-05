@@ -304,20 +304,16 @@ class Polytope(object):
     def rotation(self, u, v, theta=None):
         """Returns a rotated copy of C{self}.
 
-        Use one of two methods that to describe the plane of rotation and the
-        angle of rotation (in radians) with u, v, and theta.
+        Describe the plane of rotation and the angle of rotation (in radians)
+        with u, v, and theta.
 
-        (1) u and v are the indicies (0, N] of two basis vectors, and theta is
-        the angle of rotation.
-
-        (2) u and v are two vectors, angle of rotation is TWICE the angle
-        between them from u to v. NOTE: This method is not implemented at this
-        time.
+        u and v are the indices 0..N-1 of two of the identity basis
+        vectors, and theta is the angle of rotation.
 
         Consult L{polytope.polytope._rotate} for more detail.
 
-        @type u: number, 1d array
-        @type v: number, 1d array
+        @type u: int
+        @type v: int
         @type theta: number
         """
         newpoly = self.copy()
@@ -507,13 +503,13 @@ def _rotate(polyreg, u=None, v=None, theta=None, R=None):
     be parameterized by its plane of rotation. Compound rotations are the
     combination of multiple simple rotations; they have more than one plane of
     rotation. For N > 3 dimensions, a compound rotation may be necessary to map
-    one orientation to another (Euler's rotation theory no longer applies).
+    one orientation to another (Euler's rotation theorem no longer applies).
 
     Use one of the following three methods to specify rotation. The first two
     can only express simple rotation, but simple rotations may be applied in a
     sequence to acheive a compound rotation.
 
-    (1) Provide the indices [0, N) of the orthogonal basis vectors, u and v,
+    (1) Provide the indices 0..N-1 of the orthogonal basis vectors, u and v,
     which define the plane of rotation and a radian angle of rotation, theta,
     between them. This method contructs the Givens rotation matrix. The right
     hand rule defines the positive rotation direction.
@@ -784,20 +780,16 @@ class Region(object):
     def rotation(self, u, v, theta=None):
         """Returns a rotated copy of C{self}.
 
-        Use one of two methods that to describe the plane of rotation and the
-        angle of rotation (in radians) with u, v, and theta.
+        Describe the plane of rotation and the angle of rotation (in radians)
+        with u, v, and theta.
 
-        (1) u and v are the indicies (0, N] of two basis vectors, and theta is
-        the angle of rotation.
-
-        (2) u and v are two vectors, angle of rotation is TWICE the angle
-        between them from u to v. NOTE: This method is not implemented at this
-        time.
+        u and v are the indices 0..N-1 of two of the identity basis
+        vectors, and theta is the angle of rotation.
 
         Consult L{polytope.polytope._rotate} for more detail.
 
-        @type u: number, 1d array
-        @type v: number, 1d array
+        @type u: int
+        @type v: int
         @type theta: number
         """
         newreg = self.copy()
