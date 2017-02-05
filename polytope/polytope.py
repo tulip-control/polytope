@@ -301,23 +301,23 @@ class Polytope(object):
         _translate(newpoly, d)
         return newpoly
 
-    def rotation(self, u, v, theta=None):
+    def rotation(self, i=None, j=None, theta=None):
         """Returns a rotated copy of C{self}.
 
         Describe the plane of rotation and the angle of rotation (in radians)
-        with u, v, and theta.
+        with i, j, and theta.
 
-        u and v are the indices 0..N-1 of two of the identity basis
+        i and j are the indices 0..N-1 of two of the identity basis
         vectors, and theta is the angle of rotation.
 
         Consult L{polytope.polytope._rotate} for more detail.
 
-        @type u: int
-        @type v: int
+        @type i: int
+        @type j: int
         @type theta: number
         """
         newpoly = self.copy()
-        _rotate(newpoly, u, v, theta)
+        _rotate(newpoly, i=i, j=j, theta=theta)
         return newpoly
 
     def copy(self):
@@ -494,7 +494,7 @@ def _translate(polyreg, d):
         polyreg._chebXc = polyreg._chebXc + d
 
 
-def _rotate(polyreg, u=None, v=None, theta=None, R=None):
+def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
     """Rotate C{polyreg} in-place. Return the rotation matrix.
 
     There are two types of rotation: simple and compound. For simple rotations,
@@ -509,7 +509,7 @@ def _rotate(polyreg, u=None, v=None, theta=None, R=None):
     can only express simple rotation, but simple rotations may be applied in a
     sequence to acheive a compound rotation.
 
-    (1) Provide the indices 0..N-1 of the orthogonal basis vectors, u and v,
+    (1) Provide the indices 0..N-1 of the identity basis vectors, i and j,
     which define the plane of rotation and a radian angle of rotation, theta,
     between them. This method contructs the Givens rotation matrix. The right
     hand rule defines the positive rotation direction.
@@ -526,12 +526,16 @@ def _rotate(polyreg, u=None, v=None, theta=None, R=None):
 
     @param polyreg: The polytope or region to be rotated.
     @type polyreg: L{Polytope} or L{Region}
-    @param u: The first index or vector describing the plane of rotation.
-    @type u: number, 1d array
-    @param u: The second index or vector describing the plane of rotation
-    @type v: number, 1d array.
+    @param i: The first index describing the plane of rotation.
+    @type i: int
+    @param j: The second index describing the plane of rotation.
+    @type j: int
+    @param u: The first vector describing the plane of rotation.
+    @type u: 1d array
+    @param u: The second vector describing the plane of rotation.
+    @type v: 1d array.
     @param theta: The radian angle to rotate the polyreg in the plane defined
-                  by u and v.
+                  by i and j.
     @type theta: number
     @param R: A predefined rotation matrix.
     @type R: 2d array
@@ -540,20 +544,19 @@ def _rotate(polyreg, u=None, v=None, theta=None, R=None):
     if R is not None:
         logger.info("rotate via predefined matrix.")
 
-    elif u is not None and v is not None:
-        if theta is not None:
+    elif i is not None and j is not None and theta is not None:
             logger.info("rotate via indices and angle.")
-            if u == v:
+            if i == j:
                 raise ValueError("Must provide two unique basis vectors.")
             R = np.identity(polyreg.dim)
             c = np.cos(theta)
             s = np.sin(theta)
-            R[u, u] = c
-            R[v, v] = c
-            R[u, v] = -s
-            R[v, u] = s
+            R[i, i] = c
+            R[j, j] = c
+            R[i, j] = -s
+            R[j, i] = s
 
-        else:  # theta is None
+    elif u is not None and v is not None:  # theta is None
             logger.info("rotate via 2 vectors.")
             # TODO: Assert vectors are non-zero and non-parallel aka exterior
             # product is non-zero; then autocalculate the complex rotation
@@ -562,7 +565,8 @@ def _rotate(polyreg, u=None, v=None, theta=None, R=None):
                                       " available. See source for TODO.")
 
     else:
-        raise ValueError("R or (u and v) must be defined.")
+        raise ValueError("R or (i and j and theta) or (u and v) "
+                         "must be defined.")
 
     if isinstance(polyreg, Polytope):
         # Ensure that half space is normalized before rotation
@@ -777,23 +781,23 @@ class Region(object):
                     P = union(P, isect, check_convex=True)
         return P
 
-    def rotation(self, u, v, theta=None):
+    def rotation(self, i=None, j=None, theta=None):
         """Returns a rotated copy of C{self}.
 
         Describe the plane of rotation and the angle of rotation (in radians)
-        with u, v, and theta.
+        with i, j, and theta.
 
-        u and v are the indices 0..N-1 of two of the identity basis
+        i and j are the indices 0..N-1 of two of the identity basis
         vectors, and theta is the angle of rotation.
 
         Consult L{polytope.polytope._rotate} for more detail.
 
-        @type u: int
-        @type v: int
+        @type i: int
+        @type j: int
         @type theta: number
         """
         newreg = self.copy()
-        _rotate(newreg, u, v, theta)
+        _rotate(newreg, i=i, j=j, theta=theta)
         return newreg
 
     def translation(self, d):
