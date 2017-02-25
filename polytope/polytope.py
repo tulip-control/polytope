@@ -2327,7 +2327,7 @@ def _plot_text(polyreg, txt, ax, color):
     ax.text(xc[0], xc[1], txt, color=color)
 
 
-def _newax(ax):
+def _newax(ax=None):
     """Add subplot to current figure and return axes."""
     from matplotlib import pyplot as plt
     if ax is not None:
