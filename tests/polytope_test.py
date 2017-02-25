@@ -12,139 +12,144 @@ log.setLevel(logging.INFO)
 log.addHandler(logging.StreamHandler())
 
 
-# unit square in first quadrant
-Ab = np.array([[0.0, 1.0, 1.0],
-               [0.0, -1.0, 0.0],
-               [1.0, 0.0, 1.0],
-               [-1.0, 0.0, 0.0]])
+class operations_test:
+    def setUp(self):
+        # unit square in first quadrant
+        self.Ab = np.array([[0.0, 1.0, 1.0],
+                            [0.0, -1.0, 0.0],
+                            [1.0, 0.0, 1.0],
+                            [-1.0, 0.0, 0.0]])
 
-# unit square in second quadrant
-Ab2 = np.array([[-1.0, 0.0, 1.0],
-               [1.0, 0.0, 0.0],
-               [0.0, 1.0, 1.0],
-               [0.0, -1.0, 0.0]])
+        # unit square in second quadrant
+        self.Ab2 = np.array([[-1.0, 0.0, 1.0],
+                             [1.0, 0.0, 0.0],
+                             [0.0, 1.0, 1.0],
+                             [0.0, -1.0, 0.0]])
 
-# unit square in third quadrant
-Ab3 = np.array([[0.0, 1.0, 0.0],
-               [0.0, -1.0, 1.0],
-               [1.0, 0.0, 0.0],
-               [-1.0, 0.0, 1.0]])
+        # unit square in third quadrant
+        self.Ab3 = np.array([[0.0, 1.0, 0.0],
+                             [0.0, -1.0, 1.0],
+                             [1.0, 0.0, 0.0],
+                             [-1.0, 0.0, 1.0]])
 
-# unit square in fourth quadrant
-Ab4 = np.array([[0.0, 1.0, 0.0],
-               [0.0, -1.0, 1.0],
-               [1.0, 0.0, 1.0],
-               [-1.0, 0.0, 0.0]])
+        # unit square in fourth quadrant
+        self.Ab4 = np.array([[0.0, 1.0, 0.0],
+                             [0.0, -1.0, 1.0],
+                             [1.0, 0.0, 1.0],
+                             [-1.0, 0.0, 0.0]])
 
-A = Ab[:, 0:2]
-b = Ab[:, 2]
+        self.A = self.Ab[:, 0:2]
+        self.b = self.Ab[:, 2]
 
-
-def comparison_test():
-    p = pc.Polytope(A, b)
-    p2 = pc.Polytope(A, 2*b)
-
-    assert(p <= p2)
-    assert(not p2 <= p)
-    assert(not p2 == p)
-
-    r = pc.Region([p])
-    r2 = pc.Region([p2])
-
-    assert(r <= r2)
-    assert(not r2 <= r)
-    assert(not r2 == r)
-
-    # test H-rep -> V-rep -> H-rep
-    v = pc.extreme(p)
-    p3 = pc.qhull(v)
-    assert(p3 == p)
-
-    # test V-rep -> H-rep with d+1 points
-    p4 = pc.qhull(np.array([[0, 0], [1, 0], [0, 1]]))
-    assert(p4 == pc.Polytope(
-        np.array([[1, 1], [0, -1], [0, -1]]),
-        np.array([1, 0, 0])))
+    def tearDown(self):
+        pass
 
 
-def region_rotation_test():
-    p = pc.Region([pc.Polytope(A, b)])
-    p1 = pc.Region([pc.Polytope(A, b)])
-    p2 = pc.Region([pc.Polytope(Ab2[:, 0:2], Ab2[:, 2])])
-    p3 = pc.Region([pc.Polytope(Ab3[:, 0:2], Ab3[:, 2])])
-    p4 = pc.Region([pc.Polytope(Ab4[:, 0:2], Ab4[:, 2])])
+    def comparison_test(self):
+        p = pc.Polytope(self.A, self.b)
+        p2 = pc.Polytope(self.A, 2*self.b)
 
-    p = p.rotation(0, 1, np.pi/2)
-    print(p.bounding_box)
-    assert(p == p2)
-    assert(not p == p3)
-    assert(not p == p4)
-    assert(not p == p1)
-    assert_allclose(p.chebXc, [-0.5, 0.5])
+        assert(p <= p2)
+        assert(not p2 <= p)
+        assert(not p2 == p)
 
-    p = p.rotation(0, 1, np.pi/2)
-    assert(p == p3)
-    assert_allclose(p.chebXc, [-0.5, -0.5])
+        r = pc.Region([p])
+        r2 = pc.Region([p2])
 
-    p = p.rotation(0, 1, np.pi/2)
-    assert(p == p4)
-    assert_allclose(p.chebXc, [0.5, -0.5])
+        assert(r <= r2)
+        assert(not r2 <= r)
+        assert(not r2 == r)
 
-    p = p.rotation(0, 1, np.pi/2)
-    assert(p == p1)
-    assert_allclose(p.chebXc, [0.5, 0.5])
+        # test H-rep -> V-rep -> H-rep
+        v = pc.extreme(p)
+        p3 = pc.qhull(v)
+        assert(p3 == p)
 
-
-def polytope_rotation_test():
-    p = pc.Polytope(A, b)
-    p1 = pc.Polytope(A, b)
-    p2 = pc.Polytope(Ab2[:, 0:2], Ab2[:, 2])
-    p3 = pc.Polytope(Ab3[:, 0:2], Ab3[:, 2])
-    p4 = pc.Polytope(Ab4[:, 0:2], Ab4[:, 2])
-
-    p = p.rotation(0, 1, np.pi/2)
-    print(p.bounding_box)
-    assert(p == p2)
-    assert(not p == p3)
-    assert(not p == p4)
-    assert(not p == p1)
-    assert_allclose(p.chebXc, [-0.5, 0.5])
-
-    p = p.rotation(0, 1, np.pi/2)
-    assert(p == p3)
-    assert_allclose(p.chebXc, [-0.5, -0.5])
-
-    p = p.rotation(0, 1, np.pi/2)
-    assert(p == p4)
-    assert_allclose(p.chebXc, [0.5, -0.5])
-
-    p = p.rotation(0, 1, np.pi/2)
-    assert(p == p1)
-    assert_allclose(p.chebXc, [0.5, 0.5])
+        # test V-rep -> H-rep with d+1 points
+        p4 = pc.qhull(np.array([[0, 0], [1, 0], [0, 1]]))
+        assert(p4 == pc.Polytope(
+            np.array([[1, 1], [0, -1], [0, -1]]),
+            np.array([1, 0, 0])))
 
 
-def region_translation_test():
-    p = pc.Region([pc.Polytope(A, b)])
-    p1 = pc.Region([pc.Polytope(A, b)])
-    p2 = pc.Region([pc.Polytope(Ab2[:, 0:2], Ab2[:, 2])])
+    def region_rotation_test(self):
+        p = pc.Region([pc.Polytope(self.A, self.b)])
+        p1 = pc.Region([pc.Polytope(self.A, self.b)])
+        p2 = pc.Region([pc.Polytope(self.Ab2[:, 0:2], self.Ab2[:, 2])])
+        p3 = pc.Region([pc.Polytope(self.Ab3[:, 0:2], self.Ab3[:, 2])])
+        p4 = pc.Region([pc.Polytope(self.Ab4[:, 0:2], self.Ab4[:, 2])])
 
-    p = p.translation([-1, 0])
-    assert(p == p2)
-    assert(not p == p1)
-    p = p.translation([1, 0])
-    assert(p == p1)
+        p = p.rotation(0, 1, np.pi/2)
+        print(p.bounding_box)
+        assert(p == p2)
+        assert(not p == p3)
+        assert(not p == p4)
+        assert(not p == p1)
+        assert_allclose(p.chebXc, [-0.5, 0.5])
+
+        p = p.rotation(0, 1, np.pi/2)
+        assert(p == p3)
+        assert_allclose(p.chebXc, [-0.5, -0.5])
+
+        p = p.rotation(0, 1, np.pi/2)
+        assert(p == p4)
+        assert_allclose(p.chebXc, [0.5, -0.5])
+
+        p = p.rotation(0, 1, np.pi/2)
+        assert(p == p1)
+        assert_allclose(p.chebXc, [0.5, 0.5])
 
 
-def polytope_translation_test():
-    p = pc.Polytope(A, b)
-    p1 = pc.Polytope(A, b)
-    p2 = pc.Polytope(Ab2[:, 0:2], Ab2[:, 2])
+    def polytope_rotation_test(self):
+        p = pc.Polytope(self.A, self.b)
+        p1 = pc.Polytope(self.A, self.b)
+        p2 = pc.Polytope(self.Ab2[:, 0:2], self.Ab2[:, 2])
+        p3 = pc.Polytope(self.Ab3[:, 0:2], self.Ab3[:, 2])
+        p4 = pc.Polytope(self.Ab4[:, 0:2], self.Ab4[:, 2])
 
-    p = p.translation([-1, 0])
-    assert(p == p2)
-    assert(not p == p1)
-    p = p.translation([1, 0])
-    assert(p == p1)
+        p = p.rotation(0, 1, np.pi/2)
+        print(p.bounding_box)
+        assert(p == p2)
+        assert(not p == p3)
+        assert(not p == p4)
+        assert(not p == p1)
+        assert_allclose(p.chebXc, [-0.5, 0.5])
+
+        p = p.rotation(0, 1, np.pi/2)
+        assert(p == p3)
+        assert_allclose(p.chebXc, [-0.5, -0.5])
+
+        p = p.rotation(0, 1, np.pi/2)
+        assert(p == p4)
+        assert_allclose(p.chebXc, [0.5, -0.5])
+
+        p = p.rotation(0, 1, np.pi/2)
+        assert(p == p1)
+        assert_allclose(p.chebXc, [0.5, 0.5])
+
+
+    def region_translation_test(self):
+        p = pc.Region([pc.Polytope(self.A, self.b)])
+        p1 = pc.Region([pc.Polytope(self.A, self.b)])
+        p2 = pc.Region([pc.Polytope(self.Ab2[:, 0:2], self.Ab2[:, 2])])
+
+        p = p.translation([-1, 0])
+        assert(p == p2)
+        assert(not p == p1)
+        p = p.translation([1, 0])
+        assert(p == p1)
+
+
+    def polytope_translation_test(self):
+        p = pc.Polytope(self.A, self.b)
+        p1 = pc.Polytope(self.A, self.b)
+        p2 = pc.Polytope(self.Ab2[:, 0:2], self.Ab2[:, 2])
+
+        p = p.translation([-1, 0])
+        assert(p == p2)
+        assert(not p == p1)
+        p = p.translation([1, 0])
+        assert(p == p1)
 
 if __name__ == '__main__':
     comparison_test()
