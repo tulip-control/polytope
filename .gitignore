@@ -14,3 +14,5 @@ build/
 dist/
 doc/_build/
 /polytope/commit_hash.txt
+.coverage
+/tests/cover/
