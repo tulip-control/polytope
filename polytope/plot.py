@@ -38,7 +38,7 @@ import logging
 import numpy as np
 import networkx as nx
 
-import polytope as pc
+from . import polytope as pc
 # inline imports:
 #
 # import matplotlib as mpl
