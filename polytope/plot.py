@@ -88,7 +88,7 @@ def plot_partition(
         trans = np.array(trans)
     l,u = ppp.domain.bounding_box
     arr_size = (u[0,0]-l[0,0])/50.0
-    ax = pc._newax()
+    ax = pc._newax(ax)
     # no trans given: use partition's
     if trans is True and ppp.adj is not None:
         ax.set_title('Adjacency from Partition')
