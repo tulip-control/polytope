@@ -12,7 +12,7 @@ log.setLevel(logging.INFO)
 log.addHandler(logging.StreamHandler())
 
 
-class operations_test:
+class operations_test(object):
     def setUp(self):
         # unit square in first quadrant
         self.Ab = np.array([[0.0, 1.0, 1.0],
