@@ -9,7 +9,6 @@ import polytope as pc
 
 log = logging.getLogger('polytope.polytope')
 log.setLevel(logging.INFO)
-log.addHandler(logging.StreamHandler())
 
 
 class operations_test(object):
