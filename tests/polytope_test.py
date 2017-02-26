@@ -165,5 +165,21 @@ class operations_test(object):
         assert not pc.is_fulldim(pc.Polytope())
         assert not pc.is_fulldim(pc.Polytope(self.A, self.b - 1e3))
 
+    def region_full_dim_test(self):
+        assert not pc.is_fulldim(pc.Region())
+
+        p1 = pc.Polytope(self.A, self.b)
+        p2 = pc.Polytope(self.Ab2[:, 0:2], self.Ab2[:, 2])
+        reg = pc.Region([p1, p2])
+        assert pc.is_fulldim(reg)
+
+        # Adding empty polytopes should not affect the
+        # full-dimensional status of this region.
+        reg.list_poly.append(pc.Polytope())
+        assert pc.is_fulldim(reg)
+        reg.list_poly.append(pc.Polytope(self.A, self.b - 1e3))
+        assert pc.is_fulldim(reg)
+
+
 if __name__ == '__main__':
     comparison_test()
