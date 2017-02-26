@@ -159,5 +159,11 @@ class operations_test(object):
         assert len(reg) > 0
         assert pc.is_empty(reg)
 
+    def polytope_full_dim_test(self):
+        assert pc.is_fulldim(pc.Polytope(self.A, self.b))
+        assert pc.is_fulldim(pc.Polytope(self.Ab2[:, 0:2], self.Ab2[:, 2]))
+        assert not pc.is_fulldim(pc.Polytope())
+        assert not pc.is_fulldim(pc.Polytope(self.A, self.b - 1e3))
+
 if __name__ == '__main__':
     comparison_test()
