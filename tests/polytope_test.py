@@ -180,6 +180,24 @@ class operations_test(object):
         reg.list_poly.append(pc.Polytope(self.A, self.b - 1e3))
         assert pc.is_fulldim(reg)
 
+    def polytope_intersect_test(self):
+        p1 = pc.Polytope(self.A, self.b)
+        p2 = pc.Polytope(self.Ab2[:, 0:2], self.Ab2[:, 2])
+        p3 = p1.intersect(p2)
+        assert pc.is_fulldim(p1)
+        assert pc.is_fulldim(p2)
+        assert not pc.is_fulldim(p3)
+
+        # p4 is the unit square with center at the origin.
+        p4 = pc.Polytope(np.array([[ 1.,  0.],
+                                   [ 0.,  1.],
+                                   [-1.,  0.],
+                                   [ 0., -1.]]),
+                         np.array([0.5, 0.5, 0.5, 0.5]))
+        p5 = p2.intersect(p4)
+        assert pc.is_fulldim(p4)
+        assert pc.is_fulldim(p5)
+
 
 if __name__ == '__main__':
     comparison_test()
