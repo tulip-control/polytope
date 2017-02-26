@@ -150,5 +150,14 @@ class operations_test(object):
         p = p.translation([1, 0])
         assert(p == p1)
 
+    def region_empty_test(self):
+        # Note that as of commit a037b555758ed9ee736fa7cb324d300b8d622fb4
+        # Region.__init__ deletes empty polytopes from
+        # the given list of polytopes at instantiation.
+        reg = pc.Region()
+        reg.list_poly = [pc.Polytope(), pc.Polytope()]
+        assert len(reg) > 0
+        assert pc.is_empty(reg)
+
 if __name__ == '__main__':
     comparison_test()
