@@ -528,13 +528,7 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
             logger.info("rotate via indices and angle.")
             if i == j:
                 raise ValueError("Must provide two unique basis vectors.")
-            R = np.identity(polyreg.dim)
-            c = np.cos(theta)
-            s = np.sin(theta)
-            R[i, i] = c
-            R[j, j] = c
-            R[i, j] = -s
-            R[j, i] = s
+            R = _Givens_rotation_matrix(i, j, theta, polyreg.dim)
 
     elif u is not None and v is not None:  # theta is None
             logger.info("rotate via 2 vectors.")
@@ -567,6 +561,18 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
     if polyreg._chebXc is not None:
         polyreg._chebXc = np.inner(polyreg._chebXc, R)
 
+    return R
+
+
+def _Givens_rotation_matrix(i, j, theta, N):
+    """Return the Givens rotation matrix for an N-dimensional space."""
+    R = np.identity(N)
+    c = np.cos(theta)
+    s = np.sin(theta)
+    R[i, i] = c
+    R[j, j] = c
+    R[i, j] = -s
+    R[j, i] = s
     return R
 
 
