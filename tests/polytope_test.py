@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from numpy.testing import assert_allclose
 import polytope as pc
-
+from polytope.polytope import _solve_rotation
 
 log = logging.getLogger('polytope.polytope')
 log.setLevel(logging.INFO)
@@ -145,6 +145,79 @@ def polytope_translation_test():
     assert(not p == p1)
     p = p.translation([1, 0])
     assert(p == p1)
+
+
+def solve_rotation_test_090(atol=1e-15):
+    g1 = np.array([0, 1, 1, 0])
+    g2 = np.array([0, 1, 0, 0])
+    R = _solve_rotation(g1, g2)
+
+    e0 = np.array([0, 1, 1, 1])
+    e1 = np.array([0, 0, -1, 0])
+    e2 = np.array([0, 0, 0, 0])
+
+    t0 = np.array([0, 1, -1, 1])
+    t1 = np.array([0, -1, 0, 0])
+    t2 = np.array([0, 0, 0, 0])
+
+    assert_allclose(R @ e0, t0, atol=atol)
+    assert_allclose(R @ e1, t1, atol=atol)
+    assert_allclose(R @ e2, t2, atol=atol)
+
+
+def solve_rotation_test_180(atol=1e-15):
+    g1 = np.array([0, 1, 0, 0])
+    g2 = np.array([0, 0, 1, 0])
+    R = _solve_rotation(g1, g2)
+
+    e0 = np.array([0, 1, 1, 1])
+    e1 = np.array([0, 0, -1, 0])
+    e2 = np.array([0, 0, 0, 0])
+
+    t0 = np.array([0, -1, -1, 1])
+    t1 = np.array([0, 0, 1, 0])
+    t2 = np.array([0, 0, 0, 0])
+
+    assert_allclose(R @ e0, t0, atol=atol)
+    assert_allclose(R @ e1, t1, atol=atol)
+    assert_allclose(R @ e2, t2, atol=atol)
+
+
+def solve_rotation_test_270R(atol=1e-15):
+    g1 = np.array([0, -1, 0, 0])
+    g2 = np.array([0, 1, 1, 0])
+    R = _solve_rotation(g1, g2)
+
+    e0 = np.array([0, 1, 1, 1])
+    e1 = np.array([0, 0, -1, 0])
+    e2 = np.array([0, 0, 0, 0])
+
+    t0 = np.array([0, -1, 1, 1])
+    t1 = np.array([0, 1, 0, 0])
+    t2 = np.array([0, 0, 0, 0])
+
+    assert_allclose(R @ e0, t0, atol=atol)
+    assert_allclose(R @ e1, t1, atol=atol)
+    assert_allclose(R @ e2, t2, atol=atol)
+
+
+def solve_rotation_test_270L(atol=1e-15):
+    g1 = np.array([0, -1, 0, 0])
+    g2 = np.array([0, 1, -1, 0])
+    R = _solve_rotation(g1, g2)
+
+    e0 = np.array([0, 1, 1, 1])
+    e1 = np.array([0, 0, -1, 0])
+    e2 = np.array([0, 0, 0, 0])
+
+    t0 = np.array([0, 1, -1, 1])
+    t1 = np.array([0, -1, 0, 0])
+    t2 = np.array([0, 0, 0, 0])
+
+    assert_allclose(R @ e0, t0, atol=atol)
+    assert_allclose(R @ e1, t1, atol=atol)
+    assert_allclose(R @ e2, t2, atol=atol)
+
 
 if __name__ == '__main__':
     comparison_test()
