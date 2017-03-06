@@ -613,7 +613,7 @@ def _solve_rotation(u, v):
     if uv[0, 0] < 0:
         M[0, 0] = -1
         M[1, 1] = -1
-        uv = uv @ M
+        uv = uv.dot(M)
 
     logger.debug("u is now {}".format(uv[0]))
     logger.debug("v is now {}".format(uv[1]))
@@ -627,8 +627,8 @@ def _solve_rotation(u, v):
                 logger.debug("in the {0},{1} plane rotate {2}".format(c, c-1,
                                                                       theta))
 
-                uv = uv @ Mk
-                M = M @ Mk
+                uv = uv.dot(Mk)
+                M = M.dot(Mk)
 
                 logger.debug("u is now {}".format(uv[0]))
                 logger.debug("v is now {}".format(uv[1]))
@@ -642,7 +642,7 @@ def _solve_rotation(u, v):
     # perform M rotations in reverse order
     M_inverse = M.T
 
-    R = M @ R @ M_inverse
+    R = M.dot(R.dot(M_inverse))
     logger.debug("rotation matrix is\n{}".format(R))
 
     return R
