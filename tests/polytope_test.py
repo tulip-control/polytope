@@ -160,9 +160,9 @@ def solve_rotation_test_090(atol=1e-15):
     t1 = np.array([0, -1, 0, 0])
     t2 = np.array([0, 0, 0, 0])
 
-    assert_allclose(R @ e0, t0, atol=atol)
-    assert_allclose(R @ e1, t1, atol=atol)
-    assert_allclose(R @ e2, t2, atol=atol)
+    assert_allclose(R.dot(e0), t0, atol=atol)
+    assert_allclose(R.dot(e1), t1, atol=atol)
+    assert_allclose(R.dot(e2), t2, atol=atol)
 
 
 def solve_rotation_test_180(atol=1e-15):
@@ -178,9 +178,9 @@ def solve_rotation_test_180(atol=1e-15):
     t1 = np.array([0, 0, 1, 0])
     t2 = np.array([0, 0, 0, 0])
 
-    assert_allclose(R @ e0, t0, atol=atol)
-    assert_allclose(R @ e1, t1, atol=atol)
-    assert_allclose(R @ e2, t2, atol=atol)
+    assert_allclose(R.dot(e0), t0, atol=atol)
+    assert_allclose(R.dot(e1), t1, atol=atol)
+    assert_allclose(R.dot(e2), t2, atol=atol)
 
 
 def solve_rotation_test_270R(atol=1e-15):
@@ -196,9 +196,9 @@ def solve_rotation_test_270R(atol=1e-15):
     t1 = np.array([0, 1, 0, 0])
     t2 = np.array([0, 0, 0, 0])
 
-    assert_allclose(R @ e0, t0, atol=atol)
-    assert_allclose(R @ e1, t1, atol=atol)
-    assert_allclose(R @ e2, t2, atol=atol)
+    assert_allclose(R.dot(e0), t0, atol=atol)
+    assert_allclose(R.dot(e1), t1, atol=atol)
+    assert_allclose(R.dot(e2), t2, atol=atol)
 
 
 def solve_rotation_test_270L(atol=1e-15):
@@ -214,9 +214,9 @@ def solve_rotation_test_270L(atol=1e-15):
     t1 = np.array([0, -1, 0, 0])
     t2 = np.array([0, 0, 0, 0])
 
-    assert_allclose(R @ e0, t0, atol=atol)
-    assert_allclose(R @ e1, t1, atol=atol)
-    assert_allclose(R @ e2, t2, atol=atol)
+    assert_allclose(R.dot(e0), t0, atol=atol)
+    assert_allclose(R.dot(e1), t1, atol=atol)
+    assert_allclose(R.dot(e2), t2, atol=atol)
 
 
 if __name__ == '__main__':
