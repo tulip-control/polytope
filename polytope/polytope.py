@@ -595,11 +595,14 @@ def _solve_rotation(u, v):
     functions. Also, the sign of arctan2 in numpy seems to be the opposite of
     arctan2 in \citea{aguilera2004general}.
 
-    @article{aguilera2004general,
-      title={General n-dimensional rotations},
-      author={Aguilera, Antonio and P{\'e}rez-Aguila, Ricardo},
-      year={2004},
-      publisher={V{\'a}clav Skala-UNION Agency}
+    @inproceedings{aguilera2004general,
+    author = {Aguilera, Antonio and P{\'{e}}rez-Aguila, Ricardo},
+    booktitle = {WSCG' 2004 - 12-th International Conference in Central Europe on Computer Graphics, Visualization and Computer Vision},
+    keywords = {4d visualization and animation,geometric reasoning,topological and geometrical interrogations},
+    pages = {227},
+    title = {{General n-dimensional rotations}},
+    url = {http://hdl.handle.net/11025/6178},
+    year = {2004}
     }
     """
     # TODO: Assert vectors are non-zero and non-parallel aka exterior
