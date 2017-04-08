@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from numpy.testing import assert_allclose
 import polytope as pc
-from polytope.polytope import _solve_rotation
+from polytope.polytope import solve_rotation_ap
 
 log = logging.getLogger('polytope.polytope')
 log.setLevel(logging.INFO)
@@ -150,7 +150,7 @@ def polytope_translation_test():
 def solve_rotation_test_090(atol=1e-15):
     g1 = np.array([0, 1, 1, 0])
     g2 = np.array([0, 1, 0, 0])
-    R = _solve_rotation(g1, g2)
+    R = solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -168,7 +168,7 @@ def solve_rotation_test_090(atol=1e-15):
 def solve_rotation_test_180(atol=1e-15):
     g1 = np.array([0, 1, 0, 0])
     g2 = np.array([0, 0, 1, 0])
-    R = _solve_rotation(g1, g2)
+    R = solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -186,7 +186,7 @@ def solve_rotation_test_180(atol=1e-15):
 def solve_rotation_test_270R(atol=1e-15):
     g1 = np.array([0, -1, 0, 0])
     g2 = np.array([0, 1, 1, 0])
-    R = _solve_rotation(g1, g2)
+    R = solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -204,7 +204,7 @@ def solve_rotation_test_270R(atol=1e-15):
 def solve_rotation_test_270L(atol=1e-15):
     g1 = np.array([0, -1, 0, 0])
     g2 = np.array([0, 1, -1, 0])
-    R = _solve_rotation(g1, g2)
+    R = solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])

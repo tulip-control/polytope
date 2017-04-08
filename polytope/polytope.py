@@ -528,11 +528,11 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
             logger.info("rotate via indices and angle.")
             if i == j:
                 raise ValueError("Must provide two unique basis vectors.")
-            R = _Givens_rotation_matrix(i, j, theta, polyreg.dim)
+            R = givens_rotation_matrix(i, j, theta, polyreg.dim)
 
     elif u is not None and v is not None:  # theta is None
             logger.info("rotate via 2 vectors.")
-            R = _solve_rotation(u, v)
+            R = solve_rotation_ap(u, v)
 
     else:
         raise ValueError("R or (i and j and theta) or (u and v) "
@@ -560,7 +560,7 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
     return R
 
 
-def _Givens_rotation_matrix(i, j, theta, N):
+def givens_rotation_matrix(i, j, theta, N):
     """Return the Givens rotation matrix for an N-dimensional space."""
     R = np.identity(N)
     c = np.cos(theta)
@@ -572,7 +572,7 @@ def _Givens_rotation_matrix(i, j, theta, N):
     return R
 
 
-def _solve_rotation(u, v):
+def solve_rotation_ap(u, v):
     """Return the rotation matrix for the rotation in the plane defined by the
     vectors u and v across TWICE the angle between u and v.
 
@@ -600,7 +600,7 @@ def _solve_rotation(u, v):
     booktitle = {WSCG' 2004 - 12-th International Conference in Central Europe on Computer Graphics, Visualization and Computer Vision},
     keywords = {4d visualization and animation,geometric reasoning,topological and geometrical interrogations},
     pages = {227},
-    title = {{General n-dimensional rotations}},
+    title = {General n-dimensional rotations},
     url = {http://hdl.handle.net/11025/6178},
     year = {2004}
     }
@@ -626,7 +626,7 @@ def _solve_rotation(u, v):
         for c in range(N-1, r, -1):
             if uv[r, c] != 0:  # skip rotations when theta will be zero
                 theta = -np.arctan2(uv[r, c], uv[r, c-1])
-                Mk = _Givens_rotation_matrix(c, c-1, theta, N)
+                Mk = givens_rotation_matrix(c, c-1, theta, N)
                 logger.debug("in the {0},{1} plane rotate {2}".format(c, c-1,
                                                                       theta))
 
@@ -640,7 +640,7 @@ def _solve_rotation(u, v):
     theta = -2 * np.arctan2(uv[1, 1], uv[1, 0])
     logger.debug("computed {} degree rotation".format(180*theta/np.pi))
 
-    R = _Givens_rotation_matrix(1, 0, theta, N)
+    R = givens_rotation_matrix(1, 0, theta, N)
 
     # perform M rotations in reverse order
     M_inverse = M.T
