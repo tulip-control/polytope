@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from numpy.testing import assert_allclose
 import polytope as pc
-from polytope.polytope import solve_rotation_ap
+from polytope.polytope import solve_rotation_ap, givens_rotation_matrix
 
 log = logging.getLogger('polytope.polytope')
 log.setLevel(logging.INFO)
@@ -219,5 +219,39 @@ def solve_rotation_test_270L(atol=1e-15):
     assert_allclose(R.dot(e2), t2, atol=atol)
 
 
+def givens_rotation_test_180(atol=1e-15):
+    R = givens_rotation_matrix(1, 2, np.pi, 4)
+
+    e0 = np.array([0, 1, 1, 1])
+    e1 = np.array([0, 0, -1, 0])
+    e2 = np.array([0, 0, 0, 0])
+
+    t0 = np.array([0, -1, -1, 1])
+    t1 = np.array([0, 0, 1, 0])
+    t2 = np.array([0, 0, 0, 0])
+
+    assert_allclose(R.dot(e0), t0, atol=atol)
+    assert_allclose(R.dot(e1), t1, atol=atol)
+    assert_allclose(R.dot(e2), t2, atol=atol)
+
+
+def givens_rotation_test_270L(atol=1e-15):
+    g1 = np.array([0, -1, 0, 0])
+    g2 = np.array([0, 1, -1, 0])
+    R = givens_rotation_matrix(1, 2, 3*np.pi/2, 4)
+
+    e0 = np.array([0, 1, 1, 1])
+    e1 = np.array([0, 0, -1, 0])
+    e2 = np.array([0, 0, 0, 0])
+
+    t0 = np.array([0, 1, -1, 1])
+    t1 = np.array([0, -1, 0, 0])
+    t2 = np.array([0, 0, 0, 0])
+
+    assert_allclose(R.dot(e0), t0, atol=atol)
+    assert_allclose(R.dot(e1), t1, atol=atol)
+    assert_allclose(R.dot(e2), t2, atol=atol)
+
+
 if __name__ == '__main__':
-    comparison_test()
+    pass
