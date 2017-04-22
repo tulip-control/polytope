@@ -1,6 +1,15 @@
 # Polytope package update history
 
 
+## version 0.1.4 - 6 May 2017
+
+- classes `polytope.Polytope`, `polytope.Region`:
+  - add methods `translation`, `rotation`
+- require `setuptools >= 23.0.0`
+- require `numpy >= 1.7.1`
+- require `scipy >= 0.18.0`
+
+
 ## version 0.1.3 - 31 August 2016
 
 - support Python 3
