@@ -499,13 +499,25 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
     # determine the rotation matrix based on inputs
     if R is not None:
         logger.info("rotate via predefined matrix.")
+        assert i is None, i
+        assert j is None, j
+        assert theta is None, theta
+        assert u is None, u
+        assert v is None, v
     elif i is not None and j is not None and theta is not None:
             logger.info("rotate via indices and angle.")
+            assert R is None, R
+            assert u is None, u
+            assert v is None, v
             if i == j:
                 raise ValueError("Must provide two unique basis vectors.")
             R = givens_rotation_matrix(i, j, theta, polyreg.dim)
-    elif u is not None and v is not None:  # theta is None
+    elif u is not None and v is not None:
             logger.info("rotate via 2 vectors.")
+            assert R is None, R
+            assert i is None, i
+            assert j is None, j
+            assert theta is None, theta
             R = solve_rotation_ap(u, v)
     else:
         raise ValueError("R or (i and j and theta) or (u and v) "
