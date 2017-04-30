@@ -455,7 +455,7 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
 
     There are two types of rotation: simple and compound. For simple rotations,
     by definition, all motion can be projected as circles in a single plane;
-    the other N-2 dimensions are invariant. Therefore any simple rotation can
+    the other N - 2 dimensions are invariant. Therefore any simple rotation can
     be parameterized by its plane of rotation. Compound rotations are the
     combination of multiple simple rotations; they have more than one plane of
     rotation. For N > 3 dimensions, a compound rotation may be necessary to map
@@ -463,7 +463,7 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
 
     Use one of the following three methods to specify rotation. The first two
     can only express simple rotation, but simple rotations may be applied in a
-    sequence to acheive a compound rotation.
+    sequence to achieve a compound rotation.
 
     (1) Provide the indices 0..N-1 of the identity basis vectors, i and j,
     which define the plane of rotation and a radian angle of rotation, theta,
@@ -474,7 +474,7 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
     and angle of rotation is TWICE the angle from the first vector, u, to
     the second vector, v. NOTE: This method is not implemented at this time.
 
-    (3) Provide an NxN rotation matrix, R. WARNING: No checks are made to
+    (3) Provide an N-by-N rotation matrix, R. WARNING: No checks are made to
     determine whether the provided transformation matrix is a valid rotation.
 
     Further Reading
@@ -568,12 +568,10 @@ def solve_rotation_ap(u, v):
     author = {Aguilera, Antonio and P{\'{e}}rez-Aguila, Ricardo},
     booktitle = {WSCG' 2004 - 12-th International Conference in Central
         Europe on Computer Graphics, Visualization and Computer Vision},
-    keywords = {4d visualization and animation,geometric reasoning,topological and geometrical interrogations},
     pages = {227},
     title = {General n-dimensional rotations},
     url = {http://hdl.handle.net/11025/6178},
-    year = {2004}
-    }
+    year = {2004}}
     """
     # TODO: Assert vectors are non-zero and non-parallel aka exterior
     # product is non-zero
