@@ -1576,8 +1576,7 @@ def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
         for i in xrange(len(poly1.list_poly)):
             p = projection(
                 poly1.list_poly[i], dim,
-                solver=solver, abs_tol=abs_tol
-            )
+                solver=solver, abs_tol=abs_tol)
             ret = ret + p
         return ret
     # flat ?
@@ -1661,8 +1660,7 @@ def separate(reg1, abs_tol=ABS_TOL):
         ind_del = []
         connected_reg = Region(
             [reg1.list_poly[ind_left[0]]],
-            []
-        )
+            [])
         ind_del.append(ind_left[0])
         for i in xrange(1, len(ind_left)):
             j = ind_left[i]
@@ -1670,8 +1668,7 @@ def separate(reg1, abs_tol=ABS_TOL):
                 connected_reg = union(
                     connected_reg,
                     reg1.list_poly[j],
-                    check_convex=False
-                )
+                    check_convex=False)
                 ind_del.append(j)
         connected_reg.props = props.copy()
         final.append(connected_reg)
@@ -1717,8 +1714,7 @@ def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
         b2_arr += abs_tol
         dummy = Polytope(
             np.concatenate((A1_arr, A2_arr)),
-            np.concatenate((b1_arr, b2_arr))
-        )
+            np.concatenate((b1_arr, b2_arr)))
         return is_fulldim(dummy, abs_tol=abs_tol / 10)
     else:
         M1 = np.concatenate((poly1.A, np.array([poly1.b]).T), 1).T
@@ -1737,8 +1733,7 @@ def is_adjacent(poly1, poly2, overlap=True, abs_tol=ABS_TOL):
             b2_arr[j] += abs_tol
         dummy = Polytope(
             np.concatenate((A1_arr, A2_arr)),
-            np.concatenate((b1_arr, b2_arr))
-        )
+            np.concatenate((b1_arr, b2_arr)))
         return is_fulldim(dummy, abs_tol=abs_tol / 10)
 
 
@@ -1797,12 +1792,10 @@ def projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
             row += 1
         keep_dim = np.setdiff1d(
             range(poly.A.shape[1]),
-            np.array([i])
-        )
+            np.array([i]))
         poly = Polytope(
             np.dot(C, poly.A)[:, keep_dim],
-            np.dot(C, poly.b)
-        )
+            np.dot(C, poly.b))
         if not is_fulldim(poly):
             return Polytope()
         poly = reduce(poly)
@@ -1871,8 +1864,7 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
                     Vert = np.vstack([Vert, xopt])
             if Vert.shape[0] > len(new_dim):
                 u, s, v = np.linalg.svd(
-                    np.transpose(Vert[:, new_dim] - Vert[0, new_dim])
-                )
+                    np.transpose(Vert[:, new_dim] - Vert[0, new_dim]))
                 rank = np.sum(s > abs_tol*10)
                 if rank == len(new_dim):
                     # If rank full we have found a starting simplex
@@ -1910,8 +1902,7 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
                         k,
                         range(
                             np.shape(P1.A)[1]+1,
-                            np.shape(P1.A)[1] + np.shape(Vert)[1] + 1
-                        )
+                            np.shape(P1.A)[1] + np.shape(Vert)[1] + 1)
                     ]
                 else:
                     # Solving optimization to find new vertex
