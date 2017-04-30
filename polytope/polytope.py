@@ -1411,7 +1411,7 @@ def volume(polyreg):
     @return: Volume of input
     """
     if not is_fulldim(polyreg):
-        return 0.
+        return 0.0
     try:
         if polyreg._volume is not None:
             return polyreg._volume
