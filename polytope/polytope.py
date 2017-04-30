@@ -1975,7 +1975,6 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     if not isinstance(reg, Region):
         raise Exception('reg not a Region, but: '
                         + str(type(reg)))
-    # Pdummy = poly
     N = len(reg)
     if N == 0:
         # Hack if reg happens to be a polytope
