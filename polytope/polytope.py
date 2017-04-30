@@ -528,21 +528,11 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
             logger.info("rotate via indices and angle.")
             if i == j:
                 raise ValueError("Must provide two unique basis vectors.")
-            R = np.identity(polyreg.dim)
-            c = np.cos(theta)
-            s = np.sin(theta)
-            R[i, i] = c
-            R[j, j] = c
-            R[i, j] = -s
-            R[j, i] = s
+            R = givens_rotation_matrix(i, j, theta, polyreg.dim)
 
     elif u is not None and v is not None:  # theta is None
             logger.info("rotate via 2 vectors.")
-            # TODO: Assert vectors are non-zero and non-parallel aka exterior
-            # product is non-zero; then autocalculate the complex rotation
-            # required to align the first vector with the second.
-            raise NotImplementedError("Rotation via 2 vectors is not currently"
-                                      " available. See source for TODO.")
+            R = solve_rotation_ap(u, v)
 
     else:
         raise ValueError("R or (i and j and theta) or (u and v) "
@@ -566,6 +556,97 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
                         np.inner(polyreg.bbox[1].T, R).T)
     if polyreg._chebXc is not None:
         polyreg._chebXc = np.inner(polyreg._chebXc, R)
+
+    return R
+
+
+def givens_rotation_matrix(i, j, theta, N):
+    """Return the Givens rotation matrix for an N-dimensional space."""
+    R = np.identity(N)
+    c = np.cos(theta)
+    s = np.sin(theta)
+    R[i, i] = c
+    R[j, j] = c
+    R[i, j] = -s
+    R[j, i] = s
+    return R
+
+
+def solve_rotation_ap(u, v):
+    """Return the rotation matrix for the rotation in the plane defined by the
+    vectors u and v across TWICE the angle between u and v.
+
+    This algorithm uses the Aguilera-Perez Algorithm \cite{aguilera2004general}
+    to generate the rotation matrix. The algorithm works basically as follows:
+
+    Starting with the Nth component of u, rotate u towards the (N-1)th
+    component until the Nth component is zero. Continue until u is parallel to
+    the 0th basis vector. Next do the same with v until it only has none zero
+    components in the first two dimensions. The result will be something like
+    this:
+
+    [[u0,  0, 0 ... 0],
+     [v0, v1, 0 ... 0]]
+
+    Now it is trivial to align u with v. Apply the inverse rotations to return
+    to the original orientation.
+
+    NOTE: The precision of this method is limited by sin, cos, and arctan
+    functions. Also, the sign of arctan2 in numpy seems to be the opposite of
+    arctan2 in \citea{aguilera2004general}.
+
+    @inproceedings{aguilera2004general,
+    author = {Aguilera, Antonio and P{\'{e}}rez-Aguila, Ricardo},
+    booktitle = {WSCG' 2004 - 12-th International Conference in Central Europe on Computer Graphics, Visualization and Computer Vision},
+    keywords = {4d visualization and animation,geometric reasoning,topological and geometrical interrogations},
+    pages = {227},
+    title = {General n-dimensional rotations},
+    url = {http://hdl.handle.net/11025/6178},
+    year = {2004}
+    }
+    """
+    # TODO: Assert vectors are non-zero and non-parallel aka exterior
+    # product is non-zero
+
+    N = u.size  # the number of dimensions
+    uv = np.vstack([u, v])  # the plane of rotation
+    M = np.identity(N)  # stores the rotations for rorienting reference frame
+
+    # ensure u has positive basis0 component
+    if uv[0, 0] < 0:
+        M[0, 0] = -1
+        M[1, 1] = -1
+        uv = uv.dot(M)
+
+    logger.debug("u is now {}".format(uv[0]))
+    logger.debug("v is now {}".format(uv[1]))
+
+    # align uv plane with the basis01 plane and u with basis0.
+    for r in range(0, 2):
+        for c in range(N-1, r, -1):
+            if uv[r, c] != 0:  # skip rotations when theta will be zero
+                theta = -np.arctan2(uv[r, c], uv[r, c-1])
+                Mk = givens_rotation_matrix(c, c-1, theta, N)
+                logger.debug("in the {0},{1} plane rotate {2}".format(c, c-1,
+                                                                      theta))
+
+                uv = uv.dot(Mk)
+                M = M.dot(Mk)
+
+                logger.debug("u is now {}".format(uv[0]))
+                logger.debug("v is now {}".format(uv[1]))
+
+    # rotate u onto v
+    theta = -2 * np.arctan2(uv[1, 1], uv[1, 0])
+    logger.debug("computed {} degree rotation".format(180*theta/np.pi))
+
+    R = givens_rotation_matrix(1, 0, theta, N)
+
+    # perform M rotations in reverse order
+    M_inverse = M.T
+
+    R = M.dot(R.dot(M_inverse))
+    logger.debug("rotation matrix is\n{}".format(R))
 
     return R
 
