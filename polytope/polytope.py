@@ -472,7 +472,7 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
 
     (2) Provide two vectors, the two vectors define the plane of rotation
     and angle of rotation is TWICE the angle from the first vector, u, to
-    the second vector, v. NOTE: This method is not implemented at this time.
+    the second vector, v.
 
     (3) Provide an N-by-N rotation matrix, R. WARNING: No checks are made to
     determine whether the provided transformation matrix is a valid rotation.
