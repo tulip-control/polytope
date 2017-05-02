@@ -592,8 +592,7 @@ def solve_rotation_ap(u, v):
     to the original orientation.
 
     NOTE: The precision of this method is limited by sin, cos, and arctan
-    functions. Also, the sign of arctan2 in numpy seems to be the opposite of
-    arctan2 in \citea{aguilera2004general}.
+    functions.
 
     @inproceedings{aguilera2004general,
     author = {Aguilera, Antonio and P{\'{e}}rez-Aguila, Ricardo},
@@ -609,43 +608,43 @@ def solve_rotation_ap(u, v):
     # product is non-zero
 
     N = u.size  # the number of dimensions
-    uv = np.vstack([u, v])  # the plane of rotation
+    uv = np.stack([u, v], axis=1)  # the plane of rotation
     M = np.identity(N)  # stores the rotations for rorienting reference frame
 
     # ensure u has positive basis0 component
     if uv[0, 0] < 0:
         M[0, 0] = -1
         M[1, 1] = -1
-        uv = uv.dot(M)
+        uv = M.dot(uv)
 
-    logger.debug("u is now {}".format(uv[0]))
-    logger.debug("v is now {}".format(uv[1]))
+    logger.debug("u is now {}".format(uv[:, 0]))
+    logger.debug("v is now {}".format(uv[:, 1]))
 
     # align uv plane with the basis01 plane and u with basis0.
-    for r in range(0, 2):
-        for c in range(N-1, r, -1):
+    for c in range(0, 2):
+        for r in range(N-1, c, -1):
             if uv[r, c] != 0:  # skip rotations when theta will be zero
-                theta = -np.arctan2(uv[r, c], uv[r, c-1])
-                Mk = givens_rotation_matrix(c, c-1, theta, N)
-                logger.debug("in the {0},{1} plane rotate {2}".format(c, c-1,
+                theta = np.arctan2(uv[r, c], uv[r-1, c])
+                Mk = givens_rotation_matrix(r, r-1, theta, N)
+                logger.debug("in the {0},{1} plane rotate {2}".format(r, r-1,
                                                                       theta))
 
-                uv = uv.dot(Mk)
-                M = M.dot(Mk)
+                uv = Mk.dot(uv)
+                M = Mk.dot(M)
 
-                logger.debug("u is now {}".format(uv[0]))
-                logger.debug("v is now {}".format(uv[1]))
+                logger.debug("u is now {}".format(uv[:, 0]))
+                logger.debug("v is now {}".format(uv[:, 1]))
 
     # rotate u onto v
-    theta = -2 * np.arctan2(uv[1, 1], uv[1, 0])
+    theta = 2 * np.arctan2(uv[1, 1], uv[0, 1])
     logger.debug("computed {} degree rotation".format(180*theta/np.pi))
 
-    R = givens_rotation_matrix(1, 0, theta, N)
+    R = givens_rotation_matrix(0, 1, theta, N)
 
     # perform M rotations in reverse order
     M_inverse = M.T
 
-    R = M.dot(R.dot(M_inverse))
+    R = M_inverse.dot(R.dot(M))
     logger.debug("rotation matrix is\n{}".format(R))
 
     return R
