@@ -2212,7 +2212,8 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
     M = np.sum(mi)
 
     if len(mi[0:len(mi)-1]) > 0:
-        csum = np.cumsum(np.vstack([0, mi[0:len(mi)-1]]))
+        logger.debug('mi: {}'.format(repr(mi)))
+        csum = np.cumsum(np.concatenate([[0], mi[0:len(mi)-1]]))
         beg_mi = csum + m*np.ones(len(csum), dtype=int)
     else:
         beg_mi = np.array([m])
