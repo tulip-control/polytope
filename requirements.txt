@@ -1,6 +1,6 @@
 # usage: `pip install -r requirements.txt`
-numpy>=1.6
-scipy>=0.16
+numpy==1.7.1
+scipy==0.18.0
 networkx
 
 # optional
