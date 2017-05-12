@@ -2269,8 +2269,12 @@ def lpsolve(c, G, h):
             result['status'] = 2
         elif sol['status'] == 'dual infeasible':
             result['status'] = 3
-        else:
+        elif sol['status'] == 'unknown':
             result['status'] = 4
+        else:
+            raise ValueError((
+                '`cvxopt.solvers.lp` returned unexpected '
+                'status value: {v}').format(v=sol['status']))
         result['x'] = np.squeeze(sol['x'])
         result['fun'] = sol['primal objective']
     elif lp_solver == 'scipy':
