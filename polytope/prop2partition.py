@@ -210,27 +210,6 @@ class Partition(object):
                 return False
         return True
 
-    def preserves(self, other):
-        """Return True if it refines closure of C{other} under complement.
-
-        Closure under complement is the union of C{other}
-        with the collection of complements of its elements.
-
-        This method checks the annotation of elements in C{self}
-        with elements fro C{other}.
-        """
-        for item in self._elements:
-            # item subset of these sets
-            for superset in item.supersets:
-                if not item <= superset:
-                    return False
-
-            # item subset of the complements of these sets
-            for other_set in set(other).difference(item.supersets):
-                if item.intersect(other_set):
-                    return False
-        return True
-
 
 class MetricPartition(Partition):
     """Partition of a metric space.
