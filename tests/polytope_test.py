@@ -3,7 +3,7 @@
 import logging
 
 import numpy as np
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_array_equal
 import polytope as pc
 from polytope.polytope import solve_rotation_ap, givens_rotation_matrix
 
@@ -198,6 +198,19 @@ class operations_test(object):
         assert pc.is_fulldim(p4)
         assert pc.is_fulldim(p5)
 
+    def polytope_contains_test(self):
+        p = pc.Polytope(self.A, self.b)
+
+        point_i = [0.1, 0.3]
+        point_o = [2, 0]
+        assert point_i in p
+        assert point_o not in p
+
+        many_points_i = np.random.random((2, 8))
+        many_points_0 = np.random.random((2, 8)) - np.array([[0], [1]])
+        many_points = np.concatenate([many_points_0, many_points_i], axis=1)
+        truth = np.array([False] * 8 + [True] * 8, dtype=bool)
+        assert_array_equal(pc.is_inside(p, many_points), truth)
 
 
 def solve_rotation_test_090(atol=1e-15):

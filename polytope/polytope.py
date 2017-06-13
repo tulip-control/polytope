@@ -201,12 +201,31 @@ class Polytope(object):
         P.fulldim = self.fulldim
         return P
 
+    def contains(self, point, abs_tol=ABS_TOL):
+        """Return True if polytope contains points.
+
+        @type point: array_like, 1d array, or 2d array (of column vectors)
+
+        @rtype: bool, 1d array
+
+        See Also
+        ========
+        L{is_inside}
+        """
+        if not isinstance(point, np.ndarray):
+            point = np.array(point)
+        if point.ndim == 1:
+            point.shape = (point.size, 1)
+        assert point.shape[0] == self.dim, "points should be col vectors"
+        test = self.A.dot(point) - self.b.reshape((self.b.size, 1)) < abs_tol
+        return np.all(test, axis=0)
+
     def __contains__(self, point, abs_tol=ABS_TOL):
         """Return True if polytope contains point.
 
         See Also
         ========
-        L{is_inside}
+        L{is_inside}, L{Polytope.contains}
         """
         if not isinstance(point, np.ndarray):
             point = np.array(point)
@@ -696,12 +715,34 @@ class Region(object):
     def __len__(self):
         return len(self.list_poly)
 
+    def contains(self, point, abs_tol=ABS_TOL):
+        """Return True if Region contains point.
+
+        @type point: array_like, 1d array, or 2d array (of column vectors)
+
+        @rtype: bool, 1d array
+
+        See Also
+        ========
+        L{is_inside}
+        """
+        if not isinstance(point, np.ndarray):
+            point = np.array(point)
+        if point.ndim == 1:
+            return self.__contains__(point, abs_tol=abs_tol)
+        else:
+            contained = np.full(point.shape[1], False, dtype=bool)
+            for poly in self.list_poly:
+                contained = np.logical_or(poly.contains(point, abs_tol),
+                                          contained)
+            return contained
+
     def __contains__(self, point, abs_tol=ABS_TOL):
         """Return True if Region contains point.
 
         See Also
         ========
-        L{is_inside}
+        L{is_inside}, L{Region.contains}
         """
         if not isinstance(point, np.ndarray):
             point = np.array(point)
@@ -974,11 +1015,11 @@ def is_inside(polyreg, point, abs_tol=ABS_TOL):
     """Checks if point satisfies all the inequalities of polyreg.
 
     @param polyreg: L{Polytope} or L{Region}
-    @type point: tuple, 1d array, or 2d array (a vector)
+    @type point: tuple, 1d array, or 2d array (of column vectors)
 
-    @rtype: bool
+    @rtype: bool, 1d array
     """
-    return polyreg.__contains__(point, abs_tol)
+    return polyreg.contains(point, abs_tol)
 
 
 def is_subset(small, big, abs_tol=ABS_TOL):
