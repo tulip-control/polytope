@@ -517,14 +517,14 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
     """
     # determine the rotation matrix based on inputs
     if R is not None:
-        logger.info("rotate via predefined matrix.")
+        logger.debug("rotate: R=\n{}".format(R))
         assert i is None, i
         assert j is None, j
         assert theta is None, theta
         assert u is None, u
         assert v is None, v
     elif i is not None and j is not None and theta is not None:
-            logger.info("rotate via indices and angle.")
+            logger.debug("rotate: i={}, j={}, theta={}".format(i, j, theta))
             assert R is None, R
             assert u is None, u
             assert v is None, v
@@ -532,7 +532,7 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
                 raise ValueError("Must provide two unique basis vectors.")
             R = givens_rotation_matrix(i, j, theta, polyreg.dim)
     elif u is not None and v is not None:
-            logger.info("rotate via 2 vectors.")
+            logger.debug("rotate: u={}, v={}".format(u, v))
             assert R is None, R
             assert i is None, i
             assert j is None, j
@@ -613,29 +613,28 @@ def solve_rotation_ap(u, v):
         M[0, 0] = -1
         M[1, 1] = -1
         uv = M.dot(uv)
-    logger.debug('u = {u}'.format(u=uv[:, 0]))
-    logger.debug('v = {v}'.format(v=uv[:, 1]))
+    # logger.debug('u = {u}'.format(u=uv[:, 0]))
+    # logger.debug('v = {v}'.format(v=uv[:, 1]))
     # align uv plane with the basis01 plane and u with basis0.
     for c in range(0, 2):
         for r in range(N-1, c, -1):
             if uv[r, c] != 0:  # skip rotations when theta will be zero
                 theta = np.arctan2(uv[r, c], uv[r-1, c])
                 Mk = givens_rotation_matrix(r, r-1, theta, N)
-                logger.debug(
-                    "in the {r},{r1} plane rotate {theta}".format(
-                        r=r, r1=r-1, theta=theta))
+                # logger.debug("in the {r},{r1} plane rotate {theta}".format(
+                #              r=r, r1=r-1, theta=theta))
                 uv = Mk.dot(uv)
                 M = Mk.dot(M)
                 # logger.debug("u = {u}".format(u=uv[:, 0]))
                 # logger.debug("v = {v}".format(v=uv[:, 1]))
     # rotate u onto v
     theta = 2 * np.arctan2(uv[1, 1], uv[0, 1])
-    logger.debug("computed {} degree rotation".format(180*theta/np.pi))
+    logger.debug("solve_rotation_ap: {} degree rotation".format(180*theta/np.pi))
     R = givens_rotation_matrix(0, 1, theta, N)
     # perform M rotations in reverse order
     M_inverse = M.T
     R = M_inverse.dot(R.dot(M))
-    logger.debug("rotation matrix is\n{}".format(R))
+    # logger.debug("solve_rotation_ap: R=\n{}".format(R))
     return R
 
 
