@@ -1,6 +1,11 @@
 # Polytope package update history
 
 
+## version 0.2.0 - 7 July 2017
+
+- negate `numpy.array` with operator `~`
+
+
 ## version 0.1.4 - 6 May 2017
 
 - classes `polytope.Polytope`, `polytope.Region`:
