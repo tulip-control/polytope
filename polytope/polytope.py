@@ -1063,7 +1063,7 @@ def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
         lb, ub = Polytope(A_arr, b_arr).bounding_box
         #cand = -(np.dot((A_arr>0)*A_arr,ub-lb)
         #-(b_arr-np.dot(A_arr,lb).T).T<-1e-4)
-        cand = -(np.dot((A_arr > 0)*A_arr, ub-lb) -
+        cand = ~ (np.dot((A_arr > 0)*A_arr, ub-lb) -
                  (np.array([b_arr]).T-np.dot(A_arr, lb)) < -1e-4)
         A_arr = A_arr[cand.squeeze()]
         b_arr = b_arr[cand.squeeze()]
