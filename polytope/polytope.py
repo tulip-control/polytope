@@ -216,7 +216,7 @@ class Polytope(object):
             point = np.array(point)
         if point.ndim == 1:
             point.shape = (point.size, 1)
-        assert point.shape[0] == self.dim, "points should be col vectors"
+        assert point.shape[0] == self.dim, "points should be column vectors"
         test = self.A.dot(point) - self.b.reshape((self.b.size, 1)) < abs_tol
         return np.all(test, axis=0)
 
