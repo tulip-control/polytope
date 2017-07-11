@@ -233,6 +233,8 @@ class Polytope(object):
         return np.all(test)
 
     def are_inside(self, points, abs_tol=ABS_TOL):
+        warnings.warn('polytope.are_inside is deprecated.'
+                      ' Use `polytope.contains` instead.', DeprecationWarning)
         test = self.A.dot(points) - self.b[:, np.newaxis] < abs_tol
         return np.all(test, axis=0)
 
