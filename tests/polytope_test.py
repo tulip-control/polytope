@@ -11,6 +11,29 @@ log = logging.getLogger('polytope.polytope')
 log.setLevel(logging.INFO)
 
 
+def test_polytope_str():
+    polys = dict(
+        p1d=[[0, 1]],
+        p2d=[[0, 1], [0, 2]],
+        p3d=[[0, 1], [0, 2], [0, 3]])
+    strings = dict(
+        p1d='Single polytope \n  [[ 1.] x <= [[ 1.]\n   [-1.]]|     [ 0.]]\n',
+        p2d=(
+            'Single polytope \n  [[ 1.  0.] |    [[ 1.]\n   [ 0.  1.] '
+            'x <=  [ 2.]\n   [-1. -0.] |     [ 0.]\n   [-0. -1.]]|'
+            '     [ 0.]]\n'),
+        p3d=(
+            'Single polytope \n  [[ 1.  0.  0.] |    [[ 1.]\n   '
+            '[ 0.  1.  0.] |     [ 2.]\n   [ 0.  0.  1.] x <=  [ 3.]\n'
+            '   [-1. -0. -0.] |     [ 0.]\n   [-0. -1. -0.] |'
+            '     [ 0.]\n   [-0. -0. -1.]]|     [ 0.]]\n'))
+    for name, poly in polys.items():
+        p = pc.Polytope.from_box(poly)
+        s = str(p)
+        s_ = strings[name]
+        assert s == s_, (s, s_)
+
+
 class operations_test(object):
     def setUp(self):
         # unit square in first quadrant

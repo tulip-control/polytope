@@ -151,41 +151,30 @@ class Polytope(object):
         self.vertices = vertices
 
     def __str__(self):
-        """Return pretty-formatted H-representation of polytope(s)."""
-        try:
-            output = 'Single polytope \n  '
-            A = self.A
-            b = self.b
-            A_rows = str(A).split('\n')
-            if len(b.shape) == 1:
-                # If b is just an array, rather than column vector,
-                b_rows = str(b.reshape(b.shape[0], 1)).split('\n')
-            else:
-                # Else, b is a column vector.
-                b_rows = str(b).split('\n')
-            mid_ind = (len(A_rows)-1)/2
-            spacer = ' |    '
-            if mid_ind > 1:
-                output += '\n  '.join([A_rows[k]+spacer+b_rows[k]
-                                       for k in xrange(mid_ind)]) + '\n'
-            elif mid_ind == 1:
-                output += A_rows[0]+spacer+b_rows[0] + '\n'
-            else:
-                output += ''
-            output += '  ' + A_rows[mid_ind]+' x <= '+b_rows[mid_ind]
-            if mid_ind+1 < len(A_rows)-2:
-                output += '\n' + '\n  '.join([
-                    A_rows[k]+spacer+b_rows[k]
-                    for k in xrange(mid_ind+1, len(A_rows)-1)
-                ])
-            elif mid_ind+1 == len(A_rows)-2:
-                output += '\n  ' + A_rows[mid_ind+1]+spacer+b_rows[mid_ind+1]
-            if len(A_rows) > 1:
-                output += '\n  '+A_rows[-1]+spacer[1:]+b_rows[-1]
-            output += "\n"
-            return output
-        except:
-            return str(self.A) + str(self.b)
+        """Return pretty-formatted H-representation of polytope."""
+        A, b = self.A, self.b
+        A_rows = str(A).split('\n')
+        n_rows = len(A_rows)
+        # column vector from `b`, if not already one
+        b_col = b.reshape(b.shape[0], 1) if len(b.shape) == 1 else b
+        b_rows = str(b_col).split('\n')
+        # place an "x" somewhere near the middle
+        x_row = int((n_rows - 1) / 2)  # where "x" is shown
+        above = x_row
+        below = (n_rows - x_row - 2)
+        spacer = ' |    '
+        middle = (
+            above * [spacer]
+            + [' x <= ']
+            + below * [spacer]
+            + [spacer[1:]])
+        assert len(middle) == n_rows, (middle, n_rows)
+        # format lines
+        lines = [A_rows[k] + middle[k] + b_rows[k]
+                 for k in range(n_rows)]
+        output = 'Single polytope \n  {lines}\n'.format(
+            lines='\n  '.join(lines))
+        return output
 
     def __len__(self):
         return 0
