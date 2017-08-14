@@ -1166,9 +1166,13 @@ def union(polyreg1, polyreg2, check_convex=False):
 
 
 def cheby_ball(poly1):
-    """Calculate the Chebyshev radius and center for a polytope.
+    """Calculate Chebyshev radius and center for a polytope.
 
-    If input is a region the largest Chebyshev ball is returned.
+    The Chebyshev radius is defined here as the radius of a maximal
+    inscribed ball of the given polytope. The center of a maximal ball
+    is also returned, but note that unlike the radius, it is not
+    necessarily unique. If input is a region, then a largest Chebyshev
+    ball is returned.
 
     N.B., this function will return whatever it finds in attributes
     chebR and chbXc if not None, without (re)computing the Chebyshev ball.
