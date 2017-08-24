@@ -1,7 +1,7 @@
 # usage: `pip install -r requirements.txt`
 setuptools==23.0.0
-numpy==1.7.1
-scipy==0.18.0
+numpy==1.13.1
+scipy==0.19.1
 networkx
 
 # optional
