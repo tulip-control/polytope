@@ -19,16 +19,8 @@ addons:
     - libglpk-dev
 
 before_install:
-  - curl -sO https://repo.continuum.io/miniconda/Miniconda2-4.0.5-Linux-x86_64.sh
-    && echo 'ada5b7942e519829bc5e8e638d525e009676a7a598cf3dd80f041f6d5e39ddbb  Miniconda2-4.0.5-Linux-x86_64.sh'
-    | shasum -a 256 -c -
-  - bash Miniconda2-4.0.5-Linux-x86_64.sh -b -p ${HOME}/miniconda
-  - source ${HOME}/miniconda/bin/activate root
-  - conda update -q -y --all
-  - conda install -q -y nomkl
-  - conda install -q -y numpy scipy
-  - conda info -a
-  - pip install --ignore-installed --upgrade pip setuptools
+  - pip install --ignore-installed --upgrade pip setuptools wheel
+  - pip install --only-binary=numpy,scipy numpy scipy
   - pip install matplotlib
   - pip install nose
 
