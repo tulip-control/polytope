@@ -105,7 +105,7 @@ def run_setup():
         license='BSD',
         setup_requires=['setuptools >= 23.0.0'],
         install_requires=[
-            'numpy >= 1.7.1',
+            'numpy >= 1.10.0',
             'scipy >= 0.18.0',
             'networkx >= 1.6'],
         tests_require=[
