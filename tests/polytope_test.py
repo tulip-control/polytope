@@ -6,6 +6,7 @@ import numpy as np
 from numpy.testing import assert_allclose
 import polytope as pc
 from polytope.polytope import solve_rotation_ap, givens_rotation_matrix
+from polytope import polytope as ptm
 
 log = logging.getLogger('polytope.polytope')
 log.setLevel(logging.INFO)
@@ -327,6 +328,31 @@ def givens_rotation_test_270L(atol=1e-15):
     assert_allclose(R.dot(e0), t0, atol=atol)
     assert_allclose(R.dot(e1), t1, atol=atol)
     assert_allclose(R.dot(e2), t2, atol=atol)
+
+
+def test_lpsolve():
+    # Ensure same API for both `scipy` and `cvxopt`.
+    # Ensured by the different testing configurations.
+    # Could change `polytope.polytope.lp_solver` to
+    # achieve the same result, when `cvxopt.glpk` is present.
+    #
+    # 2-D example
+    c = np.array([1, 1], dtype=float)
+    A = np.array([[-1, 0], [0, -1]], dtype=float)
+    b = np.array([1, 1], dtype=float)
+    res = ptm.lpsolve(c, A, b)
+    x = res['x']
+    assert x.ndim == 1, x.ndim
+    assert x.shape == (2,), x.shape
+    #
+    # 1-D example
+    c = np.array([1], dtype=float)
+    A = np.array([[-1]], dtype=float)
+    b = np.array([1], dtype=float)
+    res = ptm.lpsolve(c, A, b)
+    x = res['x']
+    assert x.ndim == 1, x.ndim
+    assert x.shape == (1,), x.shape
 
 
 if __name__ == '__main__':
