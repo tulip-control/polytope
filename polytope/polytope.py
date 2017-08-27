@@ -110,7 +110,6 @@ class Polytope(object):
              representation of a polytope
       - `b`: a numpy array for the hyperplane offsets in hyperplane
              representation of a polytope
-      - `array`: python array in the case of a union of convex polytopes
       - `chebXc`: coordinates of chebyshev center (if calculated)
       - `chebR`: chebyshev radius (if calculated)
       - `bbox`: bounding box (if calculated)
