@@ -2245,12 +2245,26 @@ def simplices2polytopes(points, triangles):
     return polytopes
 
 
-def lpsolve(c, G, h):
+def lpsolve(c, G, h, solver=None):
     """Try to solve linear program with `cvxopt.glpk`, else `scipy`.
+
+    Solvers:
+        - `cvxopt.glpk`: identified by `'glpk'`
+        - `scipy.optimize.linprog`: identified by `'scipy'`
+
+    @param solver:
+        - `in {'glpk', 'scipy'}`
+        - `None`:
+            1. use GLPK
+            2. if GLPK not installed, then use SciPy
 
     @return: solution with status as in `scipy.optimize.linprog`
     @rtype: `dict(status=int, x=argmin, fun=min_value)`
     """
+    if solver is None:
+        solver = lp_solver  # choose fastest installed solver
+    if solver == 'glpk' and lp_solver != 'glpk':
+        raise ImportError('GLPK requested but failed to import.')
     result = dict()
     if lp_solver == 'glpk':
         sol = solvers.lp(

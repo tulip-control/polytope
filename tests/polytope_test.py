@@ -2,8 +2,11 @@
 """Tests for the polytope subpackage."""
 import logging
 
+from nose import tools as nt
 import numpy as np
 from numpy.testing import assert_allclose
+import scipy.optimize
+
 import polytope as pc
 from polytope.polytope import solve_rotation_ap, givens_rotation_matrix
 from polytope import polytope as ptm
@@ -346,13 +349,65 @@ def test_lpsolve():
     assert x.shape == (2,), x.shape
     #
     # 1-D example
-    c = np.array([1], dtype=float)
-    A = np.array([[-1]], dtype=float)
-    b = np.array([1], dtype=float)
+    c, A, b = example_1d()
     res = ptm.lpsolve(c, A, b)
     x = res['x']
     assert x.ndim == 1, x.ndim
     assert x.shape == (1,), x.shape
+
+
+def example_1d():
+    c = np.array([1], dtype=float)
+    A = np.array([[-1]], dtype=float)
+    b = np.array([1], dtype=float)
+    return c, A, b
+
+
+def test_lpsolve_solver_selection_scipy():
+    # should always work, because `polytope` requires `scipy`
+    c, A, b = example_1d()
+    r_ = np.array([-1.0])
+    # call directly to isolate from selection within `lpsolve`
+    r = ptm._solve_lp_using_scipy(c, A, b)
+    assert r['x'] == r_, r['x']
+    r = ptm.lpsolve(c, A, b, solver='scipy')
+    assert r['x'] == r_, r['x']
+
+
+def test_lpsolve_solver_selection_glpk_present():
+    c, A, b = example_1d()
+    have_glpk = is_glpk_present()
+    # skip if GLPK fails to import
+    if not have_glpk:
+        log.info(
+            'Skipping GLPK test of `lpsolve` '
+            'because GLPK failed to import, '
+            'so assume not installed.')
+        return
+    r = ptm.lpsolve(c, A, b, solver='glpk')
+    assert r['x'] == np.array([-1.0]), r['x']
+
+
+def test_lpsolve_solver_selection_glpk_absent():
+    c, A, b = example_1d()
+    have_glpk = is_glpk_present()
+    # skip if GLPK imports
+    if have_glpk:
+        log.info(
+            'Skipping GLPK failure test, '
+            'because GLPK is present.')
+        return
+    with nt.assert_raises(ImportError):
+        ptm.lpsolve(c, A, b, solver='glpk')
+
+
+def is_glpk_present():
+    """Return `True` if `cvxopt.glpk` imports."""
+    try:
+        import cvxopt.glpk
+        return True
+    except ImportError:
+        return False
 
 
 if __name__ == '__main__':
