@@ -112,7 +112,7 @@ def run_setup():
             'networkx >= 1.6'],
         tests_require=[
             'nose',
-            'matplotlib'],
+            'matplotlib >= 2.0.0'],
         packages=[
             'polytope'],
         package_dir=dict(polytope='polytope'),
