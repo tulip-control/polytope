@@ -2265,41 +2265,54 @@ def lpsolve(c, G, h, solver=None):
         solver = lp_solver  # choose fastest installed solver
     if solver == 'glpk' and lp_solver != 'glpk':
         raise ImportError('GLPK requested but failed to import.')
-    result = dict()
     if lp_solver == 'glpk':
-        sol = solvers.lp(
-            c=matrix(c), G=matrix(G), h=matrix(h),
-            A=None, b=None, solver='glpk')
-        if sol['status'] == 'optimal':
-            result['status'] = 0
-        elif sol['status'] == 'primal infeasible':
-            result['status'] = 2
-        elif sol['status'] == 'dual infeasible':
-            result['status'] = 3
-        elif sol['status'] == 'unknown':
-            result['status'] = 4
-        else:
-            raise ValueError((
-                '`cvxopt.solvers.lp` returned unexpected '
-                'status value: {v}').format(v=sol['status']))
-        # `cvxopt.solvers.lp` returns an array of shape `(2, 1)`
-        # squeeze only the second dimension, to obtain a 1-D array
-        # thus match what `scipy.optimize.linprog` returns.
-        x = sol['x']
-        if x is not None:
-            assert x.typecode == 'd', x.typecode
-            result['x'] = np.fromiter(x, dtype=np.double)
-        else:
-            result['x'] = None
-        result['fun'] = sol['primal objective']
+        result = _solve_lp_using_glpk(c, G, h)
     elif lp_solver == 'scipy':
-        sol = optimize.linprog(
-            c, G, np.transpose(h),
-            None, None, bounds=(None, None))
-        result['status'] = sol.status
-        result['x'] = sol.x
-        result['fun'] = sol.fun
+        result = _solve_lp_using_scipy(c, G, h)
     else:
         raise Exception(
             'unknown LP solver "{s}".'.format(s=lp_solver))
     return result
+
+
+def _solve_lp_using_glpk(c, G, h):
+    """Attempt linear optimization using `cvxopt.glpk`."""
+    assert lp_solver == 'glpk', 'GLPK failed to import'
+    sol = solvers.lp(
+        c=matrix(c), G=matrix(G), h=matrix(h),
+        A=None, b=None, solver='glpk')
+    result = dict()
+    if sol['status'] == 'optimal':
+        result['status'] = 0
+    elif sol['status'] == 'primal infeasible':
+        result['status'] = 2
+    elif sol['status'] == 'dual infeasible':
+        result['status'] = 3
+    elif sol['status'] == 'unknown':
+        result['status'] = 4
+    else:
+        raise ValueError((
+            '`cvxopt.solvers.lp` returned unexpected '
+            'status value: {v}').format(v=sol['status']))
+    # `cvxopt.solvers.lp` returns an array of shape `(2, 1)`
+    # squeeze only the second dimension, to obtain a 1-D array
+    # thus match what `scipy.optimize.linprog` returns.
+    x = sol['x']
+    if x is not None:
+        assert x.typecode == 'd', x.typecode
+        result['x'] = np.fromiter(x, dtype=np.double)
+    else:
+        result['x'] = None
+    result['fun'] = sol['primal objective']
+    return result
+
+
+def _solve_lp_using_scipy(c, G, h):
+    """Attempt linear optimization using `scipy.optimize.linprog`."""
+    sol = optimize.linprog(
+        c, G, np.transpose(h),
+        None, None, bounds=(None, None))
+    return dict(
+        status=sol.status,
+        x=sol.x,
+        fun=sol.fun)
