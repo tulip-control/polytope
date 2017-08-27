@@ -2268,7 +2268,15 @@ def lpsolve(c, G, h):
             raise ValueError((
                 '`cvxopt.solvers.lp` returned unexpected '
                 'status value: {v}').format(v=sol['status']))
-        result['x'] = np.squeeze(sol['x'])
+        # `cvxopt.solvers.lp` returns an array of shape `(2, 1)`
+        # squeeze only the second dimension, to obtain a 1-D array
+        # thus match what `scipy.optimize.linprog` returns.
+        x = sol['x']
+        if x is not None:
+            assert x.typecode == 'd', x.typecode
+            result['x'] = np.fromiter(x, dtype=np.double)
+        else:
+            result['x'] = None
         result['fun'] = sol['primal objective']
     elif lp_solver == 'scipy':
         sol = optimize.linprog(
