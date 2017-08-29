@@ -10,6 +10,7 @@
 *.PNG
 *.pdf
 *.PDF
+*.swp
 build/
 dist/
 doc/_build/
