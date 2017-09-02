@@ -162,11 +162,12 @@ class Polytope(object):
         above = x_row
         below = (n_rows - x_row - 2)
         spacer = ' |    '
+        last_middle = [spacer[1:]] if n_rows > 1 else []
         middle = (
             above * [spacer]
             + [' x <= ']
             + below * [spacer]
-            + [spacer[1:]])
+            + last_middle)
         assert len(middle) == n_rows, (middle, n_rows)
         # format lines
         lines = [A_rows[k] + middle[k] + b_rows[k]

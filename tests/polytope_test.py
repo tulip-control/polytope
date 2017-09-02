@@ -16,6 +16,14 @@ log.setLevel(logging.INFO)
 
 
 def test_polytope_str():
+    # 1 constaint (so uniline)
+    A = np.array([[1]])
+    b = np.array([1])
+    p = pc.Polytope(A, b)
+    s = str(p)
+    s_ = 'Single polytope \n  [[ 1.]] x <= [[ 1.]]\n'
+    assert s == s_, (s, s_)
+    # > 1 constraints (so multiline)
     polys = dict(
         p1d=[[0, 1]],
         p2d=[[0, 1], [0, 2]],
