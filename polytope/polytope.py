@@ -64,6 +64,7 @@ from __future__ import print_function
 import logging
 
 import numpy as np
+from scipy import optimize
 
 from polytope.quickhull import quickhull
 
@@ -79,7 +80,6 @@ try:
     solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
     logger.info('will use `cvxopt.glpk` solver')
 except ImportError:
-    from scipy import optimize
     lp_solver = 'scipy'
     logger.warn(
         '`polytope` failed to import `cvxopt.glpk`.\n'
@@ -2265,9 +2265,9 @@ def lpsolve(c, G, h, solver=None):
         solver = lp_solver  # choose fastest installed solver
     if solver == 'glpk' and lp_solver != 'glpk':
         raise ImportError('GLPK requested but failed to import.')
-    if lp_solver == 'glpk':
+    if solver == 'glpk':
         result = _solve_lp_using_glpk(c, G, h)
-    elif lp_solver == 'scipy':
+    elif solver == 'scipy':
         result = _solve_lp_using_scipy(c, G, h)
     else:
         raise Exception(

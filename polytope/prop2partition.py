@@ -225,7 +225,7 @@ class Partition(object):
                     return False
         return True
 
-class MetricPartition(Partition, nx.Graph):
+class MetricPartition(Partition):
     """Partition of a metric space.
 
     Includes adjacency information which abstracts

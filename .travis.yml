@@ -29,7 +29,9 @@ install:
   - pip install dist/polytope-*.tar.gz
 
 script:
+  # w/o `cvxopt`
   - ./run_tests.py --outofsource
+  # with `cvxopt`
   - curl -sO http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-4.5.4.tar.gz
     && echo '698b5c455645bb1ad29a185f0d52025f3bd7cb7261e182c8878b0eb60567a714  SuiteSparse-4.5.4.tar.gz'
     | shasum -a 256 -c -
