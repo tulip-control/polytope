@@ -76,12 +76,16 @@ def lpsolve(c, G, h, solver=None):
     return result
 
 
-def _solve_lp_using_glpk(c, G, h):
+def _solve_lp_using_glpk(c, G, h, A=None, b=None):
     """Attempt linear optimization using `cvxopt.glpk`."""
     assert lp_solver == 'glpk', 'GLPK failed to import'
+    if A is not None:
+        A = matrix(A)
+    if b is not None:
+        b = matrix(b)
     sol = solvers.lp(
         c=matrix(c), G=matrix(G), h=matrix(h),
-        A=None, b=None, solver='glpk')
+        A=A, b=b, solver='glpk')
     result = dict()
     if sol['status'] == 'optimal':
         result['status'] = 0
