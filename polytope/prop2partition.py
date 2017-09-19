@@ -68,6 +68,7 @@ def find_adjacent_regions(partition):
 
 ################################
 
+
 class Partition(object):
     """Partition of a set.
 
@@ -85,6 +86,7 @@ class Partition(object):
 
     To utilize additional structure, see L{MetricPartition}.
     """
+
     def __init__(self, domain=None):
         """Partition over C{domain}.
 
@@ -147,22 +149,22 @@ class Partition(object):
         """
         logger.info('checking if PPP is a partition.')
 
-        l,u = self.set.bounding_box
+        l, u = self.set.bounding_box
         ok = True
         for i, region in enumerate(self.regions):
             for j, other in enumerate(self.regions[0:i]):
-                if pc.is_fulldim(region.intersect(other) ):
+                if pc.is_fulldim(region.intersect(other)):
                     msg = 'PPP is not a partition, regions: '
                     msg += str(i) + ' and: ' + str(j)
                     msg += ' intersect each other.\n'
-                    msg += 'Offending regions are:\n' + 10*'-' + '\n'
-                    msg += str(region) + 10*'-' + '\n'
-                    msg += str(other) + 10*'-' + '\n'
+                    msg += 'Offending regions are:\n' + 10 * '-' + '\n'
+                    msg += str(region) + 10 * '-' + '\n'
+                    msg += str(other) + 10 * '-' + '\n'
 
                     isect = region.intersect(other)
                     diff = region.diff(other)
 
-                    mean_volume = (region.volume + other.volume) /2.0
+                    mean_volume = (region.volume + other.volume) / 2.0
 
                     overlap = 100 * isect.volume / mean_volume
                     non_overlap = 100 * diff.volume / mean_volume
@@ -229,6 +231,7 @@ class Partition(object):
                     return False
         return True
 
+
 class MetricPartition(Partition):
     """Partition of a metric space.
 
@@ -241,6 +244,7 @@ class MetricPartition(Partition):
     If the space is also a measure space,
     then volume information is used for diagnostic purposes.
     """
+
     def compute_adj(self):
         """Update the adjacency matrix by checking all region pairs.
 
@@ -261,7 +265,7 @@ class MetricPartition(Partition):
                     adj[j, i] = 1
 
                     logger.info('regions: ' + str(i) + ', ' +
-                                 str(j) + ', are adjacent.')
+                                str(j) + ', are adjacent.')
         logger.info('...done computing adjacency.')
 
         # check previous one to unmask errors
@@ -305,8 +309,9 @@ class MetricPartition(Partition):
 
         return ok
 
+
 def _save_region_plot(region, fname, l, u):
     ax = region.plot()
-    ax.set_xlim(l[0,0], u[0,0])
-    ax.set_ylim(l[1,0], u[1,0])
+    ax.set_xlim(l[0, 0], u[0, 0])
+    ax.set_ylim(l[1, 0], u[1, 0])
     ax.figure.savefig(fname)

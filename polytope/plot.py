@@ -89,8 +89,8 @@ def plot_partition(
             raise Exception(msg)
         trans = nx.to_numpy_matrix(trans, nodelist=ppp2trans)
         trans = np.array(trans)
-    l,u = ppp.domain.bounding_box
-    arr_size = (u[0,0]-l[0,0])/50.0
+    l, u = ppp.domain.bounding_box
+    arr_size = (u[0, 0] - l[0, 0]) / 50.0
     ax = pc._newax(ax)
     # no trans given: use partition's
     if trans is True and ppp.adj is not None:
@@ -100,8 +100,8 @@ def plot_partition(
         trans = 'none'
     else:
         ax.set_title('Adjacency from given Transitions')
-    ax.set_xlim(l[0,0],u[0,0])
-    ax.set_ylim(l[1,0],u[1,0])
+    ax.set_xlim(l[0, 0], u[0, 0])
+    ax.set_ylim(l[1, 0], u[1, 0])
     # repeatable coloring ?
     if color_seed is not None:
         prng = np.random.RandomState(color_seed)
@@ -150,12 +150,12 @@ def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
     p1 = polyreg1
     rc0, xc0 = pc.cheby_ball(p0)
     rc1, xc1 = pc.cheby_ball(p1)
-    if np.sum(np.abs(xc1-xc0)) < 1e-7:
+    if np.sum(np.abs(xc1 - xc0)) < 1e-7:
         return None
     if arr_size is None:
-        l,u = polyreg1.bounding_box
+        l, u = polyreg1.bounding_box
         arr_size = (u[0, 0] - l[0, 0]) / 25.0
-    #TODO: 3d
+    # TODO: 3d
     x = xc0[0]
     y = xc0[1]
     dx = xc1[0] - xc0[0]
