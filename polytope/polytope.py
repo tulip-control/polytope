@@ -68,14 +68,11 @@ import warnings
 import numpy as np
 
 from polytope.solvers import lpsolve
+from polytope.esp import esp
 from polytope.quickhull import quickhull
 
 
 logger = logging.getLogger(__name__)
-try:
-    from polytope.esp import esp
-except ImportError:
-    esp = None
 try:
     xrange
 except NameError:
@@ -1950,9 +1947,6 @@ def projection_esp(poly1, keep_dim, del_dim):
 
     CAUTION: Very buggy.
     """
-    if lp_solver != 'glpk':
-        raise Exception("projection_esp error:"
-                        " Equality set projection requires cvxopt to run.")
     C = poly1.A[:, keep_dim]
     D = poly1.A[:, del_dim]
     if not is_fulldim(poly1):
