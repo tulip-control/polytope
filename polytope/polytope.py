@@ -319,7 +319,7 @@ class Polytope(object):
         if not isinstance(intervals, np.ndarray):
             try:
                 intervals = np.array(intervals)
-            except:
+            except Exception:
                 raise Exception('Polytope.from_box:' +
                                 'intervals must be a numpy ndarray or ' +
                                 'convertible as arg to numpy.array')
@@ -365,7 +365,7 @@ class Polytope(object):
         """Return Polytope dimension."""
         try:
             return np.shape(self.A)[1]
-        except:
+        except Exception:
             return 0.0
 
     @property
@@ -892,7 +892,7 @@ def is_empty(polyreg):
     if len(polyreg) == 0:
         try:
             return len(polyreg.A) == 0
-        except:
+        except Exception:
             return True
     else:
         N = np.zeros(n, dtype=int)
@@ -1421,7 +1421,7 @@ def volume(polyreg):
     try:
         if polyreg._volume is not None:
             return polyreg._volume
-    except:
+    except Exception:
         logger.debug('computing volume...')
     # `Region` ?
     if isinstance(polyreg, Region):
@@ -1501,7 +1501,7 @@ def extreme(poly1):
             else:
                 try:
                     v = np.linalg.solve(HH, KK)
-                except:
+                except Exception:
                     msg = 'Finding extreme points failed, '
                     msg += 'Check if any unbounded Polytope '
                     msg += 'is causing this.'
