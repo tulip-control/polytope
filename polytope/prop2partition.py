@@ -38,7 +38,6 @@ import warnings
 
 import numpy as np
 from scipy import sparse as sp
-import networkx as nx
 
 import polytope as pc
 
