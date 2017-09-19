@@ -10,7 +10,7 @@ import scipy.optimize
 
 import polytope as pc
 from polytope.polytope import solve_rotation_ap, givens_rotation_matrix
-from polytope import polytope as ptm
+from polytope import solvers
 
 log = logging.getLogger('polytope.polytope')
 log.setLevel(logging.INFO)
@@ -385,14 +385,14 @@ def test_lpsolve():
     c = np.array([1, 1], dtype=float)
     A = np.array([[-1, 0], [0, -1]], dtype=float)
     b = np.array([1, 1], dtype=float)
-    res = ptm.lpsolve(c, A, b)
+    res = solvers.lpsolve(c, A, b)
     x = res['x']
     assert x.ndim == 1, x.ndim
     assert x.shape == (2,), x.shape
     #
     # 1-D example
     c, A, b = example_1d()
-    res = ptm.lpsolve(c, A, b)
+    res = solvers.lpsolve(c, A, b)
     x = res['x']
     assert x.ndim == 1, x.ndim
     assert x.shape == (1,), x.shape
@@ -410,9 +410,9 @@ def test_lpsolve_solver_selection_scipy():
     c, A, b = example_1d()
     r_ = np.array([-1.0])
     # call directly to isolate from selection within `lpsolve`
-    r = ptm._solve_lp_using_scipy(c, A, b)
+    r = solvers._solve_lp_using_scipy(c, A, b)
     assert r['x'] == r_, r['x']
-    r = ptm.lpsolve(c, A, b, solver='scipy')
+    r = solvers.lpsolve(c, A, b, solver='scipy')
     assert r['x'] == r_, r['x']
 
 
@@ -426,7 +426,7 @@ def test_lpsolve_solver_selection_glpk_present():
             'because GLPK failed to import, '
             'so assume not installed.')
         return
-    r = ptm.lpsolve(c, A, b, solver='glpk')
+    r = solvers.lpsolve(c, A, b, solver='glpk')
     assert r['x'] == np.array([-1.0]), r['x']
 
 
@@ -440,7 +440,7 @@ def test_lpsolve_solver_selection_glpk_absent():
             'because GLPK is present.')
         return
     with nt.assert_raises(ImportError):
-        ptm.lpsolve(c, A, b, solver='glpk')
+        solvers.lpsolve(c, A, b, solver='glpk')
 
 
 def is_glpk_present():
