@@ -40,8 +40,8 @@ Reference
 =========
 
 Colin N. Jones, Eric C. Kerrigan and Jan M. Maciejowski,
-    "Equality Set Projection: A new algorithm for the projection of polytopes
-     in halfspace representation"
+    "Equality Set Projection: A new algorithm for the
+     projection of polytopes in halfspace representation"
     http://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
     2004
 """
@@ -70,7 +70,8 @@ solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
 class Ridge(object):
     '''Contains the following information:
     `E_0`: Equality set of a facet
-    `af,bf`: Affine hull of the facet s.t. P_{E_0} = P intersection {x | af x = bf}.
+    `af,bf`: Affine hull of the facet
+        s.t. P_{E_0} = P intersection {x | af x = bf}.
     '''
     def __init__(self, E, a, b):
         self.E_r= E
@@ -82,8 +83,10 @@ class Ridge_Facet(object):
 
         - `E_r`: Equality set of a ridge
 
-        - `ar,br`: Affine hull of the ridge s.t. P_{E_f} intersection {x | ar x = br}
-                 defines the ridge, where E_f is the equality set of the facet.
+        - `ar,br`: Affine hull of the ridge s.t.
+            P_{E_f} intersection {x | ar x = br}
+            defines the ridge, where E_f is the
+            equality set of the facet.
 
         - `E_0`: Equality set of a facet
 
@@ -99,12 +102,14 @@ class Ridge_Facet(object):
 
 def esp(CC,DD,bb,centered=False,abs_tol=1e-10,verbose=0):
     '''
-    Compute the projection of the polytope [C D] x <= b onto the coordinates corresponding
-    to C. The projection of the polytope P = {[C D]x <= b} where C is M x D and D is M x K is
+    Compute the projection of the polytope [C D] x <= b onto the
+    coordinates corresponding to C. The projection of the polytope
+    P = {[C D]x <= b} where C is M x D and D is M x K is
     defined as proj(P) = {x in R^d | exist y in R^k s.t Cx + Dy < b}
     '''
     # Remove zero columns and rows
-    nonzerorows = np.nonzero( np.sum(np.abs(np.hstack([CC, DD])), axis = 1) > abs_tol)[0]
+    nonzerorows = np.nonzero(
+        np.sum(np.abs(np.hstack([CC, DD])), axis = 1) > abs_tol)[0]
     nonzeroxcols = np.nonzero( np.sum(np.abs(CC), axis = 0) > abs_tol)[0]
     nonzeroycols = np.nonzero( np.sum(np.abs(DD), axis = 0) > abs_tol)[0]
 
@@ -139,14 +144,22 @@ def esp(CC,DD,bb,centered=False,abs_tol=1e-10,verbose=0):
         c = np.zeros(d+k)
         c[0] = 1
         G = np.hstack([C,D])
-        sol = solvers.lp(c=matrix(c), G=matrix(G), h=matrix(b), A=None, b=None, solver=lp_solver)
+        sol = solvers.lp(
+            c=matrix(c), G=matrix(G), h=matrix(b),
+            A=None, b=None, solver=lp_solver)
         if sol['status'] != "optimal":
-            raise Exception("esp: projection to 1D is not full-dimensional, LP returned status " + str(sol['status']))
+            raise Exception(
+                "esp: projection to 1D is not full-dimensional, "
+                "LP returned status " + str(sol['status']))
         min_sol = np.array(sol['x']).flatten()
         min_dual_sol = np.array(sol['z']).flatten()
-        sol = solvers.lp(c=-matrix(c), G=matrix(G), h=matrix(b), A=None, b=None, solver=lp_solver)
+        sol = solvers.lp(
+            c=-matrix(c), G=matrix(G), h=matrix(b),
+            A=None, b=None, solver=lp_solver)
         if sol['status'] != "optimal":
-            raise Exception("esp: projection to 1D is not full-dimensional, LP returned status " + str(sol['status']))
+            raise Exception(
+                "esp: projection to 1D is not full-dimensional, " +
+                "LP returned status " + str(sol['status']))
         max_sol = np.array(sol['x']).flatten()
         max_dual_sol = np.array(sol['z']).flatten()
 
@@ -157,13 +170,15 @@ def esp(CC,DD,bb,centered=False,abs_tol=1e-10,verbose=0):
 
         if is_dual_degenerate(c,G,b,None,None,min_sol,min_dual_sol):
             #Min case, relax constraint a little to avoid infeasibility
-            E_min = unique_equalityset(C,D,b,np.array([1.]),x_min+abs_tol/3,abs_tol=abs_tol)
+            E_min = unique_equalityset(
+                C,D,b,np.array([1.]),x_min+abs_tol/3,abs_tol=abs_tol)
         else:
             E_min = np.nonzero(np.abs(np.dot(G,min_sol)-b) < abs_tol)[0]
 
         if is_dual_degenerate(c,G,b,None,None,max_sol,max_dual_sol):
             #Max case, relax constraint a little to avoid infeasibility
-            E_max = unique_equalityset(C,D,b,np.array([1.]),x_max-abs_tol/3,abs_tol=abs_tol)
+            E_max = unique_equalityset(
+                C,D,b,np.array([1.]),x_max-abs_tol/3,abs_tol=abs_tol)
         else:
             E_max = np.nonzero(np.abs(np.dot(G,max_sol)-b) < abs_tol)[0]
 
@@ -178,7 +193,9 @@ def esp(CC,DD,bb,centered=False,abs_tol=1e-10,verbose=0):
         E_min = nonzerorows[E_min]
 
         if verbose > 0:
-           print("Returning projection from dim " + str(d+k) + " to dim 1 \n")
+            print(
+                "Returning projection from dim " +
+                str(d+k) + " to dim 1 \n")
         return G,g,[E_max,E_min]
 
     E = []
@@ -210,7 +227,9 @@ def esp(CC,DD,bb,centered=False,abs_tol=1e-10,verbose=0):
         if verbose > 0:
             print("found neighbor " + str(E_adj ) +
                 ". \n\nLooking for ridges of neighbor..")
-        ridge_list = ridge(C,D,b,E_adj,a_adj,b_adj,abs_tol=abs_tol,verbose=verbose)
+        ridge_list = ridge(
+            C,D,b,E_adj,a_adj,b_adj,
+            abs_tol=abs_tol,verbose=verbose)
         if verbose > 0:
             print("found " + str(len(ridge_list)) + " ridges\n")
 
@@ -249,7 +268,8 @@ def esp(CC,DD,bb,centered=False,abs_tol=1e-10,verbose=0):
             print("but got ridges ")
             for rid in ridge_list:
                 print(rid.E_r)
-            raise Exception("esp: ridge did not return neighboring ridge as expected")
+            raise Exception(
+                "esp: ridge did not return neighboring ridge as expected")
 
         G = np.vstack([G, a_adj])
         g = np.hstack([g, b_adj])
@@ -282,20 +302,24 @@ def shoot(C,D,b,maxiter=1000,abs_tol=1e-7):
     iter = 0
     while True:
         if iter > maxiter:
-            raise Exception("shoot: could not find starting equality set")
+            raise Exception(
+                "shoot: could not find starting equality set")
         gamma = np.random.rand(d) - 0.5
 
         c = np.zeros(k+1)
         c[0] = -1
         G = np.hstack([np.array([np.dot(C,gamma)]).T,D])
-        sol = solvers.lp(c=matrix(c), G=matrix(G) , h=matrix(b), A=None, b=None, solver=lp_solver)
+        sol = solvers.lp(
+            c=matrix(c), G=matrix(G) , h=matrix(b),
+            A=None, b=None, solver=lp_solver)
         opt_sol = np.array(sol['x']).flatten()
         opt_dual = np.array(sol['z']).flatten()
         r_opt = opt_sol[0]
         y_opt = np.array(opt_sol[ range(1,len(opt_sol)) ]).flatten()
         x_opt = r_opt*gamma
 
-        E_0 = np.nonzero(np.abs(np.dot(C,x_opt) + np.dot(D,y_opt) - b) < abs_tol)[0]
+        E_0 = np.nonzero(
+            np.abs(np.dot(C,x_opt) + np.dot(D,y_opt) - b) < abs_tol)[0]
         DE0 = D[E_0,:]
         CE0 = C[E_0,:]
         b0 = b[E_0]
@@ -321,7 +345,8 @@ def ridge(C,D,b,E,af,bf,abs_tol=1e-7,verbose=0):
     `E,af,bf`: Equality set and affine hull of a facet in the projection
 
     Output:
-    `ridge_list`: A list containing all the ridges of the facet as Ridge objects
+    `ridge_list`: A list containing all the ridges of
+        the facet as Ridge objects
     '''
 
     d = C.shape[1]
@@ -359,9 +384,12 @@ def ridge(C,D,b,E,af,bf,abs_tol=1e-7,verbose=0):
         Anew = np.hstack([Cnew,Dnew])
         xc2,yc2,cen2 = cheby_center(Cnew,Dnew,bnew)
         bnew = bnew - np.dot(Cnew,xc2).flatten() - np.dot(Dnew,yc2).flatten()
-        Gt,gt,E_t = esp(Cnew, Dnew, bnew, centered=True,abs_tol=abs_tol,verbose=0)
+        Gt,gt,E_t = esp(
+            Cnew, Dnew, bnew,
+            centered=True,abs_tol=abs_tol,verbose=0)
         if (len(E_t[0]) == 0) or (len(E_t[1]) == 0):
-            raise Exception("ridge: recursive call did not return any equality sets")
+            raise Exception(
+                "ridge: recursive call did not return any equality sets")
         for i in range(len(E_t)):
             E_f = E_t[i]
             er = np.sort( np.hstack([E, E_c[E_f]]) )
@@ -397,7 +425,11 @@ def ridge(C,D,b,E,af,bf,abs_tol=1e-7,verbose=0):
             Si = Si / np.linalg.norm(Si)
             if np.linalg.norm(af - np.dot(Si,af)*Si) > abs_tol:
 
-                test1 = null_space(np.vstack([  np.hstack([af, bf])  , np.hstack([ S[i,:], t[i] ])  ]), nonempty=True)
+                test1 = null_space(
+                    np.vstack([
+                        np.hstack([af, bf]),
+                        np.hstack([ S[i,:], t[i] ])  ]),
+                        nonempty=True)
                 test2 = np.hstack([S, np.array([t]).T])
                 test = np.dot(test1.T , test2.T)
                 test = np.sum(np.abs(test), 0)
@@ -424,7 +456,9 @@ def ridge(C,D,b,E,af,bf,abs_tol=1e-7,verbose=0):
 
                 solvers.options['show_progress']=False
                 solvers.options['LPX_K_MSGLEV'] = 0
-                sol = solvers.lp(c=matrix(c), G=matrix(G) , h=matrix(h), A=matrix(A), b=matrix(bb), solver=lp_solver)
+                sol = solvers.lp(
+                    c=matrix(c), G=matrix(G) , h=matrix(h),
+                    A=matrix(A), b=matrix(bb), solver=lp_solver)
                 if sol['status'] == 'optimal':
                     tau = sol['x'][0]
                     if tau < -abs_tol:
@@ -440,7 +474,8 @@ def ridge(C,D,b,E,af,bf,abs_tol=1e-7,verbose=0):
                         ar = ar/norm
                         br = br/norm
 
-                        Er_list.append(Ridge(np.sort(np.hstack([E,E_c[Q]])),ar,br))
+                        Er_list.append(
+                            Ridge(np.sort(np.hstack([E,E_c[Q]])),ar,br))
     return Er_list
 
 def adjacent(C,D,b,rid_fac,abs_tol=1e-7):
@@ -476,7 +511,9 @@ def adjacent(C,D,b,rid_fac,abs_tol=1e-7):
 
     A = np.hstack([af, np.zeros(k)])
 
-    sol = solvers.lp(c=matrix(c), G=matrix(G) , h=matrix(h), A=matrix(A).T, b=matrix(bf*(1-0.01)), solver=lp_solver)
+    sol = solvers.lp(
+        c=matrix(c), G=matrix(G) , h=matrix(h),
+        A=matrix(A).T, b=matrix(bf*(1-0.01)), solver=lp_solver)
 
     if sol['status'] != "optimal":
         print(G)
@@ -496,16 +533,21 @@ def adjacent(C,D,b,rid_fac,abs_tol=1e-7):
         import pickle
         pickle.dump(data, open( "polytope.p", "wb" ) )
 
-        raise Exception("adjacent: Lp returned status " + str(sol['status']))
+        raise Exception(
+            "adjacent: Lp returned status " + str(sol['status']))
     opt_sol = np.array(sol['x']).flatten()
     dual_opt_sol = np.array(sol['z']).flatten()
     x_opt = opt_sol[range(0,d)]
     y_opt = opt_sol[range(d,d+k)]
 
-    if is_dual_degenerate(c.flatten(),G,h,A,bf*(1-0.01),opt_sol,dual_opt_sol,abs_tol=abs_tol):
+    if is_dual_degenerate(
+            c.flatten(),G,h,A,bf*(1-0.01),
+            opt_sol,dual_opt_sol,abs_tol=abs_tol):
         # If degenerate, compute affine hull and take preimage
         E_temp = np.nonzero(np.abs(np.dot(G,opt_sol) - h) < abs_tol)[0]
-        a_temp,b_temp = proj_aff(C_er[E_temp,:], D_er[E_temp,:], b_er[E_temp], expected_dim=1, abs_tol=abs_tol)
+        a_temp,b_temp = proj_aff(
+            C_er[E_temp,:], D_er[E_temp,:], b_er[E_temp],
+            expected_dim=1, abs_tol=abs_tol)
         E_adj = unique_equalityset(C,D,b,a_temp,b_temp,abs_tol=abs_tol)
         if len(E_adj) == 0:
             from scipy import io as sio
@@ -520,10 +562,12 @@ def adjacent(C,D,b,rid_fac,abs_tol=1e-7):
             data["af"] = af
             data["bf"] = bf
             sio.savemat("matlabdata", data)
-            raise Exception("adjacent: equality set computation returned empty set")
+            raise Exception(
+                "adjacent: equality set computation returned empty set")
 
     else:
-        E_adj = np.nonzero(np.abs(np.dot(C,x_opt) + np.dot(D,y_opt) - b) < abs_tol)[0]
+        r = np.abs(np.dot(C,x_opt) + np.dot(D,y_opt) - b) < abs_tol
+        E_adj = np.nonzero(r)[0]
 
     C_eadj = C[E_adj,:]
     D_eadj = D[E_adj,:]
@@ -548,7 +592,8 @@ def proj_aff(Ce,De,be,expected_dim=None,abs_tol=1e-7):
         a_n, b_n = normalize(a,b)
         if expected_dim is not None:
             if expected_dim != b_n.size:
-                raise Exception("proj_aff: wrong dimension calculated in 1")
+                raise Exception(
+                    "proj_aff: wrong dimension calculated in 1")
         return a_n.flatten(), b_n
 
     sh = np.shape(D.T)
@@ -581,7 +626,8 @@ def is_dual_degenerate(c,G,h,A,b,x_opt,z_opt,abs_tol=1e-7):
 
     `G,h,A,b`: Parameters of (P)
     `x_opt`: One optimal solution to (P)
-    `z_opt`: The optimal solution to (D) corresponding to _inequality constraints_ in (P)
+    `z_opt`: The optimal solution to (D) corresponding to
+        _inequality constraints_ in (P)
 
     Output:
     `dual`: Boolean indicating whether (P) has many optimal solutions.
@@ -591,16 +637,17 @@ def is_dual_degenerate(c,G,h,A,b,x_opt,z_opt,abs_tol=1e-7):
     d = -h.flatten()
 
     mu = -z_opt.flatten() # mu >= 0
-
-    I = np.nonzero(np.abs(np.dot(D,x_opt).flatten() - d) < abs_tol)[0]   # Active constraints
-    J = np.nonzero(mu > abs_tol)[0]                            # Positive elements in dual opt
+    # Active constraints
+    I = np.nonzero(np.abs(np.dot(D,x_opt).flatten() - d) < abs_tol)[0]
+    # Positive elements in dual opt
+    J = np.nonzero(mu > abs_tol)[0]
 
     i = mu < abs_tol            # Zero elements in dual opt
     i = i.astype(int)
     j = np.zeros(len(mu), dtype=int)
     j[I] = 1                    # 1 if active
-
-    L = np.nonzero(i+j == 2)[0]    # Indices where active constraints have 0 dual opt
+    # Indices where active constraints have 0 dual opt
+    L = np.nonzero(i+j == 2)[0]
 
     nI = len(I)
     nJ = len(J)
@@ -627,7 +674,10 @@ def is_dual_degenerate(c,G,h,A,b,x_opt,z_opt,abs_tol=1e-7):
             be = np.zeros(Ae.shape[0])
             Ai = -DL
             bi = np.zeros(nL)
-            sol = solvers.lp(c=-matrix(np.sum(DL, axis=0)), G=matrix(Ai), h=matrix(bi), A=matrix(Ae), b=matrix(be), solver=lp_solver)
+            sol = solvers.lp(
+                c=-matrix(np.sum(DL, axis=0)), G=matrix(Ai),
+                h=matrix(bi), A=matrix(Ae), b=matrix(be),
+                solver=lp_solver)
             if sol['status'] == "dual infeasible":
                 # Dual infeasible -> primal unbounded -> value>epsilon
                 return True
@@ -655,9 +705,13 @@ def unique_equalityset(C,D,b,af,bf,abs_tol=1e-7,verbose=0):
     for i in range(A.shape[0]):
         A_i = np.array(A[i,:])
         b_i = b[i]
-        sol = solvers.lp(c=matrix(A_i), G=matrix(A) , h=matrix(b), A=matrix(a).T, b=matrix(bf), solver=lp_solver)
+        sol = solvers.lp(
+            c=matrix(A_i), G=matrix(A) , h=matrix(b),
+            A=matrix(a).T, b=matrix(bf), solver=lp_solver)
         if sol['status'] != "optimal":
-            raise Exception("unique_equalityset: LP returned status " + str(sol['status']))
+            raise Exception(
+                "unique_equalityset: LP returned status " +
+                str(sol['status']))
         if np.abs(sol['primal objective'] - b_i) < abs_tol:
             # Constraint is active everywhere
             E.append(i)
@@ -693,9 +747,13 @@ def unique_equalityset2(C,D,b,opt_sol,abs_tol=1e-7):
     h = np.hstack([ht, np.hstack([h, np.zeros(m)]) ])
     c = np.hstack([np.zeros(n), np.ones(m)])
 
-    sol = solvers.lp(c=matrix(c), G=matrix(H), h=matrix(h), A=None, b=None, solver=lp_solver)
+    sol = solvers.lp(
+        c=matrix(c), G=matrix(H), h=matrix(h),
+        A=None, b=None, solver=lp_solver)
     if not sol['status'] == "optimal":
-        raise Exception("unique_equalityset: LP returned status " + str(sol['status']))
+        raise Exception(
+            "unique_equalityset: LP returned status " +
+            str(sol['status']))
     opt_sol2 = np.array(sol['x']).flatten()
     x = opt_sol2[range(0,n)]
     s = opt_sol2[range(n,len(opt_sol2))]
@@ -730,7 +788,9 @@ def cheby_center(C,D,b):
     G = np.c_[A, norm2]
     solvers.options['show_progress']=False
     solvers.options['LPX_K_MSGLEV'] = 0
-    sol = solvers.lp(c=matrix(c), G=matrix(G), h=matrix(b), A=None, b=None, solver=lp_solver)
+    sol = solvers.lp(
+        c=matrix(c), G=matrix(G), h=matrix(b),
+        A=None, b=None, solver=lp_solver)
     if sol['status'] == "optimal":
         opt = np.array(sol['x'][0:-1]).flatten()
         return opt[range(0,d)], opt[range(d,d+k)], True
@@ -753,7 +813,8 @@ def normalize(AA,bb,abs_tol=1e-7):
     b = bb.copy().reshape(bb.size,1)
 
     # Remove zero lines
-    keepind = np.nonzero(np.sum(np.abs(np.hstack([A,b])), axis=1) > abs_tol) [0]
+    keepind = np.nonzero(
+        np.sum(np.abs(np.hstack([A,b])), axis=1) > abs_tol) [0]
     A = A[keepind,:]
     b = b[keepind]
 

@@ -56,7 +56,8 @@ def plot_partition(
 
     See Also
     ========
-    L{abstract.prop2partition.PropPreservingPartition}, L{plot_trajectory}
+    L{abstract.prop2partition.PropPreservingPartition},
+    L{plot_trajectory}
 
     @type ppp: L{PropPreservingPartition}
 
@@ -80,9 +81,11 @@ def plot_partition(
     # needs to be converted to adjacency matrix ?
     if isinstance(trans, nx.MultiDiGraph):
         if trans is not None and ppp2trans is None:
-            msg = 'trans is a networkx MultiDiGraph, '
-            msg += 'so ppp2trans required to define state order,\n'
-            msg += 'used when converting the graph to an adjacency matrix.'
+            msg = (
+                'trans is a networkx MultiDiGraph, '
+                'so ppp2trans required to define state order,\n'
+                'used when converting the graph to '
+                'an adjacency matrix.')
             raise Exception(msg)
         trans = nx.to_numpy_matrix(trans, nodelist=ppp2trans)
         trans = np.array(trans)
@@ -126,7 +129,8 @@ def plot_partition(
             if ppp.adj[i, j] == 0:
                 continue
 
-        plot_transition_arrow(ppp.regions[i], ppp.regions[j], ax, arr_size)
+        plot_transition_arrow(
+            ppp.regions[i], ppp.regions[j], ax, arr_size)
     mpl.pyplot.show()
     return ax
 

@@ -176,8 +176,12 @@ class Partition(object):
                         print('saving')
                         fname1 = fname + 'region' + str(i) + '.pdf'
                         fname2 = fname + 'region' + str(j) + '.pdf'
-                        fname3 = fname + 'isect_' + str(i) + '_' + str(j) + '.pdf'
-                        fname4 = fname + 'diff_' + str(i) + '_' + str(j) + '.pdf'
+                        fname3 = (
+                            fname + 'isect_' + str(i) +
+                            '_' + str(j) + '.pdf')
+                        fname4 = (
+                            fname + 'diff_' + str(i) +
+                            '_' + str(j) + '.pdf')
 
                         _save_region_plot(region, fname1, l, u)
                         _save_region_plot(other, fname2, l, u)

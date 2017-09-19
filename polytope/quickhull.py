@@ -48,14 +48,18 @@ import numpy as np
 
 
 class Facet(object):
-    """A class describing a facet (n-1 dimensional face) of an n dimensional polyhedron with the
-    following fields:
-    N.B. Polyhedron is assumed to contain the origin (inside and outside are defined accordingly)
+    """A class describing a facet (n-1 dimensional face) of an
+    n dimensional polyhedron with the following fields:
+    N.B. Polyhedron is assumed to contain the origin
+    (inside and outside are defined accordingly)
 
       - `outside`: a list of points outside the facet
-      - `vertices`: the vertices of the facet in a n*n matrix where each row denotes a vertex
-      - `neighbors`: a list of other facets with which the facet shares n-1 vertices
-      - `normal`: a normalized vector perpendicular to the facet, pointing "out"
+      - `vertices`: the vertices of the facet in a n*n matrix where
+        each row denotes a vertex
+      - `neighbors`: a list of other facets with which the facet
+        shares n-1 vertices
+      - `normal`: a normalized vector perpendicular to the facet,
+        pointing "out"
       - `distance`: the normal distance of the facet from origo
     """
 
@@ -159,8 +163,9 @@ def quickhull(POINTS, abs_tol=1e-7):
     rank = np.sum(s > 1e-15)
 
     if rank < dim:
-        print("Warning: " +
-            "convex hull is not fully dimensional, returning empty polytope")
+        print(
+            "Warning: convex hull is not fully dimensional, "
+            "returning empty polytope")
         return np.array([]),np.array([]),None
 
     # Choose starting simplex by choosing maximum points in random directions
@@ -180,7 +185,8 @@ def quickhull(POINTS, abs_tol=1e-7):
             ind.append(index[i])
             d += 1
         startsimplex = POINTS[ind,:]
-        u, s, v = np.linalg.svd(np.transpose(startsimplex - startsimplex[0,:]))
+        u, s, v = np.linalg.svd(
+            np.transpose(startsimplex - startsimplex[0,:]))
         rank = np.sum(s > 1e-10)
 
     unassigned_points = POINTS[np.setdiff1d(range(npt),ind),:]
@@ -209,10 +215,13 @@ def quickhull(POINTS, abs_tol=1e-7):
         b = np.zeros([num,1])
         vert = np.zeros([num*dim,dim])
         for ii in range(num):
-            vert[ np.ix_(range(ii*dim,(ii+1)*dim)), : ] = Forg[ii].vertices + xc
+            idx = np.ix_(range(ii*dim,(ii+1)*dim))
+            vert[idx, : ] = Forg[ii].vertices + xc
             A[ii,:] = Forg[ii].normal.flatten()
             b[ii] = Forg[ii].distance
-        vert = np.unique(vert.view([('',vert.dtype)]*vert.shape[1])).view(vert.dtype).reshape(-1,vert.shape[1])
+        vert = np.unique(
+            vert.view([('',vert.dtype)]*vert.shape[1])).view(
+                vert.dtype).reshape(-1,vert.shape[1])
         b = b.flatten() + np.dot(A,xc.flatten())
         return A,b.flatten(),vert
 
@@ -290,9 +299,11 @@ def quickhull(POINTS, abs_tol=1e-7):
             N = len(fac1.outside)
             for ii in range(N):
                 if unassigned_points is None:
-                    unassigned_points = np.array([fac1.outside[ii].coordinates])
+                    unassigned_points = np.array(
+                        [fac1.outside[ii].coordinates])
                 else:
-                    unassigned_points = np.vstack([unassigned_points,fac1.outside[ii].coordinates])
+                    unassigned_points = np.vstack(
+                        [unassigned_points,fac1.outside[ii].coordinates])
 
         for fac1 in V:
             # Figure out the boundary of V, and create new facets
@@ -376,7 +387,9 @@ def quickhull(POINTS, abs_tol=1e-7):
         vert[ np.ix_(range(ii*dim,(ii+1)*dim)), : ] = Forg[ii].vertices + xc
         A[ii,:] = Forg[ii].normal.flatten()
         b[ii] = Forg[ii].distance
-    vert = np.unique(vert.view([('',vert.dtype)]*vert.shape[1])).view(vert.dtype).reshape(-1,vert.shape[1])
+    vert = np.unique(
+        vert.view([('',vert.dtype)]*vert.shape[1])).view(
+            vert.dtype).reshape(-1,vert.shape[1])
     b = b.flatten() + np.dot(A,xc.flatten())
 
     return A,b.flatten(),vert
