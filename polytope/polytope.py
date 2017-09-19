@@ -54,9 +54,17 @@
 #
 """Computational geometry module for polytope computations.
 
-Suggested abbreviation:
+By default, for linear programming the `polytope` module selects
+the fastest solver that it finds installed. You can change this
+default by setting the module variable `lp_solver`, for example:
 
->>> import polytope as pc
+```python
+from polytope import polytope as _pt
+
+_pt.lp_solver = 'scipy'
+```
+
+Choose an installed solver to avoid errors.
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -2258,9 +2266,15 @@ def lpsolve(c, G, h, solver=None):
 
     @param solver:
         - `in {'glpk', 'scipy'}`
-        - `None`:
-            1. use GLPK
-            2. if GLPK not installed, then use SciPy
+        - `None`: use the fastest installed solver,
+          as follows:
+
+            1. use GLPK if installed
+            2. otherwise use SciPy
+
+        You can change the default choice of solver by setting
+        the module variable `lp_solver`. See the module's
+        docstring for an example.
 
     @return: solution with status as in `scipy.optimize.linprog`
     @rtype: `dict(status=int, x=argmin, fun=min_value)`
