@@ -48,22 +48,11 @@ from __future__ import division
 from __future__ import print_function
 import pickle
 
-from cvxopt import matrix
-from cvxopt import solvers
 import numpy as np
 from scipy import io as sio
 from scipy import linalg
 
-# Find a lp solver to use
-try:
-    import cvxopt.glpk
-    lp_solver = 'glpk'
-except ImportError:
-    lp_solver = None
-
-
-solvers.options['show_progress'] = False
-solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
+from polytope import solvers
 
 
 class Ridge(object):
@@ -117,7 +106,7 @@ def esp(CC, DD, bb, centered=False, abs_tol=1e-10, verbose=0):
     P = {[C D]x <= b} where C is M x D and D is M x K is
     defined as proj(P) = {x in R^d | exist y in R^k s.t Cx + Dy < b}
     """
-    if lp_solver != 'glpk':
+    if solvers.lp_solver != 'glpk':
         raise Exception(
             "projection_esp error:"
             " Equality set projection requires cvxopt to run.")
@@ -152,18 +141,14 @@ def esp(CC, DD, bb, centered=False, abs_tol=1e-10, verbose=0):
         c = np.zeros(d + k)
         c[0] = 1
         G = np.hstack([C, D])
-        sol = solvers.lp(
-            c=matrix(c), G=matrix(G), h=matrix(b),
-            A=None, b=None, solver=lp_solver)
+        sol = solvers.lpsolve(c, G, b, solver='glpk')
         if sol['status'] != "optimal":
             raise Exception(
                 "esp: projection to 1D is not full-dimensional, "
                 "LP returned status " + str(sol['status']))
         min_sol = np.array(sol['x']).flatten()
         min_dual_sol = np.array(sol['z']).flatten()
-        sol = solvers.lp(
-            c=-matrix(c), G=matrix(G), h=matrix(b),
-            A=None, b=None, solver=lp_solver)
+        sol = solvers.lpsolve(-c, G, b, solver='glpk')
         if sol['status'] != "optimal":
             raise Exception(
                 "esp: projection to 1D is not full-dimensional, " +
@@ -299,9 +284,7 @@ def shoot(C, D, b, maxiter=1000, abs_tol=1e-7):
         c = np.zeros(k + 1)
         c[0] = -1
         G = np.hstack([np.array([np.dot(C, gamma)]).T, D])
-        sol = solvers.lp(
-            c=matrix(c), G=matrix(G), h=matrix(b),
-            A=None, b=None, solver=lp_solver)
+        sol = solvers.lpsolve(c, G, b, solver='glpk')
         opt_sol = np.array(sol['x']).flatten()
         opt_dual = np.array(sol['z']).flatten()
         r_opt = opt_sol[0]
@@ -426,11 +409,8 @@ def ridge(C, D, b, E, af, bf, abs_tol=1e-7, verbose=0):
                 Ar = np.vstack([af, S[i, :]])
                 A = np.hstack([Al, Ar])
                 bb = np.hstack([bf, t[i]])
-                solvers.options['show_progress'] = False
-                solvers.options['LPX_K_MSGLEV'] = 0
-                sol = solvers.lp(
-                    c=matrix(c), G=matrix(G), h=matrix(h),
-                    A=matrix(A), b=matrix(bb), solver=lp_solver)
+                sol = solvers._solve_lp_using_glpk(
+                    c, G, h, A=A, b=bb)
                 if sol['status'] == 'optimal':
                     tau = sol['x'][0]
                     if tau < -abs_tol:
@@ -479,9 +459,8 @@ def adjacent(C, D, b, rid_fac, abs_tol=1e-7):
     G = np.hstack([C_er, D_er])
     h = b_er
     A = np.hstack([af, np.zeros(k)])
-    sol = solvers.lp(
-        c=matrix(c), G=matrix(G), h=matrix(h),
-        A=matrix(A).T, b=matrix(bf * (1 - 0.01)), solver=lp_solver)
+    sol = solvers._solve_lp_using_glpk(
+        c, G, h, A=A.T, b=bf * (1 - 0.01))
     if sol['status'] != "optimal":
         print(G)
         print(h)
@@ -630,10 +609,9 @@ def is_dual_degenerate(c, G, h, A, b, x_opt, z_opt, abs_tol=1e-7):
             be = np.zeros(Ae.shape[0])
             Ai = - DL
             bi = np.zeros(nL)
-            sol = solvers.lp(
-                c=-matrix(np.sum(DL, axis=0)), G=matrix(Ai),
-                h=matrix(bi), A=matrix(Ae), b=matrix(be),
-                solver=lp_solver)
+            sol = solvers._solve_lp_using_glpk(
+                c= - np.sum(DL, axis=0), G=Ai,
+                h=bi, A=Ae, b=be)
             if sol['status'] == "dual infeasible":
                 # Dual infeasible -> primal unbounded -> value>epsilon
                 return True
@@ -662,9 +640,9 @@ def unique_equalityset(C, D, b, af, bf, abs_tol=1e-7, verbose=0):
     for i in range(A.shape[0]):
         A_i = np.array(A[i, :])
         b_i = b[i]
-        sol = solvers.lp(
-            c=matrix(A_i), G=matrix(A), h=matrix(b),
-            A=matrix(a).T, b=matrix(bf), solver=lp_solver)
+        sol = solvers._solve_lp_using_glpk(
+            c=A_i, G=A, h=b,
+            A=a.T, b=bf)
         if sol['status'] != "optimal":
             raise Exception(
                 "unique_equalityset: LP returned status " +
@@ -701,10 +679,7 @@ def unique_equalityset2(C, D, b, opt_sol, abs_tol=1e-7):
     H = np.vstack([H1, np.vstack([H2, H3])])
     h = np.hstack([ht, np.hstack([h, np.zeros(m)])])
     c = np.hstack([np.zeros(n), np.ones(m)])
-    # solve
-    sol = solvers.lp(
-        c=matrix(c), G=matrix(H), h=matrix(h),
-        A=None, b=None, solver=lp_solver)
+    sol = solvers.lpsolve(c, H, h, solver='glpk')
     if not sol['status'] == "optimal":
         raise Exception(
             "unique_equalityset: LP returned status " +
@@ -739,11 +714,7 @@ def cheby_center(C, D, b):
     c = - np.r_[np.zeros(dim), 1]
     norm2 = np.sqrt(np.sum(A * A, axis=1))
     G = np.c_[A, norm2]
-    solvers.options['show_progress'] = False
-    solvers.options['LPX_K_MSGLEV'] = 0
-    sol = solvers.lp(
-        c=matrix(c), G=matrix(G), h=matrix(b),
-        A=None, b=None, solver=lp_solver)
+    sol = solvers.lpsolve(c, G, h=b, solver='glpk')
     if sol['status'] == "optimal":
         opt = np.array(sol['x'][0:-1]).flatten()
         return opt[range(0, d)], opt[range(d, d + k)], True
