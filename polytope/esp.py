@@ -59,7 +59,7 @@ from scipy import linalg
 try:
     import cvxopt.glpk
     lp_solver = 'glpk'
-except:
+except ImportError:
     lp_solver = None
 
 
