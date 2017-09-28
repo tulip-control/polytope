@@ -89,7 +89,7 @@ try:
     logger.info('will use `cvxopt.glpk` solver')
 except ImportError:
     lp_solver = 'scipy'
-    logger.warn(
+    logger.warning(
         '`polytope` failed to import `cvxopt.glpk`.\n'
         'Will use `scipy.optimize.linprog`.')
 try:
@@ -1612,7 +1612,7 @@ def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     if mA < poly_dim:
         msg = 'fewer rows in A: ' + str(mA)
         msg += ', than polytope dimension: ' + str(poly_dim)
-        logger.warn(msg)
+        logger.warning(msg)
         # enlarge A, b with zeros
         A = poly1.A.copy()
         poly1.A = np.zeros((poly_dim, poly_dim))
@@ -1643,8 +1643,8 @@ def projection(poly1, dim, solver=None, abs_tol=ABS_TOL, verbose=0):
     elif solver == "iterhull":
         return projection_iterhull(poly1, new_dim)
     elif solver is not None:
-        logger.warn('unrecognized projection solver "' +
-                    str(solver) + '".')
+        logger.warning('unrecognized projection solver "' +
+                       str(solver) + '".')
     # `solver` undefined or unknown
     # select method based on dimension criteria
     if len(del_dim) <= 2:
