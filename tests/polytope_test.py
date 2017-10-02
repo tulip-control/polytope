@@ -210,7 +210,7 @@ class operations_test(object):
         many_points_0 = np.random.random((2, 8)) - np.array([[0], [1]])
         many_points = np.concatenate([many_points_0, many_points_i], axis=1)
         truth = np.array([False] * 8 + [True] * 8, dtype=bool)
-        assert_array_equal(pc.is_inside(p, many_points), truth)
+        assert_array_equal(pc.are_inside(p, many_points), truth)
 
 
 def solve_rotation_test_090(atol=1e-15):
