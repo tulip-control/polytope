@@ -706,6 +706,21 @@ class Region(object):
             point = np.array(point)
         return any(point in u for u in self.list_poly)
 
+    def contains(self, points, abs_tol=ABS_TOL):
+        """Return Boolean array of whether each point in `self`.
+
+        See `Polytope.contains`.
+        """
+        if not isinstance(points, np.ndarray):
+            points = np.array(points)
+        assert points.shape[0] == self.dim, 'points should be column vectors'
+        contained = np.full(points.shape[1], False, dtype=bool)
+        for poly in self.list_poly:
+            contained = np.logical_or(
+                poly.contains(points, abs_tol),
+                contained)
+        return contained
+
     def __eq__(self, other):
         return self <= other and other <= self
 
