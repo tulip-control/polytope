@@ -211,7 +211,17 @@ class Polytope(object):
         test = self.A.dot(point.flatten()) - self.b < abs_tol
         return np.all(test)
 
-    def are_inside(self, points, abs_tol=ABS_TOL):
+    def contains(self, points, abs_tol=ABS_TOL):
+        """Return Boolean array of whether each point in `self`.
+
+        Any point that satisfies all inequalities is
+        contained in `self`. A tolerance is added, and
+        strict inequality checked (<). Pass `abs_tol=0`
+        to exclude the boundary.
+
+        @param points: column vectors
+        @rtype: bool, 1d array
+        """
         test = self.A.dot(points) - self.b[:, np.newaxis] < abs_tol
         return np.all(test, axis=0)
 
@@ -2230,7 +2240,7 @@ def grid_region(polyreg, res=None):
         linspaces.append(r)
     points = np.meshgrid(*linspaces)
     x = np.vstack(map(np.ravel, points))
-    x = x[:, polyreg.are_inside(x)]
+    x = x[:, polyreg.contains(x)]
     return (x, res)
 
 
