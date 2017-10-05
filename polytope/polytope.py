@@ -992,13 +992,11 @@ def is_convex(reg, abs_tol=ABS_TOL):
 
 
 def is_inside(polyreg, point, abs_tol=ABS_TOL):
-    """Checks if point satisfies all the inequalities of polyreg.
-
-    @param polyreg: L{Polytope} or L{Region}
-    @type point: tuple, 1d array, or 2d array (a vector)
-
-    @rtype: bool
-    """
+    """Return `point in polyreg`."""
+    warnings.warn(
+        'Write `point in polyreg` instead of '
+        'calling this function.',
+        DeprecationWarning)
     return polyreg.__contains__(point, abs_tol)
 
 
@@ -1962,7 +1960,7 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
             logger.debug("Checking if new points are inside convex hull")
             OK = 1
             for i in xrange(np.shape(Vert)[0]):
-                if not is_inside(P1, Vert[i, new_dim], abs_tol=1e-5):
+                if not P1.contains([Vert[i, new_dim]], abs_tol=1e-5):
                     # If all new points are inside
                     # old polytope -> Finished
                     OK = 0
