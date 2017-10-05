@@ -704,10 +704,7 @@ class Region(object):
         """
         if not isinstance(point, np.ndarray):
             point = np.array(point)
-        for poly in self.list_poly:
-            if poly.__contains__(point, abs_tol):
-                return True
-        return False
+        return any(point in u for u in self.list_poly)
 
     def __eq__(self, other):
         return self <= other and other <= self
