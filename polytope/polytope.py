@@ -199,16 +199,19 @@ class Polytope(object):
         P.fulldim = self.fulldim
         return P
 
-    def __contains__(self, point, abs_tol=ABS_TOL):
-        """Return True if polytope contains point.
+    def __contains__(self, point):
+        """Return `True` if `self` contains `point`.
 
-        See Also
-        ========
-        L{is_inside}
+        Boundary points are included.
+
+        @param point: column vector, e.g., as `numpy.ndarray`
+        @rtype: bool
+
+        For multiple points, see the method `self.contains`.
         """
         if not isinstance(point, np.ndarray):
             point = np.array(point)
-        test = self.A.dot(point.flatten()) - self.b < abs_tol
+        test = self.A.dot(point.flatten()) - self.b < ABS_TOL
         return np.all(test)
 
     def contains(self, points, abs_tol=ABS_TOL):
@@ -705,12 +708,10 @@ class Region(object):
     def __len__(self):
         return len(self.list_poly)
 
-    def __contains__(self, point, abs_tol=ABS_TOL):
-        """Return True if Region contains point.
+    def __contains__(self, point):
+        """Return `True` if `self` contains `point`.
 
-        See Also
-        ========
-        L{is_inside}
+        See `Polytope.__contains__`.
         """
         if not isinstance(point, np.ndarray):
             point = np.array(point)
