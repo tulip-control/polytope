@@ -1,10 +1,2 @@
-# usage: `pip install -r requirements.txt`
-setuptools==23.0.0
-numpy==1.13.1
-scipy==0.19.1
-networkx
-
-# optional
-cvxopt==1.1.8
-nose
-matplotlib==2.0.2
+-r requirements/default.txt
+-r requirements/test.txt
