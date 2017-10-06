@@ -1506,7 +1506,6 @@ def extreme(poly1):
         # Polytope is 2D
         alf = np.angle(A[:, 0] + 1j * A[:, 1])
         I = np.argsort(alf)
-        Y = alf[I]
         H = np.vstack([A, A[0, :]])
         K = np.hstack([b, b[0]])
         I = np.hstack([I, I[0]])
