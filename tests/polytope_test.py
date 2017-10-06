@@ -5,6 +5,7 @@ import logging
 from nose import tools as nt
 import numpy as np
 from numpy.testing import assert_allclose
+from numpy.testing import assert_array_equal
 import scipy.optimize
 
 import polytope as pc
@@ -233,6 +234,39 @@ class operations_test(object):
         assert pc.is_fulldim(p4)
         assert pc.is_fulldim(p5)
 
+    def polytope_contains_test(self):
+        p = pc.Polytope(self.A, self.b)
+        # single point
+        point_i = [0.1, 0.3]
+        point_o = [2, 0]
+        assert point_i in p
+        assert point_o not in p
+        # multiple points
+        many_points_i = np.random.random((2, 8))
+        many_points_0 = np.random.random((2, 8)) - np.array([[0], [1]])
+        many_points = np.concatenate([many_points_0, many_points_i], axis=1)
+        truth = np.array([False] * 8 + [True] * 8, dtype=bool)
+        assert_array_equal(p.contains(many_points), truth)
+
+    def region_contains_test(self):
+        A = np.array([[1.0],
+                      [-1.0]])
+        b = np.array([1.0, 0.0])
+        poly = pc.Polytope(A, b)
+        polys = [poly]
+        reg = pc.Region(polys)
+        assert 0.5 in reg
+        # small positive tolerance (includes boundary)
+        points = np.array([[-1.0, 0.0, 0.5, 1.0, 2.0]])
+        c = reg.contains(points)
+        c_ = np.array(
+            [[False, True, True, True, False]], dtype=bool)
+        # zero tolerance (excludes boundary)
+        points = np.array([[-1.0, 0.0, 0.5, 1.0, 2.0]])
+        c = reg.contains(points, abs_tol=0)
+        c_ = np.array(
+            [[False, False, True, False, False]], dtype=bool)
+        assert np.all(c == c_), c
 
 
 def solve_rotation_test_090(atol=1e-15):
