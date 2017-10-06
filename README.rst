@@ -2,8 +2,9 @@ Polytope
 ========
 
 This is the source repository for ``polytope``, a toolbox for geometric
-operations on polytopes in any dimension.  Documentation and examples are
-available in the directories ``doc/`` and ``examples/``.
+operations on polytopes in any dimension.  Documentation is available in
+the directory ``doc/`` and also at https://tulip-control.github.io/polytope/
+The directory ``examples/`` contains examples.
 
 
 Installation
