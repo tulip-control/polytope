@@ -1009,10 +1009,12 @@ def is_subset(small, big, abs_tol=ABS_TOL):
 
 
 def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
-    """Removes redundant inequalities in the hyperplane representation
-    of the polytope with the algorithm described at
-    http://www.ifor.math.ethz.ch/~fukuda/polyfaq/node24.html
-    by solving one LP for each facet
+    """Remove redundant inequalities from the hyperplane representation.
+
+    Uses the algorithm described at [1],
+    by solving one LP for each facet.
+
+    [1] http://www.ifor.math.ethz.ch/~fukuda/polyfaq/node24.html
 
     Warning:
       - nonEmptyBounded == 0 case is not tested much.
