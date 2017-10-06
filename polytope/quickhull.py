@@ -29,15 +29,12 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 # OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
-"""Implementation of the Quickhull algorithm for computing convex hulls.
+r"""Implementation of the Quickhull algorithm for computing convex hulls.
 
 Reference
 =========
 
-C. Bradford Barber, David P. Dobkin, Hannu Huhdanpa,
-    "The quickhull algorithm for convex hulls"
-    ACM Transactions on Mathematical Software,
-    Volume 22 Issue 4, Dec. 1996
+\cite{Barber96toms}
 """
 # Created by P. Nilsson, 8/2/11
 from __future__ import absolute_import

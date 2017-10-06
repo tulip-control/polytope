@@ -52,7 +52,7 @@
 #  projection_interhull
 #  projection_exthull
 #
-"""Computational geometry module for polytope computations.
+r"""Computational geometry module for polytope computations.
 
 By default, for linear programming the `polytope` module selects
 the fastest solver that it finds installed. You can change this
@@ -65,6 +65,7 @@ _pt.lp_solver = 'scipy'
 ```
 
 Choose an installed solver to avoid errors.
+The structure of this module is based on \cite{MPT04}.
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -565,10 +566,10 @@ def givens_rotation_matrix(i, j, theta, N):
 
 
 def solve_rotation_ap(u, v):
-    """Return the rotation matrix for the rotation in the plane defined by the
+    r"""Return the rotation matrix for the rotation in the plane defined by the
     vectors u and v across TWICE the angle between u and v.
 
-    This algorithm uses the Aguilera-Perez Algorithm \cite{aguilera2004general}
+    This algorithm uses the Aguilera-Perez Algorithm \cite{Aguilera}
     to generate the rotation matrix. The algorithm works basically as follows:
 
     Starting with the Nth component of u, rotate u towards the (N-1)th
@@ -585,15 +586,6 @@ def solve_rotation_ap(u, v):
 
     NOTE: The precision of this method is limited by sin, cos, and arctan
     functions.
-
-    @inproceedings{aguilera2004general,
-    author = {Aguilera, Antonio and P{\'{e}}rez-Aguila, Ricardo},
-    booktitle = {WSCG' 2004 - 12-th International Conference in Central
-        Europe on Computer Graphics, Visualization and Computer Vision},
-    pages = {227},
-    title = {General n-dimensional rotations},
-    url = {http://hdl.handle.net/11025/6178},
-    year = {2004}}
     """
     # TODO: Assert vectors are non-zero and non-parallel aka exterior
     # product is non-zero

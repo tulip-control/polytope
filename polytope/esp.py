@@ -29,7 +29,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 # OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
-"""Equality Set Projection (ESP).
+r"""Equality Set Projection (ESP).
 
 Non-vertex polytope projection method from
     http://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
@@ -39,11 +39,7 @@ Very unstable, can not handle complex polytopes.
 Reference
 =========
 
-Colin N. Jones, Eric C. Kerrigan and Jan M. Maciejowski,
-    "Equality Set Projection: A new algorithm for the
-     projection of polytopes in halfspace representation"
-    http://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
-    2004
+\cite{Jones04}
 """
 # Created by P. Nilsson, 8/2/11
 from __future__ import absolute_import
