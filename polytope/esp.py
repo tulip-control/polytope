@@ -529,8 +529,10 @@ def adjacent(C, D, b, rid_fac, abs_tol=1e-7):
 
 
 def proj_aff(Ce, De, be, expected_dim=None, abs_tol=1e-7):
-    """Compute the set aff = {x | Ce x + De y = be} on the form
-    aff = ({x | a x = b} intersection {Ce x + De y < be})
+    """Affine projection.
+
+    Compute the set aff = {x | Ce x + De y = be} on the form
+    aff = ({x | a x = b} intersection {Ce x + De y < be}).
 
     Input: Polytope parameters Ce, De and be
 
