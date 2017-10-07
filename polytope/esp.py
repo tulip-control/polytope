@@ -160,8 +160,8 @@ def esp(CC, DD, bb, centered=False, abs_tol=1e-10, verbose=0):
         # min, max
         x_min = min_sol[0]
         x_max = max_sol[0]
-        y_min = min_sol[range(1, k + 1)]
-        y_max = max_sol[range(1, k + 1)]
+        # y_min = min_sol[range(1, k + 1)]
+        # y_max = max_sol[range(1, k + 1)]
         if is_dual_degenerate(c, G, b, None, None, min_sol, min_dual_sol):
             # Min case, relax constraint a little to avoid infeasibility
             E_min = unique_equalityset(
@@ -349,7 +349,7 @@ def ridge(C, D, b, E, af, bf, abs_tol=1e-7, verbose=0):
         Cnew = np.dot(S, V_tilde)
         Dnew = L
         bnew = t - np.dot(S, V_hat).flatten() * bf / sigma
-        Anew = np.hstack([Cnew, Dnew])
+        # Anew = np.hstack([Cnew, Dnew])
         xc2, yc2, cen2 = cheby_center(Cnew, Dnew, bnew)
         bnew = bnew - np.dot(Cnew, xc2).flatten() - np.dot(Dnew, yc2).flatten()
         Gt, gt, E_t = esp(
@@ -539,9 +539,9 @@ def proj_aff(Ce, De, be, expected_dim=None, abs_tol=1e-7):
                 raise Exception(
                     "proj_aff: wrong dimension calculated in 1")
         return a_n.flatten(), b_n
-    sh = np.shape(D.T)
-    m = sh[0]
-    n = sh[1]
+    # sh = np.shape(D.T)
+    # m = sh[0]
+    # n = sh[1]
     nDe = null_space(D.T)
     a = np.dot(nDe.T, Ce)
     b = np.dot(nDe.T, be)
@@ -589,14 +589,14 @@ def is_dual_degenerate(c, G, h, A, b, x_opt, z_opt, abs_tol=1e-7):
     # Indices where active constraints have 0 dual opt
     L = np.nonzero(i + j == 2)[0]
     # sizes
-    nI = len(I)
-    nJ = len(J)
+    # nI = len(I)
+    # nJ = len(J)
     nL = len(L)
     # constraints
     DI = D[I, :]  # Active constraints
     DJ = D[J, :]  # Constraints with positive lagrange mult
     DL = D[L, :]  # Active constraints with zero dual opt
-    dual = 0
+    # dual = 0
     if A is None:
         test = DI
     else:
@@ -688,7 +688,7 @@ def unique_equalityset2(C, D, b, opt_sol, abs_tol=1e-7):
             "unique_equalityset: LP returned status " +
             str(sol['status']))
     opt_sol2 = np.array(sol['x']).flatten()
-    x = opt_sol2[range(0, n)]
+    # x = opt_sol2[range(0, n)]
     s = opt_sol2[range(n, len(opt_sol2))]
     E = np.nonzero(s > abs_tol)[0]
     print(E)

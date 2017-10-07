@@ -71,7 +71,7 @@ class Facet(object):
 
         sh = np.shape(points)
         A0 = np.hstack([points, np.ones([sh[0], 1])])
-        b0 = np.zeros([sh[0], 1])
+        # b0 = np.zeros([sh[0], 1])
         b = np.vstack([np.zeros([sh[0], 1]), 1])
         c = np.zeros(sh[1] + 1)
         c[-1] = -1.
