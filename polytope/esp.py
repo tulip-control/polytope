@@ -46,10 +46,12 @@ Reference
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import pickle
 
 from cvxopt import matrix
 from cvxopt import solvers
 import numpy as np
+from scipy import io as sio
 from scipy import linalg
 
 # Find a lp solver to use
@@ -484,13 +486,11 @@ def adjacent(C, D, b, rid_fac, abs_tol=1e-7):
         print(ar)
         print(br)
         print(np.dot(af, ar))
-        from scipy import io as sio
         data = {}
         data["C"] = C
         data["D"] = D
         data["b"] = b
         sio.savemat("matlabdata", data)
-        import pickle
         pickle.dump(data, open("polytope.p", "wb"))
         raise Exception(
             "adjacent: Lp returned status " + str(sol['status']))
@@ -508,7 +508,6 @@ def adjacent(C, D, b, rid_fac, abs_tol=1e-7):
             expected_dim=1, abs_tol=abs_tol)
         E_adj = unique_equalityset(C, D, b, a_temp, b_temp, abs_tol=abs_tol)
         if len(E_adj) == 0:
-            from scipy import io as sio
             data = {}
             data["C"] = C
             data["D"] = D
