@@ -65,10 +65,14 @@ solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
 
 
 class Ridge(object):
-    """Contains the following information:
-    `E_0`: Equality set of a facet
-    `af,bf`: Affine hull of the facet
-        s.t. P_{E_0} = P intersection {x | af x = bf}.
+    """A ridge.
+
+    Attributes:
+
+    - `E_r`: Equality set of a facet
+
+    - `ar, br`: Affine hull of the facet
+      s.t. P_{E_0} = P intersection {x | ar x = br}.
     """
 
     def __init__(self, E, a, b):
