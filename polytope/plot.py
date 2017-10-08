@@ -147,8 +147,8 @@ def plot_transition_arrow(polyreg0, polyreg1, ax, arr_size=None):
     # brevity
     p0 = polyreg0
     p1 = polyreg1
-    rc0, xc0 = pc.cheby_ball(p0)
-    rc1, xc1 = pc.cheby_ball(p1)
+    _, xc0 = pc.cheby_ball(p0)
+    _, xc1 = pc.cheby_ball(p1)
     if np.sum(np.abs(xc1 - xc0)) < 1e-7:
         return None
     if arr_size is None:

@@ -350,7 +350,7 @@ def ridge(C, D, b, E, af, bf, abs_tol=1e-7, verbose=0):
         Dnew = L
         bnew = t - np.dot(S, V_hat).flatten() * bf / sigma
         # Anew = np.hstack([Cnew, Dnew])
-        xc2, yc2, cen2 = cheby_center(Cnew, Dnew, bnew)
+        xc2, yc2, _ = cheby_center(Cnew, Dnew, bnew)
         bnew = bnew - np.dot(Cnew, xc2).flatten() - np.dot(Dnew, yc2).flatten()
         Gt, gt, E_t = esp(
             Cnew, Dnew, bnew,
@@ -766,7 +766,7 @@ def normalize(AA, bb, abs_tol=1e-7):
 
 
 def rank(A, eps=1e-15):
-    u, s, vh = linalg.svd(A)
+    u, s, _ = linalg.svd(A)
     m = A.shape[0]
     n = A.shape[1]
     tol = np.amax([m, n]) * np.amax(s) * eps

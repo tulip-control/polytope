@@ -826,7 +826,7 @@ class Region(object):
         for poly0 in self:
             for poly1 in other:
                 isect = poly0.intersect(poly1, abs_tol)
-                rp, xp = isect.cheby
+                rp, _ = isect.cheby
                 if rp > abs_tol:
                     P = union(P, isect, check_convex=True)
         return P
@@ -1223,7 +1223,7 @@ def union(polyreg1, polyreg2, check_convex=False):
                 templist = [lst[0]]
                 for ii in xrange(1, N):
                     templist.append(lst[ii])
-                    is_conv, env = is_convex(Region(templist))
+                    is_conv, _ = is_convex(Region(templist))
                     if not is_conv:
                         templist.remove(lst[ii])
                 for poly in templist:
@@ -1643,7 +1643,7 @@ def extreme(poly1):
         # General nD method,
         # solve a vertex enumeration problem for
         # the dual polytope
-        rmid, xmid = cheby_ball(poly1)
+        _, xmid = cheby_ball(poly1)
         A = poly1.A.copy()
         b = poly1.b.copy()
         sh = np.shape(A)
