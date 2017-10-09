@@ -1,6 +1,19 @@
 # Polytope package update history
 
 
+## version 0.2.1 - 24 November 2017
+
+- rename method to `Polytope.contains`, was `are_inside`
+- add method `contains` to `Region`
+- deprecate function `polytope.is_inside`,
+  use `in` and `contains` instead
+- add arg `solver` to function `lpsolve`
+- refactor by introducing new module `solvers`
+- support MOSEK as solver, via function `cvxopt.solvers.lp`
+- require `numpy >= 1.10.0`
+- require `matplotlib >= 2.0.0` for tests
+
+
 ## version 0.2.0 - 7 July 2017
 
 - negate `numpy.array` with operator `~`
