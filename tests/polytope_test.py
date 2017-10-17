@@ -439,7 +439,7 @@ def test_lpsolve_solver_selection_glpk_absent():
             'Skipping GLPK failure test, '
             'because GLPK is present.')
         return
-    with nt.assert_raises(ImportError):
+    with nt.assert_raises(RuntimeError):
         solvers.lpsolve(c, A, b, solver='glpk')
 
 
@@ -457,8 +457,12 @@ def is_glpk_present():
     """Return `True` if `cvxopt.glpk` imports."""
     try:
         import cvxopt.glpk
+        assert 'glpk' in solvers.installed_solvers, (
+            solvers.installed_solvers)
         return True
     except ImportError:
+        assert 'glpk' not in solvers.installed_solvers, (
+            solvers.installed_solvers)
         return False
 
 

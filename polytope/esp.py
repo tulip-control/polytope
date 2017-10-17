@@ -106,10 +106,10 @@ def esp(CC, DD, bb, centered=False, abs_tol=1e-10, verbose=0):
     P = {[C D]x <= b} where C is M x D and D is M x K is
     defined as proj(P) = {x in R^d | exist y in R^k s.t Cx + Dy < b}
     """
-    if solvers.default_solver != 'glpk':
+    if 'glpk' in solvers.installed_solvers:
         raise Exception(
             "projection_esp error:"
-            " Equality set projection requires cvxopt to run.")
+            " Equality set projection requires `cvxopt.glpk` to run.")
     # Remove zero columns and rows
     nonzerorows = np.nonzero(
         np.sum(np.abs(np.hstack([CC, DD])), axis=1) > abs_tol)[0]

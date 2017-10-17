@@ -1,14 +1,22 @@
 """Interface to linear programming solvers.
 
-By default, for linear programming the `polytope` package selects
-the fastest solver that it finds installed. You can change this
-default by setting the variable `lp_solver` in the module
-`_solvers`. For example:
+The `polytope` package selects the default solver as follows:
+
+1. use GLPK if installed
+2. otherwise use SciPy
+
+You can change this default at runtime by setting the variable
+`default_solver` in the module `solvers`.
+
+For example:
 
 ```python
-from polytope import _solvers
+from polytope import solvers
 
-_solvers.lp_solver = 'scipy'
+solvers.default_solver = 'scipy'
+
+# to inspect which solvers were successfully imported:
+print(solvers.installed_solvers)
 ```
 
 Choose an installed solver to avoid errors.
@@ -24,24 +32,33 @@ from scipy import optimize
 
 
 logger = logging.getLogger(__name__)
+installed_solvers = {'scipy'}
 try:
     from cvxopt import matrix, solvers
     import cvxopt.glpk
-    default_solver = 'glpk'
+    installed_solvers.add('glpk')
     # Hide optimizer output
     solvers.options['show_progress'] = False
     solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
-    logger.info('will use `cvxopt.glpk` solver')
 except ImportError:
-    default_solver = 'scipy'
     logger.warn(
-        '`polytope` failed to import `cvxopt.glpk`.\n'
-        'Will use `scipy.optimize.linprog`.')
+        '`polytope` failed to import `cvxopt.glpk`.')
+
+
+# choose default from installed choices
+if 'glpk' in installed_solvers:
+    default_solver = 'glpk'
+elif 'scipy' in installed_solvers:
+    default_solver = 'scipy'
+    logger.warn('will use `scipy.optimize.linprog`')
+else:
+    raise ValueError(
+        "`installed_solvers` wasn't empty above?")
 
 
 
 def lpsolve(c, G, h, solver=None):
-    """Try to solve linear program with `cvxopt.glpk`, else `scipy`.
+    """Try to solve linear program with given or default solver.
 
     Solvers:
         - `cvxopt.glpk`: identified by `'glpk'`
@@ -49,11 +66,7 @@ def lpsolve(c, G, h, solver=None):
 
     @param solver:
         - `in {'glpk', 'scipy'}`
-        - `None`: use the fastest installed solver,
-          as follows:
-
-            1. use GLPK if installed
-            2. otherwise use SciPy
+        - `None`: use the module's `default_solver`
 
         You can change the default choice of solver by setting
         the module variable `default_solver`. See the module's
@@ -64,8 +77,6 @@ def lpsolve(c, G, h, solver=None):
     """
     if solver is None:
         solver = default_solver
-    if solver == 'glpk' and default_solver != 'glpk':
-        raise ImportError('GLPK requested but failed to import.')
     if solver == 'glpk':
         result = _solve_lp_using_glpk(c, G, h)
     elif solver == 'scipy':
@@ -78,7 +89,7 @@ def lpsolve(c, G, h, solver=None):
 
 def _solve_lp_using_glpk(c, G, h, A=None, b=None):
     """Attempt linear optimization using `cvxopt.glpk`."""
-    assert default_solver == 'glpk', 'GLPK failed to import'
+    _assert_have_solver('glpk')
     if A is not None:
         A = matrix(A)
     if b is not None:
@@ -114,6 +125,7 @@ def _solve_lp_using_glpk(c, G, h, A=None, b=None):
 
 def _solve_lp_using_scipy(c, G, h):
     """Attempt linear optimization using `scipy.optimize.linprog`."""
+    _assert_have_solver('scipy')
     sol = optimize.linprog(
         c, G, np.transpose(h),
         None, None, bounds=(None, None))
@@ -121,3 +133,13 @@ def _solve_lp_using_scipy(c, G, h):
         status=sol.status,
         x=sol.x,
         fun=sol.fun)
+
+
+def _assert_have_solver(solver):
+    """Raise `RuntimeError` if `solver` is absent."""
+    if solver in installed_solvers:
+        return
+    raise RuntimeError((
+        'solver {solver} not in '
+        'installed solvers: {have}').format(
+            solver=solver, have=installed_solvers))
