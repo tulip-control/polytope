@@ -409,7 +409,7 @@ def ridge(C, D, b, E, af, bf, abs_tol=1e-7, verbose=0):
                 Ar = np.vstack([af, S[i, :]])
                 A = np.hstack([Al, Ar])
                 bb = np.hstack([bf, t[i]])
-                sol = solvers._solve_lp_using_glpk(
+                sol = solvers._solve_lp_using_cvxopt(
                     c, G, h, A=A, b=bb)
                 if sol['status'] == 'optimal':
                     tau = sol['x'][0]
@@ -459,7 +459,7 @@ def adjacent(C, D, b, rid_fac, abs_tol=1e-7):
     G = np.hstack([C_er, D_er])
     h = b_er
     A = np.hstack([af, np.zeros(k)])
-    sol = solvers._solve_lp_using_glpk(
+    sol = solvers._solve_lp_using_cvxopt(
         c, G, h, A=A.T, b=bf * (1 - 0.01))
     if sol['status'] != "optimal":
         print(G)
@@ -609,7 +609,7 @@ def is_dual_degenerate(c, G, h, A, b, x_opt, z_opt, abs_tol=1e-7):
             be = np.zeros(Ae.shape[0])
             Ai = - DL
             bi = np.zeros(nL)
-            sol = solvers._solve_lp_using_glpk(
+            sol = solvers._solve_lp_using_cvxopt(
                 c= - np.sum(DL, axis=0), G=Ai,
                 h=bi, A=Ae, b=be)
             if sol['status'] == "dual infeasible":
@@ -640,7 +640,7 @@ def unique_equalityset(C, D, b, af, bf, abs_tol=1e-7, verbose=0):
     for i in range(A.shape[0]):
         A_i = np.array(A[i, :])
         b_i = b[i]
-        sol = solvers._solve_lp_using_glpk(
+        sol = solvers._solve_lp_using_cvxopt(
             c=A_i, G=A, h=b,
             A=a.T, b=bf)
         if sol['status'] != "optimal":

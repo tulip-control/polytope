@@ -43,6 +43,11 @@ try:
 except ImportError:
     logger.warn(
         '`polytope` failed to import `cvxopt.glpk`.')
+try:
+    import mosek
+    installed_solvers.add('mosek')
+except ImportError:
+    logger.info('MOSEK solver not found.')
 
 
 # choose default from installed choices
@@ -63,9 +68,10 @@ def lpsolve(c, G, h, solver=None):
     Solvers:
         - `cvxopt.glpk`: identified by `'glpk'`
         - `scipy.optimize.linprog`: identified by `'scipy'`
+        - MOSEK: identified by `'mosek'`
 
     @param solver:
-        - `in {'glpk', 'scipy'}`
+        - `in {'glpk', 'mosek', 'scipy'}`
         - `None`: use the module's `default_solver`
 
         You can change the default choice of solver by setting
@@ -77,8 +83,8 @@ def lpsolve(c, G, h, solver=None):
     """
     if solver is None:
         solver = default_solver
-    if solver == 'glpk':
-        result = _solve_lp_using_glpk(c, G, h)
+    if solver == 'glpk' or solver == 'mosek':
+        result = _solve_lp_using_cvxopt(c, G, h, solver=solver)
     elif solver == 'scipy':
         result = _solve_lp_using_scipy(c, G, h)
     else:
@@ -87,16 +93,19 @@ def lpsolve(c, G, h, solver=None):
     return result
 
 
-def _solve_lp_using_glpk(c, G, h, A=None, b=None):
-    """Attempt linear optimization using `cvxopt.glpk`."""
-    _assert_have_solver('glpk')
+def _solve_lp_using_cvxopt(c, G, h, A=None, b=None, solver='glpk'):
+    """Attempt linear optimization using `cvxopt.glpk` or MOSEK.
+
+    @param solver: `in {'glpk', 'mosek'}`
+    """
+    _assert_have_solver(solver)
     if A is not None:
         A = matrix(A)
     if b is not None:
         b = matrix(b)
     sol = solvers.lp(
         c=matrix(c), G=matrix(G), h=matrix(h),
-        A=A, b=b, solver='glpk')
+        A=A, b=b, solver=solver)
     result = dict()
     if sol['status'] == 'optimal':
         result['status'] = 0
