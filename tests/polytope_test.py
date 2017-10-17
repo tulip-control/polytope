@@ -378,7 +378,7 @@ def givens_rotation_test_270L(atol=1e-15):
 def test_lpsolve():
     # Ensure same API for both `scipy` and `cvxopt`.
     # Ensured by the different testing configurations.
-    # Could change `polytope.polytope.lp_solver` to
+    # Could change `polytope.polytope.default_solver` to
     # achieve the same result, when `cvxopt.glpk` is present.
     #
     # 2-D example
@@ -448,8 +448,8 @@ def test_request_glpk_after_changing_default_to_scipy():
     have_glpk = is_glpk_present()
     if not have_glpk:
         return
-    assert solvers.lp_solver != 'scipy'
-    solvers.lp_solver = 'scipy'
+    assert solvers.default_solver != 'scipy'
+    solvers.default_solver = 'scipy'
     solvers.lpsolve(c, A, b, solver='glpk')
 
 

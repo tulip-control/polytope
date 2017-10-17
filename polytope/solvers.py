@@ -27,13 +27,13 @@ logger = logging.getLogger(__name__)
 try:
     from cvxopt import matrix, solvers
     import cvxopt.glpk
-    lp_solver = 'glpk'
+    default_solver = 'glpk'
     # Hide optimizer output
     solvers.options['show_progress'] = False
     solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
     logger.info('will use `cvxopt.glpk` solver')
 except ImportError:
-    lp_solver = 'scipy'
+    default_solver = 'scipy'
     logger.warn(
         '`polytope` failed to import `cvxopt.glpk`.\n'
         'Will use `scipy.optimize.linprog`.')
@@ -56,15 +56,15 @@ def lpsolve(c, G, h, solver=None):
             2. otherwise use SciPy
 
         You can change the default choice of solver by setting
-        the module variable `lp_solver`. See the module's
+        the module variable `default_solver`. See the module's
         docstring for an example.
 
     @return: solution with status as in `scipy.optimize.linprog`
     @rtype: `dict(status=int, x=argmin, fun=min_value)`
     """
     if solver is None:
-        solver = lp_solver  # choose fastest installed solver
-    if solver == 'glpk' and lp_solver != 'glpk':
+        solver = default_solver
+    if solver == 'glpk' and default_solver != 'glpk':
         raise ImportError('GLPK requested but failed to import.')
     if solver == 'glpk':
         result = _solve_lp_using_glpk(c, G, h)
@@ -72,13 +72,13 @@ def lpsolve(c, G, h, solver=None):
         result = _solve_lp_using_scipy(c, G, h)
     else:
         raise Exception(
-            'unknown LP solver "{s}".'.format(s=lp_solver))
+            'unknown LP solver "{s}".'.format(s=default_solver))
     return result
 
 
 def _solve_lp_using_glpk(c, G, h, A=None, b=None):
     """Attempt linear optimization using `cvxopt.glpk`."""
-    assert lp_solver == 'glpk', 'GLPK failed to import'
+    assert default_solver == 'glpk', 'GLPK failed to import'
     if A is not None:
         A = matrix(A)
     if b is not None:
