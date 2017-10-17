@@ -443,6 +443,16 @@ def test_lpsolve_solver_selection_glpk_absent():
         solvers.lpsolve(c, A, b, solver='glpk')
 
 
+def test_request_glpk_after_changing_default_to_scipy():
+    c, A, b = example_1d()
+    have_glpk = is_glpk_present()
+    if not have_glpk:
+        return
+    assert solvers.lp_solver != 'scipy'
+    solvers.lp_solver = 'scipy'
+    solvers.lpsolve(c, A, b, solver='glpk')
+
+
 def is_glpk_present():
     """Return `True` if `cvxopt.glpk` imports."""
     try:
