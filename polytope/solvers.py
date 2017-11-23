@@ -1,3 +1,5 @@
+# Copyright (c) 2011-2017 by California Institute of Technology
+# All rights reserved. Licensed under 3-clause BSD.
 """Interface to linear programming solvers.
 
 The `polytope` package selects the default solver as follows:
@@ -21,9 +23,6 @@ print(solvers.installed_solvers)
 
 Choose an installed solver to avoid errors.
 """
-# Copyright (c) 2011-2017 by California Institute of Technology
-# All rights reserved. Licensed under BSD-3.
-#
 from __future__ import absolute_import
 import logging
 
