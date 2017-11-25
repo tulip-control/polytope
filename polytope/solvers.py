@@ -33,14 +33,14 @@ from scipy import optimize
 logger = logging.getLogger(__name__)
 installed_solvers = {'scipy'}
 try:
+    import cvxopt as cvx
     import cvxopt.glpk
     from cvxopt import matrix
-    from cvxopt import solvers
 
     installed_solvers.add('glpk')
     # Hide optimizer output
-    solvers.options['show_progress'] = False
-    solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
+    cvx.solvers.options['show_progress'] = False
+    cvx.solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
 except ImportError:
     logger.warn(
         '`polytope` failed to import `cvxopt.glpk`.')
@@ -104,7 +104,7 @@ def _solve_lp_using_cvxopt(c, G, h, A=None, b=None, solver='glpk'):
         A = matrix(A)
     if b is not None:
         b = matrix(b)
-    sol = solvers.lp(
+    sol = cvx.solvers.lp(
         c=matrix(c), G=matrix(G), h=matrix(h),
         A=A, b=b, solver=solver)
     result = dict()
