@@ -33,8 +33,10 @@ from scipy import optimize
 logger = logging.getLogger(__name__)
 installed_solvers = {'scipy'}
 try:
-    from cvxopt import matrix, solvers
     import cvxopt.glpk
+    from cvxopt import matrix
+    from cvxopt import solvers
+
     installed_solvers.add('glpk')
     # Hide optimizer output
     solvers.options['show_progress'] = False
