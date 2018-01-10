@@ -22,7 +22,7 @@ def test_polytope_str():
     b = np.array([1])
     p = pc.Polytope(A, b)
     s = str(p)
-    s_ = 'Single polytope \n  [[ 1.]] x <= [[ 1.]]\n'
+    s_ = 'Single polytope \n  [[1.]] x <= [[1.]]\n'
     assert s == s_, (s, s_)
     # > 1 constraints (so multiline)
     polys = dict(
@@ -30,16 +30,16 @@ def test_polytope_str():
         p2d=[[0, 1], [0, 2]],
         p3d=[[0, 1], [0, 2], [0, 3]])
     strings = dict(
-        p1d='Single polytope \n  [[ 1.] x <= [[ 1.]\n   [-1.]]|     [ 0.]]\n',
+        p1d='Single polytope \n  [[ 1.] x <= [[1.]\n   [-1.]]|     [0.]]\n',
         p2d=(
-            'Single polytope \n  [[ 1.  0.] |    [[ 1.]\n   [ 0.  1.] '
-            'x <=  [ 2.]\n   [-1. -0.] |     [ 0.]\n   [-0. -1.]]|'
-            '     [ 0.]]\n'),
+            'Single polytope \n  [[ 1.  0.] |    [[1.]\n   [ 0.  1.] '
+            'x <=  [2.]\n   [-1. -0.] |     [0.]\n   [-0. -1.]]|'
+            '     [0.]]\n'),
         p3d=(
-            'Single polytope \n  [[ 1.  0.  0.] |    [[ 1.]\n   '
-            '[ 0.  1.  0.] |     [ 2.]\n   [ 0.  0.  1.] x <=  [ 3.]\n'
-            '   [-1. -0. -0.] |     [ 0.]\n   [-0. -1. -0.] |'
-            '     [ 0.]\n   [-0. -0. -1.]]|     [ 0.]]\n'))
+            'Single polytope \n  [[ 1.  0.  0.] |    [[1.]\n   '
+            '[ 0.  1.  0.] |     [2.]\n   [ 0.  0.  1.] x <=  [3.]\n'
+            '   [-1. -0. -0.] |     [0.]\n   [-0. -1. -0.] |'
+            '     [0.]\n   [-0. -0. -1.]]|     [0.]]\n'))
     for name, poly in polys.items():
         p = pc.Polytope.from_box(poly)
         s = str(p)
