@@ -20,7 +20,7 @@ addons:
 
 before_install:
   - pip install --ignore-installed --upgrade pip setuptools wheel
-  - pip install --only-binary=numpy,scipy numpy scipy
+  - pip install -U --only-binary=numpy,scipy numpy scipy
   - pip install matplotlib
   - pip install nose
 
