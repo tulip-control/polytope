@@ -40,7 +40,7 @@ try:
     installed_solvers.add('glpk')
     # Hide optimizer output
     cvx.solvers.options['show_progress'] = False
-    cvx.solvers.options['glpk'] = dict(msg_lev='GLP_MSG_OFF')
+    cvx.glpk.options['msg_lev'] = 'GLP_MSG_OFF'
 except ImportError:
     logger.warn(
         '`polytope` failed to import `cvxopt.glpk`.')
