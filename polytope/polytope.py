@@ -400,20 +400,18 @@ class Polytope(object):
             self.bbox = bounding_box(self)
         return self.bbox
 
-    def plot(self, ax=None, color=None,
-             hatch=None, alpha=1.0):
+    def plot(self, ax=None, color=None, hatch=None, alpha=1.0, linestyle=None, linewidth=None, edgecolor=None):
         if self.dim != 2:
             raise Exception("Cannot plot polytopes of dimension larger than 2")
         ax = _newax(ax)
         if not is_fulldim(self):
-            logger.error("Cannot plot empty polytope")
             return None
         if color is None:
             color = np.random.rand(3)
         poly = _get_patch(
             self, facecolor=color, hatch=hatch,
-            alpha=alpha, linestyle='dashed', linewidth=3,
-            edgecolor='black')
+            alpha=alpha, linestyle=linestyle, linewidth=linewidth,
+            edgecolor=edgecolor)
         ax.add_patch(poly)
         return ax
 
