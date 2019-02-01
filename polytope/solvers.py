@@ -42,7 +42,7 @@ try:
     cvx.solvers.options['show_progress'] = False
     cvx.glpk.options['msg_lev'] = 'GLP_MSG_OFF'
 except ImportError:
-    logger.warn(
+    logger.warning(
         '`polytope` failed to import `cvxopt.glpk`.')
 try:
     import mosek
@@ -56,7 +56,7 @@ if 'glpk' in installed_solvers:
     default_solver = 'glpk'
 elif 'scipy' in installed_solvers:
     default_solver = 'scipy'
-    logger.warn('will use `scipy.optimize.linprog`')
+    logger.warning('will use `scipy.optimize.linprog`')
 else:
     raise ValueError(
         "`installed_solvers` wasn't empty above?")
