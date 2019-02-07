@@ -403,8 +403,15 @@ class Polytope(object):
     def plot(self, ax=None, color=None, hatch=None, alpha=1.0, linestyle=None, linewidth=None, edgecolor=None):
         if self.dim != 2:
             raise Exception("Cannot plot polytopes of dimension larger than 2")
+        
+        # Setting default values for plotting
+        linestyle = linestyle or "dashed"
+        linewidth = linewidth or 3
+        edgecolor = edgecolor or "black"
+        
         ax = _newax(ax)
         if not is_fulldim(self):
+            logger.error("Cannot plot empty polytope")
             return None
         if color is None:
             color = np.random.rand(3)
@@ -854,8 +861,7 @@ class Region(object):
             self.bbox = bounding_box(self)
         return self.bbox
 
-    def plot(self, ax=None, color=None,
-             hatch=None, alpha=1.0):
+    def plot(self, ax=None, color=None, hatch=None, alpha=1.0, linestyle=None, linewidth=None, edgecolor=None):
         """Plot a `polytope` on axes `ax`."""
         # TODO optional arg for text label
         if self.dim != 2:
@@ -868,7 +874,8 @@ class Region(object):
             color = np.random.rand(3)
         for poly2 in self.list_poly:
             # TODO hatched polytopes in same region
-            poly2.plot(ax, color=color, hatch=hatch, alpha=alpha)
+            poly2.plot(ax, color=color, hatch=hatch, alpha=alpha, linestyle=linestyle, linewidth=linewidth,
+                       edgecolor=edgecolor)
         return ax
 
     def text(self, txt, ax=None, color='black'):
