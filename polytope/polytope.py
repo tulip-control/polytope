@@ -251,7 +251,7 @@ class Polytope(object):
         @rtype: L{Polytope} or L{Region}
         """
         if isinstance(other, Region):
-            return other.intersect(self)
+            return other.intersect(self, abs_tol=abs_tol)
         if not isinstance(other, Polytope):
             msg = 'Polytope intersection defined only'
             msg += ' with other Polytope. Got instead: '
@@ -1346,7 +1346,7 @@ def envelope(reg, abs_tol=ABS_TOL):
         else:
             Ae = np.vstack([Ae, poly1.A[ind_i, :]])
             be = np.hstack([be, poly1.b[ind_i]])
-    ret = reduce(Polytope(Ae, be))
+    ret = reduce(Polytope(Ae, be), abs_tol=abs_tol)
     if is_fulldim(ret):
         return ret
     else:
@@ -1405,9 +1405,9 @@ def intersect(poly1, poly2, abs_tol=ABS_TOL):
     # raise NotImplementedError('Being removed,
     # use {Polytope, Region}.intersect instead')
     if isinstance(poly1, Region):
-        return poly1.intersect(poly2)
+        return poly1.intersect(poly2, abs_tol=abs_tol)
     if isinstance(poly2, Region):
-        return poly2.intersect(poly1)
+        return poly2.intersect(poly1, abs_tol=abs_tol)
     if not isinstance(poly1, Polytope):
         msg = 'poly1 not Region nor Polytope.'
         msg += 'Got instead: ' + str(type(poly1))
@@ -1847,7 +1847,7 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
         if sol['status'] == 0:
             vert2 = sol['x']
         vert = np.vstack([vert1, vert2])
-        return qhull(vert)
+        return qhull(vert, abs_tol=abs_tol)
     else:
         OK = False
         cnt = 0
@@ -1885,7 +1885,7 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
         logger.debug("Found starting simplex after " +
                      str(cnt) + " iterations")
         cnt = 0
-        P1 = qhull(Vert[:, new_dim])
+        P1 = qhull(Vert[:, new_dim], abs_tol=abs_tol)
         HP = None
         while True:
             # Iteration:
@@ -1935,12 +1935,12 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
                         HP = np.vstack([HP, add])
                     Vert = np.vstack([Vert, xopt])
             logger.debug("Taking convex hull of new points")
-            P2 = qhull(Vert[:, new_dim])
+            P2 = qhull(Vert[:, new_dim], abs_tol=abs_tol)
             logger.debug("Checking if new points are inside convex hull")
             OK = 1
             for i in xrange(np.shape(Vert)[0]):
                 if not P1.contains(np.transpose([Vert[i, new_dim]]),
-                                   abs_tol=1e-5):
+                                   abs_tol=abs_tol):
                     # If all new points are inside
                     # old polytope -> Finished
                     OK = 0
