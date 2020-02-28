@@ -1933,7 +1933,8 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
             logger.debug("Checking if new points are inside convex hull")
             OK = 1
             for i in xrange(np.shape(Vert)[0]):
-                if not P1.contains([Vert[i, new_dim]], abs_tol=1e-5):
+                if not P1.contains(np.transpose([Vert[i, new_dim]]),
+                                   abs_tol=1e-5):
                     # If all new points are inside
                     # old polytope -> Finished
                     OK = 0
