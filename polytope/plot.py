@@ -116,7 +116,7 @@ def plot_partition(
         # single polytope or region ?
         reg.plot(color=col, ax=ax)
         if plot_numbers:
-            reg.text(str(i), ax, color='red')
+            reg.text(str(i), ax, color='black')
     # not show trans ?
     if trans is 'none':
         mpl.pyplot.show()

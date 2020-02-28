@@ -90,7 +90,7 @@ def lpsolve(c, G, h, solver=None):
         result = _solve_lp_using_scipy(c, G, h)
     else:
         raise Exception(
-            'unknown LP solver "{s}".'.format(s=default_solver))
+            'unknown LP solver "{s}".'.format(s=solver))
     return result
 
 
