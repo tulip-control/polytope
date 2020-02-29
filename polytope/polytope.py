@@ -964,12 +964,18 @@ def is_convex(reg, abs_tol=ABS_TOL):
 
 
 def is_inside(polyreg, point, abs_tol=ABS_TOL):
-    """Return `point in polyreg`."""
+    """Return `point in polyreg`.
+
+    @type point: `collections.abc.Sequence` or `numpy.ndarray`
+    @rtype: bool
+    """
     warnings.warn(
         'Write `point in polyreg` instead of '
         'calling this function.',
         DeprecationWarning)
-    return polyreg.__contains__(point, abs_tol)
+    if not isinstance(point, np.ndarray):
+        point = np.array(point)
+    return polyreg.contains(point[:, np.newaxis], abs_tol)[0]
 
 
 def is_subset(small, big, abs_tol=ABS_TOL):

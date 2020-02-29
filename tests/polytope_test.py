@@ -268,6 +268,26 @@ class operations_test(object):
             [[False, False, True, False, False]], dtype=bool)
         assert np.all(c == c_), c
 
+    def is_inside_test(self):
+        box = [[0.0, 1.0], [0.0, 2.0]]
+        p = pc.Polytope.from_box(box)
+        point = np.array([0.0, 1.0])
+        abs_tol = 0.01
+        assert pc.is_inside(p, point)
+        assert pc.is_inside(p, point, abs_tol)
+        region = pc.Region([p])
+        assert pc.is_inside(region, point)
+        assert pc.is_inside(region, point, abs_tol)
+        point = np.array([2.0, 0.0])
+        assert not pc.is_inside(p, point)
+        assert not pc.is_inside(p, point, abs_tol)
+        region = pc.Region([p])
+        assert not pc.is_inside(region, point)
+        assert not pc.is_inside(region, point, abs_tol)
+        abs_tol = 1.2
+        assert pc.is_inside(p, point, abs_tol)
+        assert pc.is_inside(region, point, abs_tol)
+
 
 def solve_rotation_test_090(atol=1e-15):
     g1 = np.array([0, 1, 1, 0])
