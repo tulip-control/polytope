@@ -32,7 +32,7 @@
 """polytope package version"""
 import os.path
 
-version_info = (0, 2, 2)
+version_info = (0, 2, 3)
 
 version = '.'.join([str(x) for x in version_info])
 
