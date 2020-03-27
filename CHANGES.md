@@ -1,6 +1,11 @@
 # Polytope package update history
 
 
+## version 0.2.2 - 27 March 2020
+
+- customizable plotting in methods `Polytope.plot` and `Region.plot`
+
+
 ## version 0.2.1 - 24 November 2017
 
 - rename method to `Polytope.contains`, was `are_inside`
