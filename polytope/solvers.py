@@ -49,9 +49,17 @@ try:
 except ImportError:
     logger.info('MOSEK solver not found.')
 
+try:
+    import gurobipy as gp
+    installed_solvers.add('gurobi')
+except ImportError:
+    logger.info('GUROBI solver not found')
+
 
 # choose default from installed choices
-if 'glpk' in installed_solvers:
+if 'gurobi' in installed_solvers:
+    default_solver = 'gurobi'
+elif 'glpk' in installed_solvers:
     default_solver = 'glpk'
 elif 'scipy' in installed_solvers:
     default_solver = 'scipy'
@@ -59,7 +67,6 @@ elif 'scipy' in installed_solvers:
 else:
     raise ValueError(
         "`installed_solvers` wasn't empty above?")
-
 
 
 def lpsolve(c, G, h, solver=None):
@@ -87,6 +94,8 @@ def lpsolve(c, G, h, solver=None):
         result = _solve_lp_using_cvxopt(c, G, h, solver=solver)
     elif solver == 'scipy':
         result = _solve_lp_using_scipy(c, G, h)
+    elif solver == 'gurobi':
+        result = _solve_lp_using_gurobi(c, G, h)
     else:
         raise Exception(
             'unknown LP solver "{s}".'.format(s=solver))
@@ -143,6 +152,34 @@ def _solve_lp_using_scipy(c, G, h):
         status=sol.status,
         x=sol.x,
         fun=sol.fun)
+
+
+def _solve_lp_using_gurobi(c, G, h):
+    """Attempt linear optimization using gurobipy"""
+    _assert_have_solver('gurobi')
+    m = gp.Model()
+    x = m.addMVar(G.shape[1], lb=-gp.GRB.INFINITY)
+    m.addConstr(G@x <= h)
+    m.setObjective(c@x)
+    m.optimize()
+
+    result = dict()
+    if m.Status == gp.GRB.OPTIMAL:
+        result['status'] = 0
+        result['x'] = x.x
+        result['fun'] = m.ObjVal
+        return result
+    elif m.Status == gp.GRB.INFEASIBLE:
+        result['status'] = 2
+    elif m.Status == gp.GRB.INF_OR_UNBD or m.Status == gp.GRB.UNBOUNDED:
+        result['status'] = 3
+    else:
+        raise ValueError(f'`gurobipy` returned unexpected status value: {m.Status}')
+
+    result['x'] = None
+    result['fun'] = None
+    return result
+
 
 
 def _assert_have_solver(solver):

@@ -616,5 +616,14 @@ def test_reduce():
     assert_allclose(u, np.array([[50.], [1.]]), rtol=1e-07, atol=1e-07)
 
 
+def test_gurobipy_return_same_result_as_scipy():
+    c, A, b = example_1d()
+    result_gurobi = solvers.lpsolve(c, A, b, solver='gurobi')
+    result_scipy = solvers.lpsolve(c, A, b, solver='scipy')
+    nt.assert_equal(result_scipy['status'], result_gurobi['status'])
+    nt.assert_almost_equal(result_scipy['x'][0], result_gurobi['x'][0])
+    nt.assert_almost_equal(result_scipy['fun'], result_gurobi['fun'])
+
+
 if __name__ == '__main__':
     pass
