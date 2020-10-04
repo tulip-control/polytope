@@ -486,5 +486,14 @@ def is_glpk_present():
         return False
 
 
+def test_gurobipy_return_same_result_as_scipy():
+    c, A, b = example_1d()
+    result_gurobi = solvers.lpsolve(c, A, b, solver='gurobi')
+    result_scipy = solvers.lpsolve(c, A, b, solver='scipy')
+    nt.assert_equal(result_scipy['status'], result_gurobi['status'])
+    nt.assert_almost_equal(result_scipy['x'][0], result_gurobi['x'][0])
+    nt.assert_almost_equal(result_scipy['fun'], result_gurobi['fun'])
+
+
 if __name__ == '__main__':
     pass
