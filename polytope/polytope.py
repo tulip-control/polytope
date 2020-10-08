@@ -118,8 +118,8 @@ class Polytope(object):
             self, A=np.array([]), b=np.array([]), minrep=False,
             chebR=0, chebX=None, fulldim=None,
             volume=None, vertices=None, normalize=True):
-        self.A = A.astype(float)
-        self.b = b.astype(float).flatten()
+        self._A = A.astype(float)
+        self._b = b.astype(float).flatten()
         if A.size > 0 and normalize:
             # Normalize
             Anorm = np.sqrt(np.sum(A * A, 1)).flatten()
@@ -194,6 +194,7 @@ class Polytope(object):
             point = np.array(point)
         test = self.A.dot(point.flatten()) - self.b < ABS_TOL
         return np.all(test)
+
 
     def contains(self, points, abs_tol=ABS_TOL):
         """Return Boolean array of whether each point in `self`.
@@ -399,6 +400,24 @@ class Polytope(object):
         if self.bbox is None:
             self.bbox = bounding_box(self)
         return self.bbox
+
+    @property
+    def A(self):
+        """Gets the value of the A matrix
+            No setter defined to be read only
+
+        """
+        return self._A
+
+
+    @property
+    def b(self):
+        """Gets the value of the b vector
+            No setter defined to be read only
+        """
+        return self._b
+
+
 
     def plot(self, ax=None, color=None, hatch=None, alpha=1.0, linestyle=None, linewidth=None, edgecolor=None):
         if self.dim != 2:
