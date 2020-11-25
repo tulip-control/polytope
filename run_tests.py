@@ -7,7 +7,8 @@ TuLiP (http://tulip-control.org).
 """
 from __future__ import absolute_import
 from __future__ import print_function
-import imp
+# import imp  # inline
+# import importlib  # inline
 import sys
 import os.path
 
@@ -81,8 +82,13 @@ if __name__ == "__main__":
         except ValueError:
             pass
     try:
-        modtuple = imp.find_module("polytope", sys.path)
-        imp.load_module("polytope", *modtuple)
+        if sys.version_info.major == 2:
+            import imp
+            modtuple = imp.find_module("polytope", sys.path)
+            imp.load_module("polytope", *modtuple)
+        else:
+            import importlib
+            importlib.import_module('polytope')
     except ImportError:
         if require_nonlocaldir_polytope:
             raise ImportError(

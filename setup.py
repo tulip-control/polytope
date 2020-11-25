@@ -4,10 +4,12 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import imp
+# import imp  # inline
+# import importlib  # inline
 import os
 from setuptools import setup
 import subprocess
+import sys
 
 
 classifiers = [
@@ -94,8 +96,17 @@ def run_setup():
             f.write(commit_hash_header + '\n')
             f.write(sha1 + '\n')
     # Import polytope/version.py without importing polytope
-    version = imp.load_module('version',
-                              *imp.find_module('version', ['polytope']))
+    if sys.version_info.major == 2:
+        import imp
+        version = imp.load_module('version',
+                                  *imp.find_module('version', ['polytope']))
+    else:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            'version', 'polytope/version.py')
+        version = importlib.util.module_from_spec(spec)
+        sys.modules['version'] = version
+        spec.loader.exec_module(version)
     polytope_version = version.version
     setup(
         name='polytope',
