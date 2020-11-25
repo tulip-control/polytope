@@ -1,6 +1,12 @@
 # Polytope package update history
 
 
+## version 0.2.3 - 25 November 2020
+
+- require `cvxopt == 1.2.5` in `requirements/extras.txt`
+  to support Python 3.9
+
+
 ## version 0.2.2 - 27 March 2020
 
 - customizable plotting in methods `Polytope.plot` and `Region.plot`
