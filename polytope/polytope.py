@@ -1005,7 +1005,7 @@ def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     Uses the algorithm described at [1],
     by solving one LP for each facet.
 
-    [1] http://www.ifor.math.ethz.ch/~fukuda/polyfaq/node24.html
+    [1] https://www.cs.mcgill.ca/~fukuda/soft/polyfaq/node24.html
 
     Warning:
       - nonEmptyBounded == 0 case is not tested much.
@@ -1040,6 +1040,7 @@ def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     # first eliminate the linearly dependent rows
     # corresponding to the same hyperplane
     M1 = np.hstack([A_arr, np.array([b_arr]).T]).T
+    # Normalize all rows
     M1row = 1 / np.sqrt(np.sum(M1**2, 0))
     M1n = np.dot(M1, np.diag(M1row))
     M1n = M1n.T
@@ -1047,6 +1048,9 @@ def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     for i in xrange(neq):
         keep_i = 1
         for j in xrange(i + 1, neq):
+            # If the product of two vectors are close to 1,
+            # since they are both unit vectors,
+            # they must represent the same hyperplane
             if np.dot(M1n[i].T, M1n[j]) > 1 - abs_tol:
                 keep_i = 0
         if keep_i:
@@ -1060,8 +1064,15 @@ def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     # Now eliminate hyperplanes outside the bounding box
     if neq > 3 * nx:
         lb, ub = Polytope(A_arr, b_arr).bounding_box
-        # cand = -(np.dot((A_arr>0)*A_arr,ub-lb)
-        #-(b_arr-np.dot(A_arr,lb).T).T<-1e-4)
+        # Do a coordinate system translation such that the lower bound is
+        # moved to the origin
+        #       A*(x-lb) <= b - A*lb
+        # Relative to the origin, a row ai in A with only positive coefficients
+        # represents an upper bound. If ai*(x1-lb) <= bi, the hyperplane is above x1.
+        # Hence, if ai*(ub-lb) <= bi, then the hyperplane at row i does not intersect
+        # the bounding box. The same holds for rows with negative coefficients
+        # multiplied with the origin. Rows with both negative and positive coefficients
+        # are a mixture of the two extremes.
         cand = ~ (np.dot((A_arr > 0) * A_arr, ub - lb) -
                   (np.array([b_arr]).T - np.dot(A_arr, lb)) < -1e-4)
         A_arr = A_arr[cand.squeeze()]
@@ -1070,15 +1081,21 @@ def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     if nonEmptyBounded:
         if neq <= nx + 1:
             return Polytope(A_arr, b_arr)
+    # Check for each inequality whether it is implied by the other inequalities, i.e., is it redundant?
     del keep_row[:]
-    for k in xrange(A_arr.shape[0]):
+    for k in xrange(neq):
+        # Setup object function to maximize the linear function defined as current row of A matrix
         f = -A_arr[k, :]
         G = A_arr
         h = b_arr
+        # Give some slack in the current inequality
         h[k] += 0.1
         sol = lpsolve(f, G, h)
         h[k] -= 0.1
         if sol['status'] == 0:
+            # If the maximum is greater than the constraint of
+            # the inequality, then the inequality constrains solutions
+            # and thus the inequality is non-redundant
             obj = -sol['fun'] - h[k]
             if obj > abs_tol:
                 keep_row.append(k)
