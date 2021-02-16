@@ -1805,7 +1805,7 @@ def projection_fm(poly1, new_dim, del_dim, abs_tol=ABS_TOL):
     poly = poly1.copy()
     for i in del_dim:
         positive = np.nonzero(poly.A[:, i] > abs_tol)[0]
-        negative = np.nonzero(poly.A[:, i] < abs_tol)[0]
+        negative = np.nonzero(poly.A[:, i] < -abs_tol)[0]
         null = np.nonzero(np.abs(poly.A[:, i]) < abs_tol)[0]
         nr = len(null) + len(positive) * len(negative)
         nc = np.shape(poly.A)[0]
