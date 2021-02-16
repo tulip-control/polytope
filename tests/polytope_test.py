@@ -486,5 +486,29 @@ def is_glpk_present():
         return False
 
 
+def test_reduce():
+    a = np.array([
+        [1.0, 0.1],
+        [1.0, 0.1],
+        [-1., 0.],
+        [0., 1.],
+        [0., -1.]
+    ])
+
+    b = np.array([
+        50.,
+        50.5,
+        -40.,
+        1.,
+        0.
+    ])
+
+    poly = pc.Polytope(a, b)
+    poly2 = pc.reduce(poly)
+    l, u = poly2.bounding_box
+    assert_allclose(l, np.array([[40.], [0.]]), rtol=1e-07, atol=1e-07)
+    assert_allclose(u, np.array([[50.], [1.]]), rtol=1e-07, atol=1e-07)
+
+
 if __name__ == '__main__':
     pass

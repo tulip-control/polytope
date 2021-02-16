@@ -1039,22 +1039,24 @@ def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     neq = np.shape(A_arr)[0]
     # first eliminate the linearly dependent rows
     # corresponding to the same hyperplane
-    M1 = np.hstack([A_arr, np.array([b_arr]).T]).T
     # Normalize all rows
-    M1row = 1 / np.sqrt(np.sum(M1**2, 0))
-    M1n = np.dot(M1, np.diag(M1row))
-    M1n = M1n.T
-    keep_row = []
+    a_norm = 1 / np.sqrt(np.sum(A_arr.T**2, 0))
+    a_normed = np.dot(A_arr.T, np.diag(a_norm)).T
+    remove_row = []
     for i in xrange(neq):
-        keep_i = 1
         for j in xrange(i + 1, neq):
             # If the product of two vectors are close to 1,
             # since they are both unit vectors,
-            # they must represent the same hyperplane
-            if np.dot(M1n[i].T, M1n[j]) > 1 - abs_tol:
-                keep_i = 0
-        if keep_i:
-            keep_row.append(i)
+            # they must represent parallel hyperplanes
+            if np.dot(a_normed[i].T, a_normed[j]) > 1 - abs_tol:
+                # Check which inequality that constrains the most
+                b_in = b_arr[i] * a_norm[i]
+                b_jn = b_arr[j] * a_norm[j]
+                if b_in < b_jn:
+                    remove_row.append(j)
+                else:
+                    remove_row.append(i)
+    keep_row = np.setdiff1d(range(neq), remove_row).tolist()
     A_arr = A_arr[keep_row]
     b_arr = b_arr[keep_row]
     neq, nx = A_arr.shape
