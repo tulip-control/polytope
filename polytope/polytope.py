@@ -93,8 +93,13 @@ ABS_TOL = 1e-7
 
 
 class Polytope(object):
-    """Polytope class with following fields
+    """A convex polytope, in half-space representation.
 
+    The minimal vertex representation can be computed with
+    the function `extreme`. A minimal half-space representation can
+    be computed from a vertex representation with the function `qhull`.
+
+    Attributes:
       - `A`: a numpy array for the hyperplane normals in hyperplane
              representation of a polytope
       - `b`: a numpy array for the hyperplane offsets in hyperplane
@@ -109,9 +114,13 @@ class Polytope(object):
       - `dim`: dimension
       - `volume`: volume, computed on first call
 
+    Reference
+    =========
+    https://en.wikipedia.org/wiki/Convex_polytope
+
     See Also
     ========
-    L{Region}
+    L{Region}, L{extreme}, L{qhull}
     """
 
     def __init__(
@@ -403,12 +412,12 @@ class Polytope(object):
     def plot(self, ax=None, color=None, hatch=None, alpha=1.0, linestyle=None, linewidth=None, edgecolor=None):
         if self.dim != 2:
             raise Exception("Cannot plot polytopes of dimension larger than 2")
-        
+
         # Setting default values for plotting
         linestyle = linestyle or "dashed"
         linewidth = linewidth or 3
         edgecolor = edgecolor or "black"
-        
+
         ax = _newax(ax)
         if not is_fulldim(self):
             logger.error("Cannot plot empty polytope")
@@ -613,10 +622,12 @@ def _hessian_normal(A, b):
 
 
 class Region(object):
-    """Class for lists of convex polytopes
+    """A polytope, possibly nonconvex.
 
-    Contains the following fields:
+    Represented using a `list` of convex polytopes.
+    Is usable as a container of polytopes.
 
+    Attributes:
       - `list_poly`: list of Polytope objects
       - `props`: set of propositions inside region
       - `bbox`: if calculated, bounding box of region (see bounding_box)
@@ -626,6 +637,10 @@ class Region(object):
       - `volume`: volume of region, calculated on first call
       - `chebXc`: coordinates of maximum chebyshev center (if calculated)
       - `chebR`: maximum chebyshev radius (if calculated)
+
+    Reference
+    =========
+    https://en.wikipedia.org/wiki/Polytope
 
     See Also
     ========
@@ -2258,6 +2273,11 @@ def simplices2polytopes(points, triangles):
 
     @type points: N x d
     @type triangles: NT x 3
+
+    References
+    ==========
+    https://en.wikipedia.org/wiki/Simplex
+    https://en.wikipedia.org/wiki/Triangle_mesh
     """
     polytopes = []
     for triangle in triangles:
