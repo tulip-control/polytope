@@ -411,7 +411,7 @@ class Polytope(object):
 
     def plot(self, ax=None, color=None, hatch=None, alpha=1.0, linestyle=None, linewidth=None, edgecolor=None):
         if self.dim != 2:
-            raise Exception("Cannot plot polytopes of dimension larger than 2")
+            raise Exception("Cannot plot polytopes of dimension other than 2")
 
         # Setting default values for plotting
         linestyle = linestyle or "dashed"
@@ -880,7 +880,7 @@ class Region(object):
         """Plot a `polytope` on axes `ax`."""
         # TODO optional arg for text label
         if self.dim != 2:
-            raise Exception("Cannot plot region of dimension larger than 2")
+            raise Exception("Cannot plot region of dimension other than 2")
         if not is_fulldim(self):
             logger.error("Cannot plot empty region")
             return None
