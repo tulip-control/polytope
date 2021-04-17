@@ -1218,7 +1218,7 @@ def cheby_ball(poly1):
     length of the longest line segment along the first coordinate axis
     inside polytope P
 
-    @type poly1: L{Polytope}
+    @type poly1: L{Polytope} or L{Region}
 
     @return: rc,xc: Chebyshev radius rc (float) and center xc (numpy array)
     """
