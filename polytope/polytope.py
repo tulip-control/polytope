@@ -1214,7 +1214,7 @@ def cheby_ball(poly1):
 
     Example (low dimension):
 
-    r1,x1 = cheby_ball(P, [1]) calculates the center and half the
+    r1,x1 = cheby_ball(P) calculates the center and half the
     length of the longest line segment along the first coordinate axis
     inside polytope P
 
