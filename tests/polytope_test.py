@@ -544,6 +544,24 @@ def test_non_convex_region_diff():
     assert not pc.is_fulldim(diff.diff(remaining1).diff(remaining2)), diff
 
 
+def test_checker_region_diff():
+    # Test `polytope.polytope.region_diff` when the output should be non-convex
+    # Set up a square and remove 1/2 by subtracting 2 square boxes on the
+    # diagonal
+    domain = pc.Polytope.from_box([(0.0, 1.0), (0.0, 1.0)])
+    region = pc.Region([
+        pc.Polytope.from_box([(0.0, 0.5), (0.0, 0.5)]),
+        pc.Polytope.from_box([(0.5, 1.0), (0.5, 1.0)]),
+    ])
+    # Do the diff and compare with expected result
+    diff = pc.polytope.region_diff(domain, region)
+    remaining1 = pc.Polytope.from_box([(0.5, 1.0), (0.0, 0.5)])
+    remaining2 = pc.Polytope.from_box([(0.0, 0.5), (0.5, 1.0)])
+    assert pc.is_fulldim(diff.diff(remaining1)), diff
+    assert pc.is_fulldim(diff.diff(remaining2)), diff
+    assert not pc.is_fulldim(diff.diff(remaining1).diff(remaining2)), diff
+
+
 def test_triangles_region_diff():
     # Test `polytope.polytope.region_diff` when the output should be convex
     # Test with something else than boxes
