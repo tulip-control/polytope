@@ -2095,21 +2095,11 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
             if R < abs_tol:
                 level -= 1
                 res = union(res, Polytope(A[INDICES, :], B[INDICES]), False)
-                nzcount = np.nonzero(counter)[0]
-                for jj in xrange(len(nzcount) - 1, -1, -1):
-                    if counter[level] <= mi[level]:
-                        INDICES[-1] -= M
-                        INDICES = np.hstack([
-                            INDICES,
-                            beg_mi[level] + counter[level] + M
-                        ])
-                        break
-                    else:
-                        counter[level] = 0
-                        INDICES = INDICES[0:m + sum(counter)]
-                        if level == -1:
-                            logger.debug('returning res from 1st point')
-                            return res
+                INDICES[-1] -= M
+                INDICES = np.hstack([
+                    INDICES,
+                    beg_mi[level] + counter[level] + M
+                ])
         else:
             if save:
                 logger.debug('counter[level] > 0')
