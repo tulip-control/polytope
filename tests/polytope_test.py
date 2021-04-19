@@ -486,5 +486,158 @@ def is_glpk_present():
         return False
 
 
+def test_simple_region_diff():
+    # Test `polytope.polytope.region_diff` with very simple input
+    # Set up a square and remove half of it
+    domain = pc.Polytope.from_box([(0.0, 1.0), (0.0, 1.0)])
+    region = pc.Region([pc.Polytope.from_box([(0.0, 0.5), (0.0, 1.0)])])
+    # Do the diff and compare with exprected result
+    diff = pc.polytope.region_diff(domain, region)
+    remaining = pc.Polytope.from_box([(0.5, 1.0), (0.0, 1.0)])
+    assert diff == remaining, (diff, remaining)
+
+
+def test_convex_region_diff_1():
+    # Test `polytope.polytope.region_diff` when the output should be one
+    # polytope
+    # Set up a square and remove 3/4 by subtracting 2 boxes
+    domain = pc.Polytope.from_box([(0.0, 1.0), (0.0, 1.0)])
+    region = pc.Region([
+        pc.Polytope.from_box([(0.0, 0.5), (0.0, 1.0)]),
+        pc.Polytope.from_box([(0.0, 1.0), (0.0, 0.5)]),
+    ])
+    # Do the diff and compare with exprected result
+    diff = pc.polytope.region_diff(domain, region)
+    remaining = pc.Polytope.from_box([(0.5, 1.0), (0.5, 1.0)])
+    assert diff == remaining, (diff, remaining)
+
+
+def test_convex_region_diff_2():
+    # Test `polytope.polytope.region_diff` when the output should be one
+    # polytope
+    # Set up a square and remove 3/4 by subtracting 3 boxes
+    domain = pc.Polytope.from_box([(0.0, 1.0), (0.0, 1.0)])
+    region = pc.Region([
+        pc.Polytope.from_box([(0.0, 0.5), (0.5, 1.0)]),
+        pc.Polytope.from_box([(0.5, 1.0), (0.0, 0.5)]),
+        pc.Polytope.from_box([(0.0, 0.5), (0.0, 0.5)]),
+    ])
+    # Do the diff and compare with expected result
+    diff = pc.polytope.region_diff(domain, region)
+    remaining = pc.Polytope.from_box([(0.5, 1.0), (0.5, 1.0)])
+    assert diff == remaining, (diff, remaining)
+
+
+def test_non_convex_region_diff():
+    # Test `polytope.polytope.region_diff` when the output should be non-convex
+    # Set up a square and remove 1/4 by subtracting 1 square box
+    domain = pc.Polytope.from_box([(0.0, 1.0), (0.0, 1.0)])
+    region = pc.Region([
+        pc.Polytope.from_box([(0.0, 0.5), (0.0, 0.5)])
+    ])
+    # Do the diff and compare with expected result
+    diff = pc.polytope.region_diff(domain, region)
+    remaining1 = pc.Polytope.from_box([(0.5, 1.0), (0.0, 1.0)])
+    remaining2 = pc.Polytope.from_box([(0.0, 0.5), (0.5, 1.0)])
+    assert pc.is_fulldim(diff.diff(remaining1)), diff
+    assert pc.is_fulldim(diff.diff(remaining2)), diff
+    assert not pc.is_fulldim(diff.diff(remaining1).diff(remaining2)), diff
+
+
+def test_triangles_region_diff():
+    # Test `polytope.polytope.region_diff` when the output should be convex
+    # Test with something else than boxes
+    poly_region = pc.Region()
+    # First polytope to subtract is
+    #     (0, 0) -- (3, 0) -- (3, 1) -- (1, 1) -- (0, 0)
+    a = np.array([
+        [-1.0, 1.0],
+        [0.0, -1.0],
+        [1.0, 0.0],
+        [0.0, 1.0]
+    ])
+    b = np.array([
+        0.0,
+        0.0,
+        3.0,
+        1.0,
+    ])
+    poly_region = poly_region.union(pc.Polytope(a, b), check_convex=False)
+    #
+    # Second polytope to subtract is
+    #     (3, 0) -- (4, 0) -- (3, 1) -- (3, 0)
+    a = np.array([
+        [-1.0, 0.0],
+        [0.0, -1.0],
+        [1.0, 1.0]
+    ])
+    b = np.array([
+        -3.0,
+        0.0,
+        4.0,
+    ])
+    poly_region = poly_region.union(pc.Polytope(a, b), check_convex=False)
+    #
+    # Third polytope to subtract is
+    #     (4, 0) -- (4, 1) -- (3, 1) -- (4, 0)
+    a = np.array([
+        [1.0, 0.0],
+        [0.0, 1.0],
+        [-1.0, -1.0]
+    ])
+    b = np.array([
+        4.0,
+        1.0,
+        -4.0,
+    ])
+    poly_region = poly_region.union(pc.Polytope(a, b), check_convex=False)
+    #
+    # Fourth polytope to subtract is
+    #     (3, 1) -- (4, 1) -- (4, 4) -- (3, 3) -- (3, 1)
+    a = np.array([
+        [1.0, 0.0],
+        [-1.0, 0.0],
+        [0.0, -1.0],
+        [-1.0, 1.0]
+    ])
+    b = np.array([
+        4.0,
+        -3.0,
+        -1.0,
+        0.0,
+    ])
+    poly_region = poly_region.union(pc.Polytope(a, b), check_convex=False)
+    #
+    # The polytope to subtract from is
+    #     (0, 0) -- (4, 0) -- (4, 4) -- (0, 0)
+    a = np.array([
+        [1.0, 0.0],
+        [0.0, -1.0],
+        [-1.0, 1.0],
+    ])
+    b = np.array([
+        4.0,
+        0.0,
+        0.0,
+    ])
+    poly_domain = pc.Polytope(a, b)
+    #
+    # Do the diff
+    poly_diff = poly_domain.diff(poly_region)
+    # Set up the expected result
+    a = np.array([
+        [-1.0, 1.0],
+        [1.0, 0.0],
+        [0.0, -1.0],
+    ])
+    b = np.array([
+        0.0,
+        3.0,
+        -1.0,
+    ])
+    remaining_poly = pc.Polytope(a, b)
+    assert poly_diff == remaining_poly, (poly_diff, remaining_poly)
+
+
 if __name__ == '__main__':
     pass
