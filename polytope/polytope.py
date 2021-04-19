@@ -2086,7 +2086,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                 ])
                 Adummy = A[auxINDICES, :]
                 bdummy = B[auxINDICES]
-                R, xopt = cheby_ball(Polytope(Adummy, bdummy))
+                R, _ = cheby_ball(Polytope(Adummy, bdummy))
                 if R > abs_tol:
                     level = j
                     counter[level] = 1
@@ -2141,7 +2141,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                             logger.debug('returning res from 2nd point')
                         return res
         test_poly = Polytope(A[INDICES, :], B[INDICES])
-        rc, xc = cheby_ball(test_poly)
+        rc, _ = cheby_ball(test_poly)
         if rc > abs_tol:
             if level == N - 1:
                 res = union(res, reduce(test_poly), False)
