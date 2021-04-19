@@ -2131,13 +2131,12 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                     level -= 1
                     if level == -1:
                         if save:
-                            if save:
-                                if res:
-                                    ax = res.plot()
-                                    ax.axis([0.0, 1.0, 0.0, 2.0])
-                                    ax.figure.savefig('./img/res_returned'
-                                                      + str(res_count)
-                                                      + '.pdf')
+                            if res:
+                                ax = res.plot()
+                                ax.axis([0.0, 1.0, 0.0, 2.0])
+                                ax.figure.savefig('./img/res_returned'
+                                                  + str(res_count)
+                                                  + '.pdf')
                             logger.debug('returning res from 2nd point')
                         return res
         test_poly = Polytope(A[INDICES, :], B[INDICES])
