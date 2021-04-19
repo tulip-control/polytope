@@ -2098,8 +2098,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                 nzcount = np.nonzero(counter)[0]
                 for jj in xrange(len(nzcount) - 1, -1, -1):
                     if counter[level] <= mi[level]:
-                        INDICES[len(INDICES) -
-                                1] = INDICES[len(INDICES) - 1] - M
+                        INDICES[-1] = INDICES[-1] - M
                         INDICES = np.hstack([
                             INDICES,
                             beg_mi[level] + counter[level] + M
@@ -2120,7 +2119,7 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                 level = nzcount[jj]
                 counter[level] = counter[level] + 1
                 if counter[level] <= mi[level]:
-                    INDICES[len(INDICES) - 1] = INDICES[len(INDICES) - 1] - M
+                    INDICES[-1] = INDICES[-1] - M
                     INDICES = np.hstack([
                         INDICES,
                         beg_mi[level] + counter[level] + M - 1
