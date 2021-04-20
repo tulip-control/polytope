@@ -486,5 +486,92 @@ def is_glpk_present():
         return False
 
 
+def fourier_motzkin_square_test():
+    # Setup a square and project it on the x and y axis
+    a = np.array([
+        [-1.0, 0.0],
+        [1.0, 0.0],
+        [0.0, -1.0],
+        [0.0, 1.0],
+    ])
+    b = np.array([
+        -1.0,
+        2.0,
+        -1.0,
+        2.0,
+    ])
+    poly = pc.Polytope(a, b)
+    project_dim_0 = pc.polytope.projection_fm(poly, None, np.array([1]))
+    project_dim_1 = pc.polytope.projection_fm(poly, None, np.array([0]))
+    expected_a = np.array([[-1.0], [1.0]])
+    expected_b = np.array([-1.0, 2.0])
+    ind_0 = np.argsort(project_dim_0.A, axis=0).flatten()
+    ind_1 = np.argsort(project_dim_1.A, axis=0).flatten()
+    assert np.allclose(
+        project_dim_0.A[ind_0],
+        expected_a,
+        pc.polytope.ABS_TOL),\
+        (project_dim_0.A[ind_0], expected_a)
+    assert np.allclose(
+        project_dim_0.b[ind_0],
+        expected_b,
+        pc.polytope.ABS_TOL),\
+        (project_dim_0.b[ind_0], expected_b)
+    assert np.allclose(
+        project_dim_1.A[ind_1],
+        expected_a,
+        pc.polytope.ABS_TOL),\
+        (project_dim_1.A[ind_1], expected_a)
+    assert np.allclose(
+        project_dim_1.b[ind_1],
+        expected_b,
+        pc.polytope.ABS_TOL),\
+        (project_dim_1.b[ind_1], expected_b)
+
+
+def fourier_motzkin_triangle_test():
+    # Setup a triangle and project it on the x and y axis.
+    a = np.array([
+        [0.0, -1.0],
+        [1.0, 1.0],
+        [-1.0, 1.0],
+    ])
+    b = np.array([
+        -1.0,
+        4.0,
+        0.0,
+    ])
+    poly = pc.Polytope(a, b)
+    project_dim_0 = pc.polytope.projection_fm(poly, None, np.array([1]))
+    project_dim_1 = pc.polytope.projection_fm(poly, None, np.array([0]))
+    expected_a_0 = np.array([[-1.0], [1.0]])
+    expected_b_0 = np.array([-1.0, 3.0])
+    ind_0 = np.argsort(project_dim_0.A, axis=0).flatten()
+    expected_a_1 = np.array([[-1.0], [1.0]])
+    expected_b_1 = np.array([-1.0, 2.0])
+    ind_1 = np.argsort(project_dim_1.A, axis=0).flatten()
+    assert np.allclose(
+        project_dim_0.A[ind_0],
+        expected_a_0,
+        pc.polytope.ABS_TOL), \
+        (project_dim_0.A[ind_0], expected_a_0)
+    assert np.allclose(
+        project_dim_0.b[ind_0],
+        expected_b_0,
+        pc.polytope.ABS_TOL), \
+        (project_dim_0.b[ind_0], expected_b_0)
+    assert np.allclose(
+        project_dim_1.A[ind_1],
+        expected_a_1,
+        pc.polytope.ABS_TOL), \
+        (project_dim_1.A[ind_1], expected_a_1)
+    assert np.allclose(
+        project_dim_1.b[ind_1],
+        expected_b_1,
+        pc.polytope.ABS_TOL), \
+        (project_dim_1.b[ind_1], expected_b_1)
+
+
+
 if __name__ == '__main__':
     pass
