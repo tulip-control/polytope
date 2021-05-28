@@ -4,6 +4,7 @@
 ## version 0.2.4
 
 - remove support for Python 2.7, 3.5, 3.6
+- require `numpy >= 1.20.3`
 - always recompute the volume when calling the
   function `polytope.polytope.volume`
 - add parameters `nsamples`, `seed` to function `polytope.polytope.volume`

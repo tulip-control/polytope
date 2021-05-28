@@ -117,7 +117,7 @@ def run_setup():
         python_requires='>=3.7',
         setup_requires=['setuptools >= 57.0.0'],
         install_requires=[
-            'numpy >= 1.10.0',
+            'numpy >= 1.20.3',
             'scipy >= 0.18.0',
             'networkx >= 1.6'],
         tests_require=[
