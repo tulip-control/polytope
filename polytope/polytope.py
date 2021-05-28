@@ -145,7 +145,10 @@ class Polytope(object):
         self._chebR = chebR
         self.bbox = None
         self.fulldim = fulldim
-        self._volume = volume
+        if volume is not None:
+            self._set_volume(volume)
+        else:
+            self._volume = None
         self.vertices = vertices
 
     def __str__(self):
@@ -384,6 +387,17 @@ class Polytope(object):
         if self._volume is None:
             self._volume = volume(self)
         return self._volume
+
+    def _set_volume(self, polytope_volume):
+        """Set the attribute `self._volume`.
+
+        @param polytope_volume: nonnegative number
+        """
+        if polytope_volume < 0.0:
+            raise ValueError(
+                '`polytope_volume` must be >= 0, given:  {v}'.format(
+                    v=polytope_volume))
+        self._volume = float(polytope_volume)
 
     @property
     def chebR(self):
@@ -851,6 +865,17 @@ class Region(object):
         if self._volume is None:
             self._volume = volume(self)
         return self._volume
+
+    def _set_volume(self, region_volume):
+        """Set the attribute `self._volume`.
+
+        @param region_volume: nonnegative number
+        """
+        if region_volume < 0.0:
+            raise ValueError(
+                '`region_volume` must be >= 0, given:  {v}'.format(
+                    v=region_volume))
+        self._volume = float(region_volume)
 
     @property
     def chebR(self):
@@ -1484,7 +1509,7 @@ def volume(polyreg, nsamples=None):
         tot_vol = 0.
         for i in xrange(len(polyreg)):
             tot_vol += volume(polyreg.list_poly[i])
-        polyreg._volume = tot_vol
+        polyreg._set_volume(tot_vol)
         return tot_vol
     # `polyreg` is a `Polytope`
     n = polyreg.A.shape[1]
@@ -1516,7 +1541,7 @@ def volume(polyreg, nsamples=None):
            - np.tile(np.array([polyreg.b]).T, (1, N)))
     aux = np.nonzero(np.all(aux < 0, 0))[0].shape[0]
     vol = np.prod(u_b - l_b) * aux / N
-    polyreg._volume = vol
+    polyreg._set_volume(vol)
     return vol
 
 
