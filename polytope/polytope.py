@@ -1477,11 +1477,8 @@ def volume(polyreg, nsamples=None):
     """
     if not is_fulldim(polyreg):
         return 0.0
-    try:
-        if polyreg._volume is not None:
-            return polyreg._volume
-    except Exception:
-        logger.debug('computing volume...')
+    if polyreg._volume is not None:
+        logger.debug('recomputing polytope volume...')
     # `Region` ?
     if isinstance(polyreg, Region):
         tot_vol = 0.

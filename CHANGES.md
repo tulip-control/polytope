@@ -3,6 +3,8 @@
 
 ## version 0.2.4
 
+- always recompute the volume when calling the
+  function `polytope.polytope.volume`
 - add parameter `nsamples` to function `polytope.polytope.volume`
 
 
