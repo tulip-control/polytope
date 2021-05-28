@@ -104,7 +104,7 @@ plot.
 
 A `Region` is a (possibly non-convex and even disconnected) container of (by
 definition convex) `Polytope` objects.  The polytopes can be passed in an
-[iterable](https://docs.python.org/2.7/glossary.html#term-iterable) during
+[iterable](https://docs.python.org/3/glossary.html#term-iterable) during
 instantiation:
 
 ```python
