@@ -519,25 +519,37 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
     # determine the rotation matrix based on inputs
     if R is not None:
         logger.debug("rotate: R=\n{}".format(R))
-        assert i is None, i
-        assert j is None, j
-        assert theta is None, theta
-        assert u is None, u
-        assert v is None, v
+        if i is not None:
+            raise ValueError(i)
+        if j is not None:
+            raise ValueError(j)
+        if theta is not None:
+            raise ValueError(theta)
+        if u is not None:
+            raise ValueError(u)
+        if v is not None:
+            raise ValueError(v)
     elif i is not None and j is not None and theta is not None:
         logger.info("rotate via indices and angle.")
-        assert R is None, R
-        assert u is None, u
-        assert v is None, v
+        if R is not None:
+            raise ValueError(R)
+        if u is not None:
+            raise ValueError(u)
+        if v is not None:
+            raise ValueError(v)
         if i == j:
             raise ValueError("Must provide two unique basis vectors.")
         R = givens_rotation_matrix(i, j, theta, polyreg.dim)
     elif u is not None and v is not None:
         logger.info("rotate via 2 vectors.")
-        assert R is None, R
-        assert i is None, i
-        assert j is None, j
-        assert theta is None, theta
+        if R is not None:
+            raise ValueError(R)
+        if i is not None:
+            raise ValueError(i)
+        if j is not None:
+            raise ValueError(j)
+        if theta is not None:
+            raise ValueError(theta)
         R = solve_rotation_ap(u, v)
     else:
         raise ValueError("R or (i and j and theta) or (u and v) "
@@ -724,7 +736,8 @@ class Region(object):
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
-        assert points.shape[0] == self.dim, 'points should be column vectors'
+        if points.shape[0] != self.dim:
+            raise ValueError('points should be column vectors')
         contained = np.full(points.shape[1], False, dtype=bool)
         for poly in self.list_poly:
             contained = np.logical_or(
@@ -1626,7 +1639,8 @@ def extreme(poly1):
             for ix in xrange(nx):
                 V[iv, ix] = H[iv, ix] / K[iv] + xmid[ix]
     a = V.size / nx
-    assert a.is_integer(), a
+    if not a.is_integer():
+        raise AssertionError(a)
     a = int(a)
     poly1.vertices = V.reshape((a, nx))
     return poly1.vertices
