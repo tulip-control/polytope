@@ -1,6 +1,11 @@
 # Polytope package update history
 
 
+## version 0.2.4
+
+- add parameter `nsamples` to function `polytope.polytope.volume`
+
+
 ## version 0.2.3 - 25 November 2020
 
 - require `cvxopt == 1.2.5` in `requirements/extras.txt`

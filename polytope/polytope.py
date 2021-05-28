@@ -1463,12 +1463,15 @@ def intersect(poly1, poly2, abs_tol=ABS_TOL):
     return poly1.intersect(poly2, abs_tol)
 
 
-def volume(polyreg):
+def volume(polyreg, nsamples=None):
     """Approximately compute the volume of a Polytope or Region.
 
     A randomized algorithm is used.
 
     @type polyreg: L{Polytope} or L{Region}
+    @param nsamples: number of samples to generate to
+        use for estimating volume
+    @type nsamples: positive integer
 
     @return: Volume of input
     """
@@ -1496,6 +1499,18 @@ def volume(polyreg):
         N = 3000
     else:
         N = 10000
+    if nsamples is not None and nsamples < 1:
+        raise ValueError(
+            '`nsamples` must be >= 1, given:  {v}'.format(
+                v=nsamples))
+    if nsamples is not None:
+        N = nsamples
+    if N != int(N):
+        raise ValueError((
+            'it appears that a noninteger number of samples '
+            'has been given, namely:  {v}'
+            ).format(
+                v=nsamples))
     l_b, u_b = polyreg.bounding_box
     x = (np.tile(l_b, (1, N))
          + np.random.rand(n, N)
