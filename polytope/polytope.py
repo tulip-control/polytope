@@ -1506,7 +1506,7 @@ def volume(polyreg, nsamples=None):
         logger.debug('recomputing polytope volume...')
     # `Region` ?
     if isinstance(polyreg, Region):
-        tot_vol = 0.
+        tot_vol = 0.0
         for i in xrange(len(polyreg)):
             tot_vol += volume(polyreg.list_poly[i])
         polyreg._set_volume(tot_vol)
