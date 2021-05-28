@@ -1323,6 +1323,12 @@ def bounding_box(polyreg):
         if sol['status'] == 0:
             x = sol['x']
             l[i] = x[i]
+        else:
+            raise RuntimeError((
+                '`polytope.solvers.lpsolve` returned:  {v}\n'
+                'its docstring describes return values'
+                ).format(
+                    v=sol))
     # upper corner
     for i in xrange(0, n):
         c = np.negative(np.array(In[:, i]))
@@ -1332,6 +1338,12 @@ def bounding_box(polyreg):
         if sol['status'] == 0:
             x = sol['x']
             u[i] = x[i]
+        else:
+            raise RuntimeError((
+                '`polytope.solvers.lpsolve` returned:  {v}\n'
+                'its docstring describes return values'
+                ).format(
+                    v=sol))
     polyreg.bbox = l, u
     return l, u
 
@@ -1879,9 +1891,21 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
         sol = lpsolve(f1, poly1.A, poly1.b)
         if sol['status'] == 0:
             vert1 = sol['x']
+        else:
+            raise RuntimeError((
+                '`polytope.solvers.lpsolve` returned:  {v}\n'
+                'its docstring describes return values'
+                ).format(
+                    v=sol))
         sol = lpsolve(np.negative(f1), poly1.A, poly1.b)
         if sol['status'] == 0:
             vert2 = sol['x']
+        else:
+            raise RuntimeError((
+                '`polytope.solvers.lpsolve` returned:  {v}\n'
+                'its docstring describes return values'
+                ).format(
+                    v=sol))
         vert = np.vstack([vert1, vert2])
         return qhull(vert)
     else:
