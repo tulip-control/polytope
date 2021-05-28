@@ -1501,7 +1501,7 @@ def intersect(poly1, poly2, abs_tol=ABS_TOL):
     return poly1.intersect(poly2, abs_tol)
 
 
-def volume(polyreg, nsamples=None):
+def volume(polyreg, nsamples=None, seed=None):
     """Approximately compute the volume of a Polytope or Region.
 
     A randomized algorithm is used.
@@ -1510,6 +1510,17 @@ def volume(polyreg, nsamples=None):
     @param nsamples: number of samples to generate to
         use for estimating volume
     @type nsamples: positive integer
+    @param seed: initialization for the random number
+        generator. Passed as argument to the parameter
+        `seed` of the function `numpy.random.default_rng`,
+        read the docstring of that function for details.
+
+        The seed can be used for reproducible volume
+        computations. The documentation of the class
+        `numpy.random.SeedSequence` includes useful
+        recommendations for how to initialize a random
+        generator automatically, and record the seed
+        for reusing it.
 
     @return: Volume of input
     """
@@ -1548,7 +1559,7 @@ def volume(polyreg, nsamples=None):
                 v=nsamples))
     l_b, u_b = polyreg.bounding_box
     x = (np.tile(l_b, (1, N))
-         + np.random.rand(n, N)
+         + np.random.default_rng(seed).random((n, N))
          * np.tile(u_b - l_b, (1, N)))
     aux = (np.dot(polyreg.A, x)
            - np.tile(np.array([polyreg.b]).T, (1, N)))

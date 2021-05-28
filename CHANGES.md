@@ -5,7 +5,7 @@
 
 - always recompute the volume when calling the
   function `polytope.polytope.volume`
-- add parameter `nsamples` to function `polytope.polytope.volume`
+- add parameters `nsamples`, `seed` to function `polytope.polytope.volume`
 - replace certain `assert` statements with
   `raise` statements, raising `ValueError` or `AssertionError`
 
