@@ -112,7 +112,10 @@ def run_setup():
         author='Caltech Control and Dynamical Systems',
         author_email='polytope@tulip-control.org',
         url='http://tulip-control.org',
-        bugtrack_url='http://github.com/tulip-control/polytope/issues',
+        project_urls={
+            'Bug Tracker': 'https://github.com/tulip-control/polytope/issues',
+            'Documentation': 'https://tulip-control.github.io/polytope/',
+            'Source Code': 'https://github.com/tulip-control/polytope'},
         license='BSD',
         python_requires='>=3.7',
         setup_requires=['setuptools >= 57.0.0'],
