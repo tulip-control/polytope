@@ -134,8 +134,8 @@ def run_setup():
             'numpy >= 1.24.1',
             'scipy >= 1.10.0'],
         tests_require=[
-            'nose',
-            'matplotlib >= 3.6.3'],
+            'matplotlib >= 3.6.3',
+            'pytest >= 7.2.1'],
         packages=[
             'polytope'],
         package_dir=dict(

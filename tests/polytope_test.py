@@ -2,10 +2,10 @@
 """Tests for the polytope subpackage."""
 import logging
 
-from nose import tools as nt
 import numpy as np
 from numpy.testing import assert_allclose
 from numpy.testing import assert_array_equal
+import pytest
 import scipy.optimize
 
 import polytope as pc
@@ -480,13 +480,13 @@ def test_grid_region():
     points, res = pc.grid_region(poly, res=[20, 21])
     assert res == [20, 21], res
     _check_grid(points, poly, res)
-    with nt.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         pc.grid_region(poly, res=[20])
-    with nt.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         pc.grid_region(poly, res=[20, 10, 20])
-    with nt.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         pc.grid_region(poly, res=[20, -1])
-    with nt.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         pc.grid_region(poly, res=[0, 2])
     res = [1, 1]
     points, res_ = pc.grid_region(poly, res=res)
@@ -565,7 +565,7 @@ def test_lpsolve_solver_selection_glpk_absent():
             'Skipping GLPK failure test, '
             'because GLPK is present.')
         return
-    with nt.assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         solvers.lpsolve(c, A, b, solver='glpk')
 
 

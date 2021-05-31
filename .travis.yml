@@ -25,8 +25,10 @@ install:
   - pip install dist/polytope-*.tar.gz
 
 script:
-  # w/o `cvxopt`
-  - ./run_tests.py --outofsource
+  # without `cvxopt`
+  - cd tests/
+  - pytest -v --continue-on-collection-errors .
+  - cd ..
   # with `cvxopt`
   - curl -sO https://people.engr.tamu.edu/davis/SuiteSparse/SuiteSparse-4.5.4.tar.gz
     && echo '698b5c455645bb1ad29a185f0d52025f3bd7cb7261e182c8878b0eb60567a714  SuiteSparse-4.5.4.tar.gz'
@@ -36,7 +38,8 @@ script:
   - export CVXOPT_BUILD_GLPK=1
   - pip install cvxopt
   - python -c "import cvxopt.glpk"
-  - ./run_tests.py --outofsource
+  - cd tests/
+  - pytest -v --continue-on-collection-errors .
 
 notifications:
   email: false
