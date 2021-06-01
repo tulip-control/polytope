@@ -62,6 +62,7 @@ The structure of this module is based on \cite{MPT04}.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import math
 import logging
 import warnings
 
@@ -2352,20 +2353,15 @@ def grid_region(polyreg, res=None):
     """
     # grid corners
     bbox = polyreg.bounding_box
-    bbox = np.hstack(bbox)
-    dom = bbox.flatten()
     # grid resolution
-    density = 8
     if res is None:
-        res = list()
-        for i in xrange(0, dom.size, 2):
-            L = dom[i + 1] - dom[i]
-            res += [density * L]
+        density = 8
+        res = [
+            math.ceil(density * (b - a))
+            for a, b in zip(*bbox)]
     linspaces = list()
-    for i, n in enumerate(res):
-        a = dom[2 * i]
-        b = dom[2 * i + 1]
-        r = np.linspace(a, b, n)
+    for a, b, n in zip(*bbox, res):
+        r = np.linspace(a, b, num=n)
         linspaces.append(r)
     points = np.meshgrid(*linspaces)
     x = np.vstack(list(map(np.ravel, points)))
