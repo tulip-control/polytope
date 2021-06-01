@@ -749,8 +749,8 @@ def normalize(AA, bb, abs_tol=1e-7):
     for i in range(len(anorm)):
         unique = True
         for j in range(i + 1, len(anorm)):
-            test = np.sum(np.abs(A[i, :] - A[j, :])) + \
-                np.abs(b[i, 0] - b[j, 0])
+            test = (np.sum(np.abs(A[i, :] - A[j, :])) +
+                np.abs(b[i, 0] - b[j, 0]))
             if test < abs_tol:
                 unique = False
                 break
