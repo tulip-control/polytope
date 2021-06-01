@@ -459,6 +459,36 @@ def _lexsort(x):
     return x[:, np.lexsort(x)]
 
 
+def test_grid_region():
+    # 8 points in [0, 1]
+    poly = pc.box2poly([[0, 1]])
+    points, res = pc.grid_region(poly)
+    assert res == [8], res
+    _check_grid(points, poly, res)
+    # 100 points in [0, 2]
+    poly = pc.box2poly([[0, 2]])
+    points, res = pc.grid_region(poly, res=[100])
+    assert res == [100], res
+    _check_grid(points, poly, res)
+    # 8 * 8 points in a square
+    poly = pc.box2poly([[0, 10], [5, 20]])
+    points, res = pc.grid_region(poly)
+    assert res == [80, 120], res
+    _check_grid(points, poly, res)
+    # 20 * 20 points in a square
+    poly = pc.box2poly([[-3, 50], [1, 4]])
+    points, res = pc.grid_region(poly, res=[20, 21])
+    assert res == [20, 21], res
+    _check_grid(points, poly, res)
+
+
+def _check_grid(points, poly, res):
+    assert points.shape == (poly.dim, np.prod(res)), (points.shape, res)
+    bbox = alg._bounding_box_to_polytope(*poly.bounding_box)
+    c = bbox.contains(points)
+    assert np.all(c), points[:, c]
+
+
 def test_lpsolve():
     # Ensure same API for both `scipy` and `cvxopt`.
     # Ensured by the different testing configurations.
