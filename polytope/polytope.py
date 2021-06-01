@@ -2352,7 +2352,7 @@ def grid_region(polyreg, res=None):
     @param res: resolution of grid, i.e., how many points
         the grid has per dimension, before filtering based
         on which points are contained in the polytope
-    @type res: `list` of `int`,
+    @type res: `list` of `int` >= 1,
         with `len` equal to `polyreg.dim`
     """
     # grid corners
@@ -2368,6 +2368,11 @@ def grid_region(polyreg, res=None):
             "`len(res)` must equal the polytope's dimension "
             "(which is {dim}), but instead `res` is:  {res}"
             ).format(dim=polyreg.dim, res=res))
+    if any(n < 1 for n in res):
+        raise ValueError((
+            '`res` must contain `int` values >= 1, '
+            'instead `res` equals:  {res}'
+            ).format(res=res))
     linspaces = list()
     for a, b, n in zip(*bbox, res):
         r = np.linspace(a, b, num=n)

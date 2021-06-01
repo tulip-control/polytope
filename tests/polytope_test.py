@@ -484,6 +484,14 @@ def test_grid_region():
         pc.grid_region(poly, res=[20])
     with nt.assert_raises(ValueError):
         pc.grid_region(poly, res=[20, 10, 20])
+    with nt.assert_raises(ValueError):
+        pc.grid_region(poly, res=[20, -1])
+    with nt.assert_raises(ValueError):
+        pc.grid_region(poly, res=[0, 2])
+    res = [1, 1]
+    points, res_ = pc.grid_region(poly, res=res)
+    assert res == res_, res_
+    _check_grid(points, poly, res)
 
 
 def _check_grid(points, poly, res):
