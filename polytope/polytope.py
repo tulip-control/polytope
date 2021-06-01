@@ -2357,7 +2357,7 @@ def grid_region(polyreg, res=None):
         r = np.linspace(a, b, n)
         linspaces.append(r)
     points = np.meshgrid(*linspaces)
-    x = np.vstack(map(np.ravel, points))
+    x = np.vstack(list(map(np.ravel, points)))
     x = x[:, polyreg.contains(x)]
     return (x, res)
 
