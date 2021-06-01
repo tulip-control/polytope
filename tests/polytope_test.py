@@ -290,6 +290,22 @@ class operations_test(object):
         assert pc.is_inside(region, point, abs_tol)
 
 
+def test_bounding_box_to_polytope():
+    boxes = [
+        [[0, 1]],
+        [[0, 1], [0, 2]],
+        [[-1, 2], [3, 5], [-5, -3]],
+        ]
+    for intervals in boxes:
+        _check_bbox_to_poly(intervals)
+
+
+def _check_bbox_to_poly(intervals):
+    poly = pc.box2poly(intervals)
+    bbox = alg._bounding_box_to_polytope(*poly.bounding_box)
+    assert poly == bbox, bbox
+
+
 def solve_rotation_test_090(atol=1e-15):
     g1 = np.array([0, 1, 1, 0])
     g2 = np.array([0, 1, 0, 0])

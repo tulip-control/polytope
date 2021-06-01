@@ -1300,6 +1300,17 @@ def cheby_ball(poly1):
     return poly1._chebR, poly1._chebXc
 
 
+def _bounding_box_to_polytope(lower, upper):
+    """Return a `Polytope` that represents the given bounding box.
+
+    @param lower: corner point of the bounding box
+    @param upper: corner point of the bounding box
+    @rtype: `Polytope`
+    """
+    intervals = [(a[0], b[0]) for a, b in zip(lower, upper)]
+    return box2poly(intervals)
+
+
 def bounding_box(polyreg):
     """Return smallest hyperbox containing polytope or region.
 
