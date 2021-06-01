@@ -1034,7 +1034,7 @@ def is_inside(polyreg, point, abs_tol=ABS_TOL):
 
 
 def is_subset(small, big, abs_tol=ABS_TOL):
-    """Return True if small \subseteq big.
+    r"""Return True if small \subseteq big.
 
     @type small: L{Polytope} or L{Region}
     @type big:   L{Polytope} or L{Region}
@@ -1456,7 +1456,7 @@ count = 0
 
 
 def mldivide(a, b, save=False):
-    """Return set difference a \ b.
+    r"""Return set difference a \ b.
 
     @param a: L{Polytope} or L{Region}
     @param b: L{Polytope} to subtract
