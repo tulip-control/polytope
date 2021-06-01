@@ -9,8 +9,9 @@ from numpy.testing import assert_array_equal
 import scipy.optimize
 
 import polytope as pc
-from polytope.polytope import solve_rotation_ap, givens_rotation_matrix
+import polytope.polytope as alg
 from polytope import solvers
+
 
 log = logging.getLogger('polytope.polytope')
 log.setLevel(logging.INFO)
@@ -292,7 +293,7 @@ class operations_test(object):
 def solve_rotation_test_090(atol=1e-15):
     g1 = np.array([0, 1, 1, 0])
     g2 = np.array([0, 1, 0, 0])
-    R = solve_rotation_ap(g1, g2)
+    R = alg.solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -310,7 +311,7 @@ def solve_rotation_test_090(atol=1e-15):
 def solve_rotation_test_180(atol=1e-15):
     g1 = np.array([0, 1, 0, 0])
     g2 = np.array([0, 0, 1, 0])
-    R = solve_rotation_ap(g1, g2)
+    R = alg.solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -328,7 +329,7 @@ def solve_rotation_test_180(atol=1e-15):
 def solve_rotation_test_270R(atol=1e-15):
     g1 = np.array([0, -1, 0, 0])
     g2 = np.array([0, 1, 1, 0])
-    R = solve_rotation_ap(g1, g2)
+    R = alg.solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -346,7 +347,7 @@ def solve_rotation_test_270R(atol=1e-15):
 def solve_rotation_test_270L(atol=1e-15):
     g1 = np.array([0, -1, 0, 0])
     g2 = np.array([0, 1, -1, 0])
-    R = solve_rotation_ap(g1, g2)
+    R = alg.solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -362,7 +363,7 @@ def solve_rotation_test_270L(atol=1e-15):
 
 
 def givens_rotation_test_180(atol=1e-15):
-    R = givens_rotation_matrix(1, 2, np.pi, 4)
+    R = alg.givens_rotation_matrix(1, 2, np.pi, 4)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -380,7 +381,7 @@ def givens_rotation_test_180(atol=1e-15):
 def givens_rotation_test_270L(atol=1e-15):
     g1 = np.array([0, -1, 0, 0])
     g2 = np.array([0, 1, -1, 0])
-    R = givens_rotation_matrix(1, 2, 3*np.pi/2, 4)
+    R = alg.givens_rotation_matrix(1, 2, 3*np.pi/2, 4)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
