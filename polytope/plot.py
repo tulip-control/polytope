@@ -87,8 +87,7 @@ def plot_partition(
                 'used when converting the graph to '
                 'an adjacency matrix.')
             raise Exception(msg)
-        trans = nx.to_numpy_matrix(trans, nodelist=ppp2trans)
-        trans = np.array(trans)
+        trans = nx.to_numpy_array(trans, nodelist=ppp2trans)
     l, u = ppp.domain.bounding_box
     arr_size = (u[0, 0] - l[0, 0]) / 50.0
     ax = pc._newax(ax)
