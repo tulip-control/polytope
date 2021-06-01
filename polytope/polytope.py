@@ -2349,7 +2349,11 @@ def grid_region(polyreg, res=None):
     """Return bounding box grid points within `polyreg`.
 
     @type polyreg: L{Polytope} or L{Region}
-    @param res: resolution of grid
+    @param res: resolution of grid, i.e., how many points
+        the grid has per dimension, before filtering based
+        on which points are contained in the polytope
+    @type res: `list` of `int`,
+        with `len` equal to `polyreg.dim`
     """
     # grid corners
     bbox = polyreg.bounding_box
@@ -2359,6 +2363,11 @@ def grid_region(polyreg, res=None):
         res = [
             math.ceil(density * (b - a))
             for a, b in zip(*bbox)]
+    if len(res) != polyreg.dim:
+        raise ValueError((
+            "`len(res)` must equal the polytope's dimension "
+            "(which is {dim}), but instead `res` is:  {res}"
+            ).format(dim=polyreg.dim, res=res))
     linspaces = list()
     for a, b, n in zip(*bbox, res):
         r = np.linspace(a, b, num=n)
