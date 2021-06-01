@@ -120,7 +120,7 @@ if __name__ == "__main__":
             argv.append(basename)
     if len(testfiles) > 0 and len(excludefiles) > 0:
         print("You can specify files to exclude or include, but not both.")
-        print("Try calling it with \"-h\" flag.")
+        print('Try calling it with "-h" flag.')
         exit(1)
     if len(excludefiles) > 0:
         argv.append("--exclude="+"|".join(excludefiles))
