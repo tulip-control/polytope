@@ -111,7 +111,7 @@ def run_setup():
         long_description=long_description,
         author='Caltech Control and Dynamical Systems',
         author_email='polytope@tulip-control.org',
-        url='http://tulip-control.org',
+        url='https://tulip-control.org',
         project_urls={
             'Bug Tracker': 'https://github.com/tulip-control/polytope/issues',
             'Documentation': 'https://tulip-control.github.io/polytope/',

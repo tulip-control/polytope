@@ -3,7 +3,7 @@
 Driver script for testing polytope package.  Try calling it with "-h" flag.
 
 This script was originally copied from one by the same name in
-TuLiP (http://tulip-control.org).
+TuLiP (https://tulip-control.org).
 """
 from __future__ import absolute_import
 from __future__ import print_function

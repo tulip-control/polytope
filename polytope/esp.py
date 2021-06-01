@@ -32,7 +32,9 @@
 r"""Equality Set Projection (ESP).
 
 Non-vertex polytope projection method from
-    http://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
+- https://web.archive.org/web/20150103142532/
+    https://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
+- https://infoscience.epfl.ch/record/169768
 
 Very unstable, can not handle complex polytopes.
 

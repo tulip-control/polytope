@@ -40,7 +40,8 @@
 #
 #  M. Kvasnica, P. Grieder and M. Baotić,
 #  Multi-Parametric Toolbox (MPT),
-#  http://control.ee.ethz.ch/~mpt/
+#  https://people.ee.ethz.ch/~mpt/2/  (Multi-Parametric Toolbox version 2.*)
+#  https://web.archive.org/web/20121011103905/http://control.ee.ethz.ch/~mpt/
 #
 #  mldivide
 #  region_diff

@@ -95,7 +95,7 @@ ball](https://en.wikipedia.org/wiki/Chebyshev_center) radius, require sampling
 or solving an optimization problem, which can be computationally expensive.
 
 Finally, the method `plot` does what it says on a
-[matplotlib](http://matplotlib.org) figure and `text` can be used for placing
+[matplotlib](https://matplotlib.org) figure and `text` can be used for placing
 annotations at the `Polytope`'s Chebyshev center.  The `bounding_box` can be
 used to set the correct axis limits to ensure the `Polytope` is visible in the
 plot.
