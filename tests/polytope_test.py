@@ -396,6 +396,53 @@ def givens_rotation_test_270L(atol=1e-15):
     assert_allclose(R.dot(e2), t2, atol=atol)
 
 
+def test_enumerate_integral_points():
+    """Test the computation of integral points."""
+    # convex polytope
+    vertices = np.array([[0.5, 1.5], [0.5, 1.5]])
+    hull = pc.box2poly(vertices)
+    integral_points = alg.enumerate_integral_points(hull)
+    integral_points_ = np.array([[1.0], [1.0]])
+    assert_allclose(
+        _lexsort(integral_points),
+        _lexsort(integral_points_)), integral_points
+    #
+    # nonconvex polytope
+    vertices = np.array([[0.0, 0.0], [1.0, 1.0], [2.0, 1.0]])
+    hull_1 = pc.qhull(vertices)
+    hull_2 = pc.box2poly([[1.0, 2.0], [1.0, 2.0]])
+    nonconvex = hull_1.union(hull_2)
+    integral_points = alg.enumerate_integral_points(nonconvex)
+    integral_points_ = np.array([
+        [0.0, 1.0, 2.0, 1.0, 2.0],
+        [0.0, 1.0, 1.0, 2.0, 2.0]
+        ])
+    assert_allclose(
+        _lexsort(integral_points),
+        _lexsort(integral_points_)), integral_points
+    #
+    # 3-dimensional polytope
+    vertices = np.array([
+        [0.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 1.0]])
+    hull = pc.qhull(vertices)
+    integral_points = alg.enumerate_integral_points(hull)
+    integral_points_ = np.array([
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0]
+        ])
+    assert_allclose(
+        _lexsort(integral_points),
+        _lexsort(integral_points_)), integral_points
+
+
+def _lexsort(x):
+    return x[:, np.lexsort(x)]
+
+
 def test_lpsolve():
     # Ensure same API for both `scipy` and `cvxopt`.
     # Ensured by the different testing configurations.

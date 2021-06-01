@@ -2312,6 +2312,27 @@ def _get_patch(poly1, **kwargs):
     return patch
 
 
+def enumerate_integral_points(poly):
+    """Return all points in `poly` that have integer coordinates.
+
+    @param poly: polytope
+    @type poly: `polytope.polytope.Region` or
+        `polytope.polytope.Polytope`
+    @return: coordinates of `m` points as `d X m` array,
+        where `d` the dimension
+    @rtype: `numpy.ndarray`
+    """
+    a, b = poly.bounding_box
+    a_int = np.floor(a)
+    b_int = np.ceil(b)
+    intervals = list(zip(a_int.flatten(), b_int.flatten()))
+    box = box2poly(intervals)
+    res = [int(b - a + 1) for a, b in intervals]
+    grid, _ = grid_region(box, res=res)
+    inside = poly.contains(grid)
+    return grid[:, inside]
+
+
 def grid_region(polyreg, res=None):
     """Return bounding box grid points within `polyreg`.
 
