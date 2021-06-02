@@ -72,7 +72,8 @@ def run_setup():
     # load long description from README.rst
     readme_file = 'README.rst'
     if os.path.exists(readme_file):
-        long_description = open(readme_file).read()
+        with open(readme_file) as f:
+            long_description = f.read()
     else:
         print('Could not find readme file to extract long_description.')
         long_description = ''

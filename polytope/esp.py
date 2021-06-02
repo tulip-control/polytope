@@ -476,7 +476,8 @@ def adjacent(C, D, b, rid_fac, abs_tol=1e-7):
         data["D"] = D
         data["b"] = b
         sio.savemat("matlabdata", data)
-        pickle.dump(data, open("polytope.p", "wb"))
+        with open('polytope.p', 'wb') as f:
+            pickle.dump(data, f)
         raise Exception(
             "adjacent: Lp returned status " + str(sol['status']))
     opt_sol = np.array(sol['x']).flatten()
