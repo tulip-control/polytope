@@ -10,7 +10,7 @@ The directory ``examples/`` contains examples.
 Installation
 ------------
 
-From `PyPI <https://pypi.python.org/pypi/polytope>`_::
+From `PyPI <https://pypi.org/project/polytope/>`_::
 
   pip install polytope
 
