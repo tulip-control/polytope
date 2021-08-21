@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 """Tests for plotting."""
-import matplotlib.patches
+import unittest
+
+try:
+    import matplotlib as mpl
+    import matplotlib.patches
+except ImportError:
+    mpl = None
 
 import polytope as pc
 from polytope import plot
@@ -13,6 +19,9 @@ class Axes(object):
         pass
 
 
+@unittest.skipIf(
+    mpl is None,
+    '`matplotlib` is not installed')
 def test_plot_transition_arrow():
     p0 = pc.box2poly([[0.0, 1.0], [0.0, 2.0]])
     p1 = pc.box2poly([[0.1, 2.0], [0.0, 2.0]])
