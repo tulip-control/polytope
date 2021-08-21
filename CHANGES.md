@@ -8,6 +8,8 @@
   - `numpy >= 1.24.1`
   - `scipy >= 1.10.0`
   - `networkx >= 3.0`
+
+API:
 - add function `polytope.polytope.enumerate_integral_points`
 - always recompute the volume when calling the
   function `polytope.polytope.volume`
