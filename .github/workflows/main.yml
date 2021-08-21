@@ -1,0 +1,101 @@
+---
+# configuration for GitHub Actions
+name: polytope tests
+on:
+    push:
+    pull_request:
+    schedule:
+        # the start of every hour is
+        # a high-load time for GitHub Actions
+        # <https://docs.github.com/en/actions/reference/
+        #  events-that-trigger-workflows>
+        - cron: '34 5 5 * *'
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-22.04
+        strategy:
+            matrix:
+                python-version: [
+                    '3.8',
+                    '3.9',
+                    '3.10',
+                    '3.11',
+                    ]
+        steps:
+            - uses: actions/checkout@v3
+            - name: Install APT packages
+              run: |
+                sudo apt update
+                sudo apt install \
+                    gfortran \
+                    libatlas-base-dev \
+                    liblapack-dev \
+                    libgmp-dev \
+                    libmpfr-dev \
+                    libglpk-dev
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v4
+              with:
+                  python-version: ${{ matrix.python-version }}
+            - name: Install dependencies from PyPI
+              run: |
+                pip install \
+                    --ignore-installed \
+                    --upgrade \
+                        pip \
+                        setuptools \
+                        wheel
+                pip install \
+                    --upgrade \
+                    --only-binary=numpy,scipy \
+                        numpy scipy
+            - name: Create sdist for `polytope`
+              run: |
+                python setup.py sdist
+            - name: Install from sdist of `polytope`
+              run: |
+                pip install dist/polytope-*.tar.gz
+            - name: Install test dependencies
+              run: |
+                pip install pytest
+            - name: Run tests, using required dependencies
+              run: |
+                set -o posix
+                echo 'Exported environment variables:'
+                export -p
+                cd tests/
+                pytest \
+                    -v \
+                    --continue-on-collection-errors \
+                    .
+            - name: Install dependencies for plotting tests
+              run: |
+                pip install matplotlib
+                # the import statement ensures
+                # that no tests will be skipped below
+                python -c 'import matplotlib'
+            - name: Run all tests
+              run: |
+                set -o posix
+                echo 'Exported environment variables:'
+                export -p
+                pytest \
+                    -v \
+                    --continue-on-collection-errors \
+                    .
+            - name: Install `cvxopt.glpk`
+              run: |
+                export CVXOPT_BUILD_GLPK=1
+                pip install cvxopt
+                python -c 'import cvxopt.glpk'
+            - name: Run all tests, using `cvxopt.glpk`
+              run: |
+                set -o posix
+                echo 'Exported environment variables:'
+                export -p
+                cd tests/
+                pytest \
+                    -v \
+                    --continue-on-collection-errors \
+                    .

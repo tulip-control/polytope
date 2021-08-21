@@ -11,6 +11,7 @@
   - `setuptools >= 65.5.1`
 - TST: require `pytest >= 7.2.1`, instead of `nose`,
   for Python >= 3.10 compatibility
+- CI: test using GitHub Actions
 
 API:
 - add function `polytope.polytope.enumerate_integral_points()`
