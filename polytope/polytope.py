@@ -2106,6 +2106,11 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                 save=False):
     """Subtract a region from a polytope
 
+    For a discription of the algorithm, see algorithm 2 in:
+    Mato Baotić "Polytopic computations in constrained optimal control"
+    Automatika, 2009, Vol. 50, No. 3--4, pp. 119--134, 2009.
+    https://hrcak.srce.hr/46543
+
     @param poly: polytope from which to subtract a region
     @param reg: region which should be subtracted
     @param abs_tol: absolute tolerance
@@ -2174,8 +2179,8 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
         return Polytope()
     # some constraints are active
     M = np.sum(mi)
-    if len(mi[0:len(mi) - 1]) > 0:
-        csum = np.cumsum(np.hstack([0, mi[0:len(mi) - 1]]))
+    if len(mi) > 1:
+        csum = np.cumsum(np.hstack([0, mi[0:-1]]))
         beg_mi = csum + m * np.ones(len(csum), dtype=int)
     else:
         beg_mi = np.array([m])
@@ -2194,78 +2199,107 @@ def region_diff(poly, reg, abs_tol=ABS_TOL, intersect_tol=ABS_TOL,
                 ax.figure.savefig('./img/res' + str(res_count) + '.pdf')
                 res_count += 1
         if counter[level] == 0:
+            # This is the first visit to this level
             if save:
                 logger.debug('counter[level] is 0')
 
+            # Go through all remaining polytopes that we want to remove and
+            # check whether any of them removes anything from the current set
+            # of hyperplanes (constraints)
             for j in xrange(level, N):
+                # Construct a set of constraints with the current hyperplanes
+                # and the hyperplanes of polytope j.
+                # This is the intersection of the current hyperplanes and
+                # polytope j
                 auxINDICES = np.hstack([
                     INDICES,
                     range(beg_mi[j], beg_mi[j] + mi[j])
                 ])
                 Adummy = A[auxINDICES, :]
                 bdummy = B[auxINDICES]
-                R, xopt = cheby_ball(Polytope(Adummy, bdummy))
+                # Will polytope j remove anything from the current set of
+                # hyperplanes?
+                R, _ = cheby_ball(Polytope(Adummy, bdummy))
                 if R > abs_tol:
+                    # Yes, constrain the set of constraints with the negation
+                    # of one of polytope j's hyperplanes
                     level = j
                     counter[level] = 1
+                    # Offset M negates hyperplanes
                     INDICES = np.hstack([INDICES, beg_mi[level] + M])
                     break
             if R < abs_tol:
-                level = level - 1
+                # Since no polytope will remove anything, the current set of
+                # hyperplanes must be in the result
                 res = union(res, Polytope(A[INDICES, :], B[INDICES]), False)
-                nzcount = np.nonzero(counter)[0]
-                for jj in xrange(len(nzcount) - 1, -1, -1):
-                    if counter[level] <= mi[level]:
-                        INDICES[len(INDICES) -
-                                1] = INDICES[len(INDICES) - 1] - M
-                        INDICES = np.hstack([
-                            INDICES,
-                            beg_mi[level] + counter[level] + M
-                        ])
-                        break
-                    else:
-                        counter[level] = 0
-                        INDICES = INDICES[0:m + sum(counter)]
-                        if level == -1:
-                            logger.debug('returning res from 1st point')
-                            return res
+                # None of the remaining polytopes removes anything
+                # Indicate that we are done at this level
+                counter[level] = mi[level]
+                # Add the polytope to the indices to get an empty intersection
+                # This will force the algorithm to pop out of this level and
+                # move on
+                INDICES = np.hstack([
+                    INDICES,
+                    range(beg_mi[level], beg_mi[level] + mi[level])
+                ])
         else:
+            # We have been at this level before
             if save:
                 logger.debug('counter[level] > 0')
             # counter(level) > 0
             nzcount = np.nonzero(counter)[0]
+            # Start from the deepest level and pop out of it if we are done at
+            # that level
             for jj in xrange(len(nzcount) - 1, -1, -1):
                 level = nzcount[jj]
-                counter[level] = counter[level] + 1
+                counter[level] += 1
+                # Have we checked all hyperplanes?
                 if counter[level] <= mi[level]:
-                    INDICES[len(INDICES) - 1] = INDICES[len(INDICES) - 1] - M
+                    # No
+                    # We have already handled the negative side of the last
+                    # hyperplane, so negate it to get the
+                    # positive side
+                    INDICES[-1] -= M
+                    # Add the next negative hyperplane of the polytope of the
+                    # current level
                     INDICES = np.hstack([
                         INDICES,
                         beg_mi[level] + counter[level] + M - 1
                     ])
+                    # Stay at this level, since we haven't checked all
+                    # hyperplanes yet
                     break
                 else:
+                    # We have checked all hyperplanes at this level
+                    # Pop out of this level by resetting our states
                     counter[level] = 0
                     INDICES = INDICES[0:m + np.sum(counter)]
-                    level = level - 1
+                    level -= 1
                     if level == -1:
+                        # We're done at all levels, return
                         if save:
-                            if save:
-                                if res:
-                                    ax = res.plot()
-                                    ax.axis([0.0, 1.0, 0.0, 2.0])
-                                    ax.figure.savefig('./img/res_returned'
-                                                      + str(res_count)
-                                                      + '.pdf')
+                            if res:
+                                ax = res.plot()
+                                ax.axis([0.0, 1.0, 0.0, 2.0])
+                                ax.figure.savefig('./img/res_returned'
+                                                  + str(res_count)
+                                                  + '.pdf')
                             logger.debug('returning res from 2nd point')
                         return res
         test_poly = Polytope(A[INDICES, :], B[INDICES])
-        rc, xc = cheby_ball(test_poly)
+        rc, _ = cheby_ball(test_poly)
+        # Do we have a non-empty diff at this level?
         if rc > abs_tol:
             if level == N - 1:
+                # The diff is non-empty, and we have no more polytopes to
+                # remove.
+                # Add the current set of constraints to the result.
                 res = union(res, reduce(test_poly), False)
             else:
-                level = level + 1
+                # The diff is non-empty, but we need to check whether the
+                # remaining polytopes remove anything.
+                # Go one level deeper to continue the search.
+                level += 1
     logger.debug('returning res from end')
     return res
 
