@@ -16,11 +16,6 @@ From `PyPI <https://pypi.python.org/pypi/polytope>`_::
 
 From source::
 
-  python setup.py install
-
-If this fails, because ``setuptools`` attempts to install
-``scipy`` before ``numpy``, then::
-
   pip install .
 
 
