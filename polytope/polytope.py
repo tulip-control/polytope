@@ -997,9 +997,9 @@ def is_convex(reg, abs_tol=ABS_TOL):
         returned.
     """
     if not is_fulldim(reg):
-        return True
+        return True, None
     if len(reg) == 0:
-        return True
+        return True, None
     outer = envelope(reg)
     if is_empty(outer):
         # Probably because input polytopes were so small and ugly..
