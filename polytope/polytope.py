@@ -1007,8 +1007,8 @@ def is_convex(reg, abs_tol=ABS_TOL):
     bboxP = np.hstack([Pl, Pu])
     bboxO = np.hstack([Ol, Ou])
     if (
-            sum(abs(bboxP[:, 0] - bboxO[:, 0]) > abs_tol) > 0 or
-            sum(abs(bboxP[:, 1] - bboxO[:, 1]) > abs_tol) > 0):
+            np.any(abs(bboxP[:, 0] - bboxO[:, 0]) > abs_tol) or
+            np.any(abs(bboxP[:, 1] - bboxO[:, 1]) > abs_tol)):
         return False, None
     if is_fulldim(outer.diff(reg)):
         return False, None
