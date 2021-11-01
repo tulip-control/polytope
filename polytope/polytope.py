@@ -996,8 +996,6 @@ def is_convex(reg, abs_tol=ABS_TOL):
         be convex the envelope describing the convex polytope is
         returned.
     """
-    if not is_fulldim(reg):
-        return True, None
     if len(reg) == 0:
         return True, None
     outer = envelope(reg)
