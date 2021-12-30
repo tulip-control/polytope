@@ -23,7 +23,6 @@ print(solvers.installed_solvers)
 
 Choose an installed solver to avoid errors.
 """
-from __future__ import absolute_import
 import logging
 
 import numpy as np

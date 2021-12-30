@@ -30,7 +30,6 @@
 # OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 """Polytope package."""
-from __future__ import absolute_import
 from .version import version as __version__
 
 from .polytope import (

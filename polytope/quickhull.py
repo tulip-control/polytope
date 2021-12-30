@@ -37,10 +37,6 @@ Reference
 \cite{Barber96toms}
 """
 # Created by P. Nilsson, 8/2/11
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import numpy as np
 
 
