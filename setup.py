@@ -19,11 +19,7 @@ classifiers = [
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 2',
-    'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.5',
-    'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
@@ -76,7 +72,8 @@ def run_setup():
     # load long description from README.rst
     readme_file = 'README.rst'
     if os.path.exists(readme_file):
-        long_description = open(readme_file).read()
+        with open(readme_file) as f:
+            long_description = f.read()
     else:
         print('Could not find readme file to extract long_description.')
         long_description = ''
@@ -115,12 +112,16 @@ def run_setup():
         long_description=long_description,
         author='Caltech Control and Dynamical Systems',
         author_email='polytope@tulip-control.org',
-        url='http://tulip-control.org',
-        bugtrack_url='http://github.com/tulip-control/polytope/issues',
+        url='https://tulip-control.org',
+        project_urls={
+            'Bug Tracker': 'https://github.com/tulip-control/polytope/issues',
+            'Documentation': 'https://tulip-control.github.io/polytope/',
+            'Source Code': 'https://github.com/tulip-control/polytope'},
         license='BSD',
-        setup_requires=['setuptools >= 23.0.0'],
+        python_requires='>=3.7',
+        setup_requires=['setuptools >= 57.0.0'],
         install_requires=[
-            'numpy >= 1.10.0',
+            'numpy >= 1.20.3',
             'scipy >= 0.18.0',
             'networkx >= 1.6'],
         tests_require=[

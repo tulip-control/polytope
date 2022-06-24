@@ -1,4 +1,4 @@
-Copyright (c) 2010-2020 by California Institute of Technology
+Copyright (c) 2010-2021 by California Institute of Technology
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,6 @@ This library has been initially based on:
 
 M. Kvasnica, P. Grieder and M. Baotić,
 Multi-Parametric Toolbox (MPT),
-    http://control.ee.ethz.ch/~mpt/
+    https://people.ee.ethz.ch/~mpt/2/
 
 with permission from its authors.

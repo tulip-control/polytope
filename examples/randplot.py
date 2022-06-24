@@ -5,7 +5,7 @@ Sample N points in the unit square, compute hull and plot.
   Usage: randplot.py [N]
 
 The default value of N is 3.  Note that plotting requires matplotlib
-(http://matplotlib.org), which is an optional dependency.
+(https://matplotlib.org), which is an optional dependency.
 """
 from __future__ import print_function
 import sys

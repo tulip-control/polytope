@@ -9,8 +9,9 @@ from numpy.testing import assert_array_equal
 import scipy.optimize
 
 import polytope as pc
-from polytope.polytope import solve_rotation_ap, givens_rotation_matrix
+import polytope.polytope as alg
 from polytope import solvers
+
 
 log = logging.getLogger('polytope.polytope')
 log.setLevel(logging.INFO)
@@ -289,10 +290,26 @@ class operations_test(object):
         assert pc.is_inside(region, point, abs_tol)
 
 
+def test_bounding_box_to_polytope():
+    boxes = [
+        [[0, 1]],
+        [[0, 1], [0, 2]],
+        [[-1, 2], [3, 5], [-5, -3]],
+        ]
+    for intervals in boxes:
+        _check_bbox_to_poly(intervals)
+
+
+def _check_bbox_to_poly(intervals):
+    poly = pc.box2poly(intervals)
+    bbox = alg._bounding_box_to_polytope(*poly.bounding_box)
+    assert poly == bbox, bbox
+
+
 def solve_rotation_test_090(atol=1e-15):
     g1 = np.array([0, 1, 1, 0])
     g2 = np.array([0, 1, 0, 0])
-    R = solve_rotation_ap(g1, g2)
+    R = alg.solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -310,7 +327,7 @@ def solve_rotation_test_090(atol=1e-15):
 def solve_rotation_test_180(atol=1e-15):
     g1 = np.array([0, 1, 0, 0])
     g2 = np.array([0, 0, 1, 0])
-    R = solve_rotation_ap(g1, g2)
+    R = alg.solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -328,7 +345,7 @@ def solve_rotation_test_180(atol=1e-15):
 def solve_rotation_test_270R(atol=1e-15):
     g1 = np.array([0, -1, 0, 0])
     g2 = np.array([0, 1, 1, 0])
-    R = solve_rotation_ap(g1, g2)
+    R = alg.solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -346,7 +363,7 @@ def solve_rotation_test_270R(atol=1e-15):
 def solve_rotation_test_270L(atol=1e-15):
     g1 = np.array([0, -1, 0, 0])
     g2 = np.array([0, 1, -1, 0])
-    R = solve_rotation_ap(g1, g2)
+    R = alg.solve_rotation_ap(g1, g2)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -362,7 +379,7 @@ def solve_rotation_test_270L(atol=1e-15):
 
 
 def givens_rotation_test_180(atol=1e-15):
-    R = givens_rotation_matrix(1, 2, np.pi, 4)
+    R = alg.givens_rotation_matrix(1, 2, np.pi, 4)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -380,7 +397,7 @@ def givens_rotation_test_180(atol=1e-15):
 def givens_rotation_test_270L(atol=1e-15):
     g1 = np.array([0, -1, 0, 0])
     g2 = np.array([0, 1, -1, 0])
-    R = givens_rotation_matrix(1, 2, 3*np.pi/2, 4)
+    R = alg.givens_rotation_matrix(1, 2, 3*np.pi/2, 4)
 
     e0 = np.array([0, 1, 1, 1])
     e1 = np.array([0, 0, -1, 0])
@@ -393,6 +410,95 @@ def givens_rotation_test_270L(atol=1e-15):
     assert_allclose(R.dot(e0), t0, atol=atol)
     assert_allclose(R.dot(e1), t1, atol=atol)
     assert_allclose(R.dot(e2), t2, atol=atol)
+
+
+def test_enumerate_integral_points():
+    """Test the computation of integral points."""
+    # convex polytope
+    vertices = np.array([[0.5, 1.5], [0.5, 1.5]])
+    hull = pc.box2poly(vertices)
+    integral_points = alg.enumerate_integral_points(hull)
+    integral_points_ = np.array([[1.0], [1.0]])
+    assert_allclose(
+        _lexsort(integral_points),
+        _lexsort(integral_points_)), integral_points
+    #
+    # nonconvex polytope
+    vertices = np.array([[0.0, 0.0], [1.0, 1.0], [2.0, 1.0]])
+    hull_1 = pc.qhull(vertices)
+    hull_2 = pc.box2poly([[1.0, 2.0], [1.0, 2.0]])
+    nonconvex = hull_1.union(hull_2)
+    integral_points = alg.enumerate_integral_points(nonconvex)
+    integral_points_ = np.array([
+        [0.0, 1.0, 2.0, 1.0, 2.0],
+        [0.0, 1.0, 1.0, 2.0, 2.0]
+        ])
+    assert_allclose(
+        _lexsort(integral_points),
+        _lexsort(integral_points_)), integral_points
+    #
+    # 3-dimensional polytope
+    vertices = np.array([
+        [0.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 1.0]])
+    hull = pc.qhull(vertices)
+    integral_points = alg.enumerate_integral_points(hull)
+    integral_points_ = np.array([
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0]
+        ])
+    assert_allclose(
+        _lexsort(integral_points),
+        _lexsort(integral_points_)), integral_points
+
+
+def _lexsort(x):
+    return x[:, np.lexsort(x)]
+
+
+def test_grid_region():
+    # 8 points in [0, 1]
+    poly = pc.box2poly([[0, 1]])
+    points, res = pc.grid_region(poly)
+    assert res == [8], res
+    _check_grid(points, poly, res)
+    # 100 points in [0, 2]
+    poly = pc.box2poly([[0, 2]])
+    points, res = pc.grid_region(poly, res=[100])
+    assert res == [100], res
+    _check_grid(points, poly, res)
+    # 8 * 8 points in a square
+    poly = pc.box2poly([[0, 10], [5, 20]])
+    points, res = pc.grid_region(poly)
+    assert res == [80, 120], res
+    _check_grid(points, poly, res)
+    # 20 * 20 points in a square
+    poly = pc.box2poly([[-3, 50], [1, 4]])
+    points, res = pc.grid_region(poly, res=[20, 21])
+    assert res == [20, 21], res
+    _check_grid(points, poly, res)
+    with nt.assert_raises(ValueError):
+        pc.grid_region(poly, res=[20])
+    with nt.assert_raises(ValueError):
+        pc.grid_region(poly, res=[20, 10, 20])
+    with nt.assert_raises(ValueError):
+        pc.grid_region(poly, res=[20, -1])
+    with nt.assert_raises(ValueError):
+        pc.grid_region(poly, res=[0, 2])
+    res = [1, 1]
+    points, res_ = pc.grid_region(poly, res=res)
+    assert res == res_, res_
+    _check_grid(points, poly, res)
+
+
+def _check_grid(points, poly, res):
+    assert points.shape == (poly.dim, np.prod(res)), (points.shape, res)
+    bbox = alg._bounding_box_to_polytope(*poly.bounding_box)
+    c = bbox.contains(points)
+    assert np.all(c), points[:, c]
 
 
 def test_lpsolve():
@@ -486,7 +592,7 @@ def is_glpk_present():
         return False
 
 
-def fourier_motzkin_square_test():
+def test_fourier_motzkin_square():
     # Setup a square and project it on the x and y axis
     a = np.array([
         [-1.0, 0.0],
@@ -529,7 +635,7 @@ def fourier_motzkin_square_test():
         (project_dim_1.b[ind_1], expected_b)
 
 
-def fourier_motzkin_triangle_test():
+def test_fourier_motzkin_triangle():
     # Setup a triangle and project it on the x and y axis.
     a = np.array([
         [0.0, -1.0],
@@ -571,6 +677,29 @@ def fourier_motzkin_triangle_test():
         pc.polytope.ABS_TOL), \
         (project_dim_1.b[ind_1], expected_b_1)
 
+
+def test_reduce():
+    a = np.array([
+        [1.0, 0.1],
+        [1.0, 0.1],
+        [-1., 0.],
+        [0., 1.],
+        [0., -1.]
+    ])
+
+    b = np.array([
+        50.,
+        50.5,
+        -40.,
+        1.,
+        0.
+    ])
+
+    poly = pc.Polytope(a, b)
+    poly2 = pc.reduce(poly)
+    l, u = poly2.bounding_box
+    assert_allclose(l, np.array([[40.], [0.]]), rtol=1e-07, atol=1e-07)
+    assert_allclose(u, np.array([[50.], [1.]]), rtol=1e-07, atol=1e-07)
 
 
 if __name__ == '__main__':

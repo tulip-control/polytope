@@ -1,6 +1,18 @@
 # Polytope package update history
 
 
+## version 0.2.4
+
+- remove support for Python 2.7, 3.5, 3.6
+- require `numpy >= 1.20.3`
+- add function `polytope.polytope.enumerate_integral_points`
+- always recompute the volume when calling the
+  function `polytope.polytope.volume`
+- add parameters `nsamples`, `seed` to function `polytope.polytope.volume`
+- replace certain `assert` statements with
+  `raise` statements, raising `ValueError` or `AssertionError`
+
+
 ## version 0.2.3 - 25 November 2020
 
 - require `cvxopt == 1.2.5` in `requirements/extras.txt`

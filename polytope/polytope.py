@@ -40,7 +40,8 @@
 #
 #  M. Kvasnica, P. Grieder and M. Baotić,
 #  Multi-Parametric Toolbox (MPT),
-#  http://control.ee.ethz.ch/~mpt/
+#  https://people.ee.ethz.ch/~mpt/2/  (Multi-Parametric Toolbox version 2.*)
+#  https://web.archive.org/web/20121011103905/http://control.ee.ethz.ch/~mpt/
 #
 #  mldivide
 #  region_diff
@@ -62,6 +63,7 @@ The structure of this module is based on \cite{MPT04}.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import math
 import logging
 import warnings
 
@@ -93,8 +95,13 @@ ABS_TOL = 1e-7
 
 
 class Polytope(object):
-    """Polytope class with following fields
+    """A convex polytope, in half-space representation.
 
+    The minimal vertex representation can be computed with
+    the function `extreme`. A minimal half-space representation can
+    be computed from a vertex representation with the function `qhull`.
+
+    Attributes:
       - `A`: a numpy array for the hyperplane normals in hyperplane
              representation of a polytope
       - `b`: a numpy array for the hyperplane offsets in hyperplane
@@ -109,9 +116,13 @@ class Polytope(object):
       - `dim`: dimension
       - `volume`: volume, computed on first call
 
+    Reference
+    =========
+    https://en.wikipedia.org/wiki/Convex_polytope
+
     See Also
     ========
-    L{Region}
+    L{Region}, L{extreme}, L{qhull}
     """
 
     def __init__(
@@ -136,7 +147,10 @@ class Polytope(object):
         self._chebR = chebR
         self.bbox = None
         self.fulldim = fulldim
-        self._volume = volume
+        if volume is not None:
+            self._set_volume(volume)
+        else:
+            self._volume = None
         self.vertices = vertices
 
     def __str__(self):
@@ -376,6 +390,17 @@ class Polytope(object):
             self._volume = volume(self)
         return self._volume
 
+    def _set_volume(self, polytope_volume):
+        """Set the attribute `self._volume`.
+
+        @param polytope_volume: nonnegative number
+        """
+        if polytope_volume < 0.0:
+            raise ValueError(
+                '`polytope_volume` must be >= 0, given:  {v}'.format(
+                    v=polytope_volume))
+        self._volume = float(polytope_volume)
+
     @property
     def chebR(self):
         r, xc = cheby_ball(self)
@@ -402,13 +427,13 @@ class Polytope(object):
 
     def plot(self, ax=None, color=None, hatch=None, alpha=1.0, linestyle=None, linewidth=None, edgecolor=None):
         if self.dim != 2:
-            raise Exception("Cannot plot polytopes of dimension larger than 2")
-        
+            raise Exception("Cannot plot polytopes of dimension other than 2")
+
         # Setting default values for plotting
         linestyle = linestyle or "dashed"
         linewidth = linewidth or 3
         edgecolor = edgecolor or "black"
-        
+
         ax = _newax(ax)
         if not is_fulldim(self):
             logger.error("Cannot plot empty polytope")
@@ -496,25 +521,37 @@ def _rotate(polyreg, i=None, j=None, u=None, v=None, theta=None, R=None):
     # determine the rotation matrix based on inputs
     if R is not None:
         logger.debug("rotate: R=\n{}".format(R))
-        assert i is None, i
-        assert j is None, j
-        assert theta is None, theta
-        assert u is None, u
-        assert v is None, v
+        if i is not None:
+            raise ValueError(i)
+        if j is not None:
+            raise ValueError(j)
+        if theta is not None:
+            raise ValueError(theta)
+        if u is not None:
+            raise ValueError(u)
+        if v is not None:
+            raise ValueError(v)
     elif i is not None and j is not None and theta is not None:
         logger.info("rotate via indices and angle.")
-        assert R is None, R
-        assert u is None, u
-        assert v is None, v
+        if R is not None:
+            raise ValueError(R)
+        if u is not None:
+            raise ValueError(u)
+        if v is not None:
+            raise ValueError(v)
         if i == j:
             raise ValueError("Must provide two unique basis vectors.")
         R = givens_rotation_matrix(i, j, theta, polyreg.dim)
     elif u is not None and v is not None:
         logger.info("rotate via 2 vectors.")
-        assert R is None, R
-        assert i is None, i
-        assert j is None, j
-        assert theta is None, theta
+        if R is not None:
+            raise ValueError(R)
+        if i is not None:
+            raise ValueError(i)
+        if j is not None:
+            raise ValueError(j)
+        if theta is not None:
+            raise ValueError(theta)
         R = solve_rotation_ap(u, v)
     else:
         raise ValueError("R or (i and j and theta) or (u and v) "
@@ -613,10 +650,12 @@ def _hessian_normal(A, b):
 
 
 class Region(object):
-    """Class for lists of convex polytopes
+    """A polytope, possibly nonconvex.
 
-    Contains the following fields:
+    Represented using a `list` of convex polytopes.
+    Is usable as a container of polytopes.
 
+    Attributes:
       - `list_poly`: list of Polytope objects
       - `props`: set of propositions inside region
       - `bbox`: if calculated, bounding box of region (see bounding_box)
@@ -626,6 +665,10 @@ class Region(object):
       - `volume`: volume of region, calculated on first call
       - `chebXc`: coordinates of maximum chebyshev center (if calculated)
       - `chebR`: maximum chebyshev radius (if calculated)
+
+    Reference
+    =========
+    https://en.wikipedia.org/wiki/Polytope
 
     See Also
     ========
@@ -695,7 +738,8 @@ class Region(object):
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
-        assert points.shape[0] == self.dim, 'points should be column vectors'
+        if points.shape[0] != self.dim:
+            raise ValueError('points should be column vectors')
         contained = np.full(points.shape[1], False, dtype=bool)
         for poly in self.list_poly:
             contained = np.logical_or(
@@ -837,6 +881,17 @@ class Region(object):
             self._volume = volume(self)
         return self._volume
 
+    def _set_volume(self, region_volume):
+        """Set the attribute `self._volume`.
+
+        @param region_volume: nonnegative number
+        """
+        if region_volume < 0.0:
+            raise ValueError(
+                '`region_volume` must be >= 0, given:  {v}'.format(
+                    v=region_volume))
+        self._volume = float(region_volume)
+
     @property
     def chebR(self):
         r, xc = cheby_ball(self)
@@ -865,7 +920,7 @@ class Region(object):
         """Plot a `polytope` on axes `ax`."""
         # TODO optional arg for text label
         if self.dim != 2:
-            raise Exception("Cannot plot region of dimension larger than 2")
+            raise Exception("Cannot plot region of dimension other than 2")
         if not is_fulldim(self):
             logger.error("Cannot plot empty region")
             return None
@@ -979,7 +1034,7 @@ def is_inside(polyreg, point, abs_tol=ABS_TOL):
 
 
 def is_subset(small, big, abs_tol=ABS_TOL):
-    """Return True if small \subseteq big.
+    r"""Return True if small \subseteq big.
 
     @type small: L{Polytope} or L{Region}
     @type big:   L{Polytope} or L{Region}
@@ -1039,22 +1094,24 @@ def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     neq = np.shape(A_arr)[0]
     # first eliminate the linearly dependent rows
     # corresponding to the same hyperplane
-    M1 = np.hstack([A_arr, np.array([b_arr]).T]).T
     # Normalize all rows
-    M1row = 1 / np.sqrt(np.sum(M1**2, 0))
-    M1n = np.dot(M1, np.diag(M1row))
-    M1n = M1n.T
-    keep_row = []
+    a_norm = 1 / np.sqrt(np.sum(A_arr.T**2, 0))
+    a_normed = np.dot(A_arr.T, np.diag(a_norm)).T
+    remove_row = []
     for i in xrange(neq):
-        keep_i = 1
         for j in xrange(i + 1, neq):
             # If the product of two vectors are close to 1,
             # since they are both unit vectors,
-            # they must represent the same hyperplane
-            if np.dot(M1n[i].T, M1n[j]) > 1 - abs_tol:
-                keep_i = 0
-        if keep_i:
-            keep_row.append(i)
+            # they must represent parallel hyperplanes
+            if np.dot(a_normed[i].T, a_normed[j]) > 1 - abs_tol:
+                # Check which inequality that constrains the most
+                b_in = b_arr[i] * a_norm[i]
+                b_jn = b_arr[j] * a_norm[j]
+                if b_in < b_jn:
+                    remove_row.append(j)
+                else:
+                    remove_row.append(i)
+    keep_row = np.setdiff1d(range(neq), remove_row).tolist()
     A_arr = A_arr[keep_row]
     b_arr = b_arr[keep_row]
     neq, nx = A_arr.shape
@@ -1068,10 +1125,12 @@ def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
         # moved to the origin
         #       A*(x-lb) <= b - A*lb
         # Relative to the origin, a row ai in A with only positive coefficients
-        # represents an upper bound. If ai*(x1-lb) <= bi, the hyperplane is above x1.
-        # Hence, if ai*(ub-lb) <= bi, then the hyperplane at row i does not intersect
-        # the bounding box. The same holds for rows with negative coefficients
-        # multiplied with the origin. Rows with both negative and positive coefficients
+        # represents an upper bound. If ai*(x1-lb) <= bi,
+        # the hyperplane is above x1.
+        # Hence, if ai*(ub-lb) <= bi, then the hyperplane at row i
+        # does not intersect the bounding box.
+        # The same holds for rows with negative coefficients multiplied with
+        # the origin. Rows with both negative and positive coefficients
         # are a mixture of the two extremes.
         cand = ~ (np.dot((A_arr > 0) * A_arr, ub - lb) -
                   (np.array([b_arr]).T - np.dot(A_arr, lb)) < -1e-4)
@@ -1081,10 +1140,12 @@ def reduce(poly, nonEmptyBounded=1, abs_tol=ABS_TOL):
     if nonEmptyBounded:
         if neq <= nx + 1:
             return Polytope(A_arr, b_arr)
-    # Check for each inequality whether it is implied by the other inequalities, i.e., is it redundant?
+    # Check for each inequality whether it is implied by
+    # the other inequalities, i.e., is it redundant?
     del keep_row[:]
     for k in xrange(neq):
-        # Setup object function to maximize the linear function defined as current row of A matrix
+        # Setup object function to maximize the linear function
+        # defined as current row of A matrix
         f = -A_arr[k, :]
         G = A_arr
         h = b_arr
@@ -1195,11 +1256,11 @@ def cheby_ball(poly1):
 
     Example (low dimension):
 
-    r1,x1 = cheby_ball(P, [1]) calculates the center and half the
+    r1,x1 = cheby_ball(P) calculates the center and half the
     length of the longest line segment along the first coordinate axis
     inside polytope P
 
-    @type poly1: L{Polytope}
+    @type poly1: L{Polytope} or L{Region}
 
     @return: rc,xc: Chebyshev radius rc (float) and center xc (numpy array)
     """
@@ -1241,6 +1302,17 @@ def cheby_ball(poly1):
     poly1._chebXc = np.array(xc)
     poly1._chebR = np.double(r)
     return poly1._chebR, poly1._chebXc
+
+
+def _bounding_box_to_polytope(lower, upper):
+    """Return a `Polytope` that represents the given bounding box.
+
+    @param lower: corner point of the bounding box
+    @param upper: corner point of the bounding box
+    @rtype: `Polytope`
+    """
+    intervals = [(a[0], b[0]) for a, b in zip(lower, upper)]
+    return box2poly(intervals)
 
 
 def bounding_box(polyreg):
@@ -1304,6 +1376,12 @@ def bounding_box(polyreg):
         if sol['status'] == 0:
             x = sol['x']
             l[i] = x[i]
+        else:
+            raise RuntimeError((
+                '`polytope.solvers.lpsolve` returned:  {v}\n'
+                'its docstring describes return values'
+                ).format(
+                    v=sol))
     # upper corner
     for i in xrange(0, n):
         c = np.negative(np.array(In[:, i]))
@@ -1313,6 +1391,12 @@ def bounding_box(polyreg):
         if sol['status'] == 0:
             x = sol['x']
             u[i] = x[i]
+        else:
+            raise RuntimeError((
+                '`polytope.solvers.lpsolve` returned:  {v}\n'
+                'its docstring describes return values'
+                ).format(
+                    v=sol))
     polyreg.bbox = l, u
     return l, u
 
@@ -1374,7 +1458,7 @@ count = 0
 
 
 def mldivide(a, b, save=False):
-    """Return set difference a \ b.
+    r"""Return set difference a \ b.
 
     @param a: L{Polytope} or L{Region}
     @param b: L{Polytope} to subtract
@@ -1432,28 +1516,39 @@ def intersect(poly1, poly2, abs_tol=ABS_TOL):
     return poly1.intersect(poly2, abs_tol)
 
 
-def volume(polyreg):
+def volume(polyreg, nsamples=None, seed=None):
     """Approximately compute the volume of a Polytope or Region.
 
     A randomized algorithm is used.
 
     @type polyreg: L{Polytope} or L{Region}
+    @param nsamples: number of samples to generate to
+        use for estimating volume
+    @type nsamples: positive integer
+    @param seed: initialization for the random number
+        generator. Passed as argument to the parameter
+        `seed` of the function `numpy.random.default_rng`,
+        read the docstring of that function for details.
+
+        The seed can be used for reproducible volume
+        computations. The documentation of the class
+        `numpy.random.SeedSequence` includes useful
+        recommendations for how to initialize a random
+        generator automatically, and record the seed
+        for reusing it.
 
     @return: Volume of input
     """
     if not is_fulldim(polyreg):
         return 0.0
-    try:
-        if polyreg._volume is not None:
-            return polyreg._volume
-    except Exception:
-        logger.debug('computing volume...')
+    if polyreg._volume is not None:
+        logger.debug('recomputing polytope volume...')
     # `Region` ?
     if isinstance(polyreg, Region):
-        tot_vol = 0.
+        tot_vol = 0.0
         for i in xrange(len(polyreg)):
             tot_vol += volume(polyreg.list_poly[i])
-        polyreg._volume = tot_vol
+        polyreg._set_volume(tot_vol)
         return tot_vol
     # `polyreg` is a `Polytope`
     n = polyreg.A.shape[1]
@@ -1465,15 +1560,27 @@ def volume(polyreg):
         N = 3000
     else:
         N = 10000
+    if nsamples is not None and nsamples < 1:
+        raise ValueError(
+            '`nsamples` must be >= 1, given:  {v}'.format(
+                v=nsamples))
+    if nsamples is not None:
+        N = nsamples
+    if N != int(N):
+        raise ValueError((
+            'it appears that a noninteger number of samples '
+            'has been given, namely:  {v}'
+            ).format(
+                v=nsamples))
     l_b, u_b = polyreg.bounding_box
     x = (np.tile(l_b, (1, N))
-         + np.random.rand(n, N)
+         + np.random.default_rng(seed).random((n, N))
          * np.tile(u_b - l_b, (1, N)))
     aux = (np.dot(polyreg.A, x)
            - np.tile(np.array([polyreg.b]).T, (1, N)))
     aux = np.nonzero(np.all(aux < 0, 0))[0].shape[0]
     vol = np.prod(u_b - l_b) * aux / N
-    polyreg._volume = vol
+    polyreg._set_volume(vol)
     return vol
 
 
@@ -1558,7 +1665,8 @@ def extreme(poly1):
             for ix in xrange(nx):
                 V[iv, ix] = H[iv, ix] / K[iv] + xmid[ix]
     a = V.size / nx
-    assert a.is_integer(), a
+    if not a.is_integer():
+        raise AssertionError(a)
     a = int(a)
     poly1.vertices = V.reshape((a, nx))
     return poly1.vertices
@@ -1860,9 +1968,21 @@ def projection_iterhull(poly1, new_dim, max_iter=1000,
         sol = lpsolve(f1, poly1.A, poly1.b)
         if sol['status'] == 0:
             vert1 = sol['x']
+        else:
+            raise RuntimeError((
+                '`polytope.solvers.lpsolve` returned:  {v}\n'
+                'its docstring describes return values'
+                ).format(
+                    v=sol))
         sol = lpsolve(np.negative(f1), poly1.A, poly1.b)
         if sol['status'] == 0:
             vert2 = sol['x']
+        else:
+            raise RuntimeError((
+                '`polytope.solvers.lpsolve` returned:  {v}\n'
+                'its docstring describes return values'
+                ).format(
+                    v=sol))
         vert = np.vstack([vert1, vert2])
         return qhull(vert)
     else:
@@ -2207,31 +2327,61 @@ def _get_patch(poly1, **kwargs):
     return patch
 
 
+def enumerate_integral_points(poly):
+    """Return all points in `poly` that have integer coordinates.
+
+    @param poly: polytope
+    @type poly: `polytope.polytope.Region` or
+        `polytope.polytope.Polytope`
+    @return: coordinates of `m` points as `d X m` array,
+        where `d` the dimension
+    @rtype: `numpy.ndarray`
+    """
+    a, b = poly.bounding_box
+    a_int = np.floor(a)
+    b_int = np.ceil(b)
+    intervals = list(zip(a_int.flatten(), b_int.flatten()))
+    box = box2poly(intervals)
+    res = [int(b - a + 1) for a, b in intervals]
+    grid, _ = grid_region(box, res=res)
+    inside = poly.contains(grid)
+    return grid[:, inside]
+
+
 def grid_region(polyreg, res=None):
     """Return bounding box grid points within `polyreg`.
 
     @type polyreg: L{Polytope} or L{Region}
-    @param res: resolution of grid
+    @param res: resolution of grid, i.e., how many points
+        the grid has per dimension, before filtering based
+        on which points are contained in the polytope
+    @type res: `list` of `int` >= 1,
+        with `len` equal to `polyreg.dim`
     """
     # grid corners
     bbox = polyreg.bounding_box
-    bbox = np.hstack(bbox)
-    dom = bbox.flatten()
     # grid resolution
-    density = 8
     if res is None:
-        res = list()
-        for i in xrange(0, dom.size, 2):
-            L = dom[i + 1] - dom[i]
-            res += [density * L]
+        density = 8
+        res = [
+            math.ceil(density * (b - a))
+            for a, b in zip(*bbox)]
+    if len(res) != polyreg.dim:
+        raise ValueError((
+            "`len(res)` must equal the polytope's dimension "
+            "(which is {dim}), but instead `res` is:  {res}"
+            ).format(dim=polyreg.dim, res=res))
+    if any(n < 1 for n in res):
+        raise ValueError((
+            '`res` must contain `int` values >= 1, '
+            'instead `res` equals:  {res}'
+            ).format(res=res))
     linspaces = list()
-    for i, n in enumerate(res):
-        a = dom[2 * i]
-        b = dom[2 * i + 1]
-        r = np.linspace(a, b, n)
+    for a, b, n in zip(*bbox, res):
+        r = np.linspace(a, b, num=n)
         linspaces.append(r)
     points = np.meshgrid(*linspaces)
-    x = np.vstack(map(np.ravel, points))
+    x = np.vstack(list(map(np.ravel, points)))
     x = x[:, polyreg.contains(x)]
     return (x, res)
 
@@ -2258,6 +2408,11 @@ def simplices2polytopes(points, triangles):
 
     @type points: N x d
     @type triangles: NT x 3
+
+    References
+    ==========
+    https://en.wikipedia.org/wiki/Simplex
+    https://en.wikipedia.org/wiki/Triangle_mesh
     """
     polytopes = []
     for triangle in triangles:

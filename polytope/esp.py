@@ -32,7 +32,9 @@
 r"""Equality Set Projection (ESP).
 
 Non-vertex polytope projection method from
-    http://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
+- https://web.archive.org/web/20150103142532/
+    https://www-control.eng.cam.ac.uk/~cnj22/research/projection.html
+- https://infoscience.epfl.ch/record/169768
 
 Very unstable, can not handle complex polytopes.
 
@@ -474,7 +476,8 @@ def adjacent(C, D, b, rid_fac, abs_tol=1e-7):
         data["D"] = D
         data["b"] = b
         sio.savemat("matlabdata", data)
-        pickle.dump(data, open("polytope.p", "wb"))
+        with open('polytope.p', 'wb') as f:
+            pickle.dump(data, f)
         raise Exception(
             "adjacent: Lp returned status " + str(sol['status']))
     opt_sol = np.array(sol['x']).flatten()
@@ -747,8 +750,8 @@ def normalize(AA, bb, abs_tol=1e-7):
     for i in range(len(anorm)):
         unique = True
         for j in range(i + 1, len(anorm)):
-            test = np.sum(np.abs(A[i, :] - A[j, :])) + \
-                np.abs(b[i, 0] - b[j, 0])
+            test = (np.sum(np.abs(A[i, :] - A[j, :])) +
+                np.abs(b[i, 0] - b[j, 0]))
             if test < abs_tol:
                 unique = False
                 break

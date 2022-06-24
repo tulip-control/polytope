@@ -125,7 +125,8 @@ def _solve_lp_using_cvxopt(c, G, h, A=None, b=None, solver='glpk'):
     # thus match what `scipy.optimize.linprog` returns.
     x = sol['x']
     if x is not None:
-        assert x.typecode == 'd', x.typecode
+        if x.typecode != 'd':
+            raise AssertionError(x.typecode)
         result['x'] = np.fromiter(x, dtype=np.double)
     else:
         result['x'] = None

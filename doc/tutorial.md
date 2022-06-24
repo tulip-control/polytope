@@ -9,7 +9,8 @@ import polytope as pc
 The `polytope` package is structured around two classes:
 
   - `Polytope`: a single convex polytope internally stored in
-    [H-representation](https://en.wikipedia.org/wiki/Convex_polytope#Intersection_of_half-spaces)
+    [H-representation](
+        https://en.wikipedia.org/wiki/Convex_polytope#Intersection_of_half-spaces)
     `A x <= b` where `A` is an `m x n` matrix and `b` and `m x 1` column matrix.
     `x` is a vector of `n` coordinates in `E^n` (Euclidean n-space).
   - `Region`: a container of `Polytope` objects, can be non-convex.
@@ -90,12 +91,12 @@ p.bounding_box
 
 Several of these attributes are properties that compute the associated
 attribute, if it has not been already computed.  The reason is that some
-computations, e.g., volume or [Chebyshev
-ball](https://en.wikipedia.org/wiki/Chebyshev_center) radius, require sampling
+computations, e.g., volume or [Chebyshev ball](
+    https://en.wikipedia.org/wiki/Chebyshev_center) radius, require sampling
 or solving an optimization problem, which can be computationally expensive.
 
 Finally, the method `plot` does what it says on a
-[matplotlib](http://matplotlib.org) figure and `text` can be used for placing
+[matplotlib](https://matplotlib.org) figure and `text` can be used for placing
 annotations at the `Polytope`'s Chebyshev center.  The `bounding_box` can be
 used to set the correct axis limits to ensure the `Polytope` is visible in the
 plot.
@@ -104,7 +105,7 @@ plot.
 
 A `Region` is a (possibly non-convex and even disconnected) container of (by
 definition convex) `Polytope` objects.  The polytopes can be passed in an
-[iterable](https://docs.python.org/2.7/glossary.html#term-iterable) during
+[iterable](https://docs.python.org/3/glossary.html#term-iterable) during
 instantiation:
 
 ```python
