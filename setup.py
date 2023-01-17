@@ -20,7 +20,6 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Topic :: Scientific/Engineering',
@@ -118,7 +117,7 @@ def run_setup():
             'Documentation': 'https://tulip-control.github.io/polytope/',
             'Source Code': 'https://github.com/tulip-control/polytope'},
         license='BSD',
-        python_requires='>=3.7',
+        python_requires='>=3.8',
         setup_requires=['setuptools >= 65.5.1'],
         install_requires=[
             'numpy >= 1.20.3',
