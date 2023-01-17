@@ -1,4 +1,4 @@
-setuptools==45.2.0
-numpy==1.18.1
-scipy==1.4.1
-networkx==2.4
+setuptools==65.5.1
+numpy==1.24.1
+scipy==1.10.0
+networkx==3.0
