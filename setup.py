@@ -120,12 +120,12 @@ def run_setup():
         python_requires='>=3.8',
         setup_requires=['setuptools >= 65.5.1'],
         install_requires=[
-            'numpy >= 1.20.3',
-            'scipy >= 0.18.0',
-            'networkx >= 1.6'],
+            'numpy >= 1.24.1',
+            'scipy >= 1.10.0',
+            'networkx >= 3.0'],
         tests_require=[
             'nose',
-            'matplotlib >= 2.0.0'],
+            'matplotlib >= 3.6.3'],
         packages=[
             'polytope'],
         package_dir=dict(polytope='polytope'),

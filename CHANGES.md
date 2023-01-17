@@ -4,7 +4,10 @@
 ## version 0.2.4
 
 - REL: require Python >= 3.8
-- require `numpy >= 1.20.3`
+- REL: require:
+  - `numpy >= 1.24.1`
+  - `scipy >= 1.10.0`
+  - `networkx >= 3.0`
 - add function `polytope.polytope.enumerate_integral_points`
 - always recompute the volume when calling the
   function `polytope.polytope.volume`
