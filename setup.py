@@ -119,7 +119,7 @@ def run_setup():
             'Source Code': 'https://github.com/tulip-control/polytope'},
         license='BSD',
         python_requires='>=3.7',
-        setup_requires=['setuptools >= 57.0.0'],
+        setup_requires=['setuptools >= 65.5.1'],
         install_requires=[
             'numpy >= 1.20.3',
             'scipy >= 0.18.0',
