@@ -2,6 +2,7 @@
 """Installation script."""
 # import imp  # inline
 # import importlib  # inline
+import shlex as _sh
 import os
 import setuptools as _stp
 import subprocess
@@ -36,17 +37,24 @@ def retrieve_git_info():
     Otherwise, return the commit hash as str.
     """
     # Is Git installed?
+    cmd = _sh.split('''
+        git --version
+        ''')
     try:
-        subprocess.call([
-            'git', '--version'],
+        subprocess.call(
+            cmd,
             stdout=subprocess.PIPE)
     except OSError:
         return None
     # Decide whether this is a release
-    p = subprocess.Popen([
-            'git', 'describe',
-            '--tags', '--candidates=0',
-            'HEAD'],
+    cmd = _sh.split('''
+        git describe
+            --tags
+            --candidates=0
+                HEAD
+        ''')
+    p = subprocess.Popen(
+        cmd,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT)
     p.wait()
@@ -59,8 +67,13 @@ def retrieve_git_info():
             except ValueError:
                 pass
     # Otherwise, return commit hash
+    cmd = _sh.split('''
+        git log
+            -1
+            --format=%H
+        ''')
     p = subprocess.Popen(
-        ['git', 'log', '-1', '--format=%H'],
+        cmd,
         stdout=subprocess.PIPE)
     p.wait()
     sha1 = p.stdout.read().decode('utf-8')
