@@ -10,10 +10,11 @@
   - `networkx >= 3.0`
 
 API:
-- add function `polytope.polytope.enumerate_integral_points`
+- add function `polytope.polytope.enumerate_integral_points()`
 - always recompute the volume when calling the
-  function `polytope.polytope.volume`
-- add parameters `nsamples`, `seed` to function `polytope.polytope.volume`
+  function `polytope.polytope.volume()`
+- add parameters `nsamples`, `seed` to
+  function `polytope.polytope.volume()`
 - replace certain `assert` statements with
   `raise` statements, raising `ValueError` or `AssertionError`
 
