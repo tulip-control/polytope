@@ -75,10 +75,12 @@ def run_setup():
     else:
         print('Could not find readme file to extract long_description.')
         long_description = ''
-    # If .git directory is present, create commit_hash.txt accordingly
+    # If .git directory is present,
+    # create commit_hash.txt accordingly
     # to indicate version information
     if os.path.exists('.git'):
-        # Provide commit hash or empty file to indicate release
+        # Provide commit hash or
+        # empty file to indicate release
         sha1 = retrieve_git_info()
         if sha1 is None:
             sha1 = 'unknown-commit'
@@ -90,7 +92,8 @@ def run_setup():
         with open('polytope/commit_hash.txt', 'w') as f:
             f.write(commit_hash_header + '\n')
             f.write(sha1 + '\n')
-    # Import polytope/version.py without importing polytope
+    # Import polytope/version.py
+    # without importing polytope
     if sys.version_info.major == 2:
         import imp
         version = imp.load_module(
