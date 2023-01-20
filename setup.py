@@ -35,13 +35,16 @@ def retrieve_git_info():
     """
     # Is Git installed?
     try:
-        subprocess.call(['git', '--version'],
-                        stdout=subprocess.PIPE)
+        subprocess.call([
+            'git', '--version'],
+            stdout=subprocess.PIPE)
     except OSError:
         return None
     # Decide whether this is a release
-    p = subprocess.Popen(
-        ['git', 'describe', '--tags', '--candidates=0', 'HEAD'],
+    p = subprocess.Popen([
+            'git', 'describe',
+            '--tags', '--candidates=0',
+            'HEAD'],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT)
     p.wait()
@@ -90,8 +93,9 @@ def run_setup():
     # Import polytope/version.py without importing polytope
     if sys.version_info.major == 2:
         import imp
-        version = imp.load_module('version',
-                                  *imp.find_module('version', ['polytope']))
+        version = imp.load_module(
+            'version',
+            *imp.find_module('version', ['polytope']))
     else:
         import importlib.util
         spec = importlib.util.spec_from_file_location(
@@ -109,9 +113,12 @@ def run_setup():
         author_email='polytope@tulip-control.org',
         url='https://tulip-control.org',
         project_urls={
-            'Bug Tracker': 'https://github.com/tulip-control/polytope/issues',
-            'Documentation': 'https://tulip-control.github.io/polytope/',
-            'Source Code': 'https://github.com/tulip-control/polytope'},
+            'Bug Tracker':
+                'https://github.com/tulip-control/polytope/issues',
+            'Documentation':
+                'https://tulip-control.github.io/polytope/',
+            'Source Code':
+                'https://github.com/tulip-control/polytope'},
         license='BSD',
         python_requires='>=3.8',
         setup_requires=[
@@ -125,8 +132,10 @@ def run_setup():
             'matplotlib >= 3.6.3'],
         packages=[
             'polytope'],
-        package_dir=dict(polytope='polytope'),
-        package_data=dict(polytope=['commit_hash.txt']),
+        package_dir=dict(
+            polytope='polytope'),
+        package_data=dict(
+            polytope=['commit_hash.txt']),
         classifiers=classifiers)
 
 
