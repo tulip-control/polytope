@@ -5,9 +5,9 @@
 
 - REL: require Python >= 3.8
 - REL: require:
+  - `networkx >= 3.0`
   - `numpy >= 1.24.1`
   - `scipy >= 1.10.0`
-  - `networkx >= 3.0`
 
 API:
 - add function `polytope.polytope.enumerate_integral_points()`

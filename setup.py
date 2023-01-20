@@ -117,9 +117,9 @@ def run_setup():
         setup_requires=[
             'setuptools >= 65.5.1'],
         install_requires=[
+            'networkx >= 3.0',
             'numpy >= 1.24.1',
-            'scipy >= 1.10.0',
-            'networkx >= 3.0'],
+            'scipy >= 1.10.0'],
         tests_require=[
             'nose',
             'matplotlib >= 3.6.3'],
