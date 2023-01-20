@@ -3,7 +3,7 @@
 # import imp  # inline
 # import importlib  # inline
 import os
-from setuptools import setup
+import setuptools as _stp
 import subprocess
 import sys
 
@@ -112,7 +112,7 @@ def run_setup():
         sys.modules['version'] = version
         spec.loader.exec_module(version)
     polytope_version = version.version
-    setup(
+    _stp.setup(
         name='polytope',
         version=polytope_version,
         description='Polytope Toolbox',
