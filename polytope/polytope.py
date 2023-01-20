@@ -614,7 +614,7 @@ def solve_rotation_ap(u, v):
         M[1, 1] = -1
         uv = M.dot(uv)
     # align uv plane with the basis01 plane and u with basis0.
-    for c in range(0, 2):
+    for c in range(2):
         for r in range(N - 1, c, -1):
             if uv[r, c] != 0:  # skip rotations when theta will be zero
                 theta = np.arctan2(uv[r, c], uv[r - 1, c])
@@ -1343,7 +1343,7 @@ def bounding_box(polyreg):
         alllower = np.zeros([lenP, dimP])
         allupper = np.zeros([lenP, dimP])
         # collect lower and upper bounds
-        for ii in range(0, lenP):
+        for ii in range(lenP):
             bbox = polyreg.list_poly[ii].bounding_box
             ll, uu = bbox
             alllower[ii, :] = ll.T
@@ -1351,7 +1351,7 @@ def bounding_box(polyreg):
         l = np.zeros([dimP, 1])
         u = np.zeros([dimP, 1])
         # compute endpoints
-        for ii in range(0, dimP):
+        for ii in range(dimP):
             l[ii] = min(alllower[:, ii])
             u[ii] = max(allupper[:, ii])
         polyreg.bbox = l, u
@@ -1362,7 +1362,7 @@ def bounding_box(polyreg):
     l = np.zeros([n, 1])
     u = np.zeros([n, 1])
     # lower corner
-    for i in range(0, n):
+    for i in range(n):
         c = np.array(In[:, i])
         G = polyreg.A
         h = polyreg.b
@@ -1377,7 +1377,7 @@ def bounding_box(polyreg):
                 ).format(
                     v=sol))
     # upper corner
-    for i in range(0, n):
+    for i in range(n):
         c = np.negative(np.array(In[:, i]))
         G = polyreg.A
         h = polyreg.b

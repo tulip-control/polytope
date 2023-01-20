@@ -479,7 +479,7 @@ def adjacent(C, D, b, rid_fac, abs_tol=1e-7):
             "adjacent: Lp returned status " + str(sol['status']))
     opt_sol = np.array(sol['x']).flatten()
     dual_opt_sol = np.array(sol['z']).flatten()
-    x_opt = opt_sol[range(0, d)]
+    x_opt = opt_sol[range(d)]
     y_opt = opt_sol[range(d, d + k)]
     if is_dual_degenerate(
             c.flatten(), G, h, A, bf * (1 - 0.01),
@@ -685,7 +685,7 @@ def unique_equalityset2(C, D, b, opt_sol, abs_tol=1e-7):
             "unique_equalityset: LP returned status " +
             str(sol['status']))
     opt_sol2 = np.array(sol['x']).flatten()
-    x = opt_sol2[range(0, n)]
+    x = opt_sol2[range(n)]
     s = opt_sol2[range(n, len(opt_sol2))]
     E = np.nonzero(s > abs_tol)[0]
     print(E)
@@ -717,7 +717,7 @@ def cheby_center(C, D, b):
     sol = solvers.lpsolve(c, G, h=b, solver='glpk')
     if sol['status'] == "optimal":
         opt = np.array(sol['x'][0:-1]).flatten()
-        return opt[range(0, d)], opt[range(d, d + k)], True
+        return opt[range(d)], opt[range(d, d + k)], True
     else:
         return np.zeros(d), np.zeros(k), False
 
