@@ -8,6 +8,7 @@
   - `networkx >= 3.0`
   - `numpy >= 1.24.1`
   - `scipy >= 1.10.0`
+  - `setuptools >= 65.5.1`
 
 API:
 - add function `polytope.polytope.enumerate_integral_points()`
