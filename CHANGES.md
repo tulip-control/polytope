@@ -9,6 +9,7 @@
   - `numpy >= 1.24.1`
   - `scipy >= 1.10.0`
   - `setuptools >= 65.5.1`
+- REL: extra require: `cvxopt == 1.3.0`
 - TST: require `pytest >= 7.2.1`, instead of `nose`,
   for Python >= 3.10 compatibility
 - CI: test using GitHub Actions
