@@ -1370,8 +1370,15 @@ def bounding_box(polyreg):
         if sol['status'] == 0:
             x = sol['x']
             l[i] = x[i]
+        elif sol['status'] == 3:
+            # dual infeasible: primal unbounded
+            l[i] = -np.inf
+        elif sol['status'] == 2:
+            # primal infeasible: empty polytope
+            l[i] = 0
         else:
             raise RuntimeError((
+                'bounding_box (lower corner): '
                 '`polytope.solvers.lpsolve` returned:  {v}\n'
                 'its docstring describes return values'
                 ).format(
@@ -1385,8 +1392,15 @@ def bounding_box(polyreg):
         if sol['status'] == 0:
             x = sol['x']
             u[i] = x[i]
+        elif sol['status'] == 3:
+            # dual infeasible: primal unbounded
+            u[i] = np.inf
+        elif sol['status'] == 2:
+            # primal infeasible: empty polytope
+            u[i] = l[i]
         else:
             raise RuntimeError((
+                'bounding_box (upper corner): '
                 '`polytope.solvers.lpsolve` returned:  {v}\n'
                 'its docstring describes return values'
                 ).format(
