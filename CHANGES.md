@@ -1,7 +1,14 @@
 # Polytope package update history
 
 
-## version 0.2.4
+## version 0.2.5 - 6 March 2024
+
+- support `matplotlib >= 3.6.0`
+- correct cases of infinite bounding box and empty polytope;
+  https://github.com/tulip-control/polytope/pull/89
+
+
+## version 0.2.4 - 29 August 2023
 
 - REL: require Python >= 3.8
 - REL: require:
