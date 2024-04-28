@@ -603,11 +603,15 @@ def solve_rotation_ap(u, v):
     NOTE: The precision of this method is limited by sin, cos, and arctan
     functions.
     """
-    # TODO: Assert vectors are non-zero and non-parallel aka exterior
-    # product is non-zero
     N = u.size  # the number of dimensions
-    uv = np.stack([u, v], axis=1)  # the plane of rotation
     M = np.identity(N)  # stores the rotations for rorienting reference frame
+    
+    # save time by returning identity for (anti-)parallel or zero vectors
+    if np.linalg.norm(u) * np.linalg.norm(v) == np.abs(np.dot(u,v)): 
+        logger.debug("solve_rotation_ap: {d} degree rotation".format(d=0))
+        return M 
+        
+    uv = np.stack([u, v], axis=1)  # the plane of rotation
     # ensure u has positive basis0 component
     if uv[0, 0] < 0:
         M[0, 0] = -1
