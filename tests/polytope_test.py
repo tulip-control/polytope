@@ -678,6 +678,51 @@ def test_fourier_motzkin_triangle():
         (project_dim_1.b[ind_1], expected_b_1)
 
 
+def test_projection_iterhull():
+    p = pc.Polytope(
+        A=np.array(
+            [
+                [1.0, -0.0, 0.0],
+                [-0.0, -0.0, -1.0],
+                [-0.0, 1.0, 0.0],
+                [1.0, 0.0, -0.0],
+                [-0.0, -1.0, -0.0],
+                [-0.0, -0.0, 1.0],
+                [-0.0, 0.0, -1.0],
+                [-1.0, 0.0, 0.0],
+                [-0.0, -1.0, 0.0],
+                [-0.0, 1.0, -0.0],
+                [-0.0, -0.0, 1.0],
+                [-1.0, -0.0, -0.0],
+            ]
+        ),
+        b=np.array([1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0]),
+    )
+    q = p.project([1, 2], solver="iterhull")
+
+    expected_q_A = np.array([[1.0, -0.0], [-0.0, -1.0], [0.0, 1.0], [-1.0, -0.0]])
+    expected_q_b = np.array([1.0, 0.0, 1.0, 0.0])
+
+    assert np.all(q.A.shape == expected_q_A.shape)
+    assert np.all(q.b.shape == expected_q_b.shape)
+    if not np.allclose(q.A, expected_q_A):
+        # Due to randomization, the A matrix found in a given test
+        # execution may have rows permuted from the expected A matrix.
+        # Therefore, search for a permutation before failing the test.
+        permutation = [-1, -1, -1, -1]
+        for expected_i, expected_row in enumerate(expected_q_A):
+            actual_i = 0
+            for actual_i, actual_row in enumerate(q.A):
+                if np.allclose(expected_row, actual_row):
+                    assert actual_i not in permutation
+                    permutation[expected_i] = actual_i
+                    break
+            assert permutation[expected_i] >= 0, "projection is missing expected row"
+        assert np.allclose(expected_q_b, q.b[permutation])
+    else:
+        assert np.allclose(expected_q_b, q.b)
+
+
 def test_reduce():
     a = np.array([
         [1.0, 0.1],
