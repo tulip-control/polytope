@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools >= 65.5.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "polytope"
+description = "Polytope Toolbox"
+authors = [{name = "Caltech Control and Dynamical Systems", email = "polytope@tulip-control.org"}]
+readme = "README.rst"
+license = {text = "BSD-3-Clause"}
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dynamic = ["version"]
+requires-python = ">=3.8"
+dependencies = [
+    "networkx >= 3.0",
+    "numpy >= 1.24.1",
+    "scipy >= 1.10.0",
+]
+
+[project.urls]
+Homepage = "https://tulip-control.org"
+"Source Code" = "https://github.com/tulip-control/polytope"
+"Bug Tracker" = "https://github.com/tulip-control/polytope/issues"
+Documentation = "https://tulip-control.github.io/polytope/"
+
+[project.optional-dependencies]
+extra = [
+    "cvxopt >= 1.3.2",
+]
+test = [
+    "matplotlib >= 3.6.3",
+    "pytest >= 7.2.1",
+]
+
+[tool.setuptools]
+packages = [
+    "polytope",
+]
+
+[tool.setuptools.package-data]
+"polytope" = ["commit_hash.txt"]

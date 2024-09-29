@@ -9,23 +9,6 @@ import subprocess
 import sys
 
 
-classifiers = [
-    'Development Status :: 2 - Pre-Alpha',
-    'Intended Audience :: Developers',
-    'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: BSD License',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
-    'Programming Language :: Python :: 3.12',
-    'Topic :: Scientific/Engineering',
-    'Topic :: Software Development']
-
-
 def retrieve_git_info():
     """Return commit hash of HEAD, or "release", or None if failure.
 
@@ -84,15 +67,6 @@ def retrieve_git_info():
 def run_setup():
     """Get version from git, then install."""
     # load long description from README.rst
-    readme_file = 'README.rst'
-    if os.path.exists(readme_file):
-        with open(readme_file) as f:
-            long_description = f.read()
-    else:
-        print(
-            'Could not find readme file to '
-            'extract long_description.')
-        long_description = ''
     # If .git directory is present,
     # create commit_hash.txt accordingly
     # to indicate version information
@@ -127,38 +101,7 @@ def run_setup():
         spec.loader.exec_module(version)
     polytope_version = version.version
     _stp.setup(
-        name='polytope',
-        version=polytope_version,
-        description='Polytope Toolbox',
-        long_description=long_description,
-        author='Caltech Control and Dynamical Systems',
-        author_email='polytope@tulip-control.org',
-        url='https://tulip-control.org',
-        project_urls={
-            'Bug Tracker':
-                'https://github.com/tulip-control/polytope/issues',
-            'Documentation':
-                'https://tulip-control.github.io/polytope/',
-            'Source Code':
-                'https://github.com/tulip-control/polytope'},
-        license='BSD',
-        python_requires='>=3.8',
-        setup_requires=[
-            'setuptools >= 65.5.1'],
-        install_requires=[
-            'networkx >= 3.0',
-            'numpy >= 1.24.1',
-            'scipy >= 1.10.0'],
-        tests_require=[
-            'matplotlib >= 3.6.3',
-            'pytest >= 7.2.1'],
-        packages=[
-            'polytope'],
-        package_dir=dict(
-            polytope='polytope'),
-        package_data=dict(
-            polytope=['commit_hash.txt']),
-        classifiers=classifiers)
+        version=polytope_version)
 
 
 if __name__ == '__main__':
