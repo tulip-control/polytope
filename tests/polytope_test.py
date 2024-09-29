@@ -679,6 +679,7 @@ def test_fourier_motzkin_triangle():
 
 
 def test_projection_iterhull():
+    # This is a unit cube with vertices at (0,0,0), (1,0,0), (0,1,0), ...
     p = pc.Polytope(
         A=np.array(
             [
