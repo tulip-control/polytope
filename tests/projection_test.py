@@ -3,6 +3,7 @@
 import logging
 
 import numpy as np
+from numpy.testing import assert_allclose
 
 import polytope as pc
 
@@ -32,22 +33,22 @@ def test_fourier_motzkin_square():
     expected_b = np.array([-1.0, 2.0])
     ind_0 = np.argsort(project_dim_0.A, axis=0).flatten()
     ind_1 = np.argsort(project_dim_1.A, axis=0).flatten()
-    assert np.allclose(
+    assert_allclose(
         project_dim_0.A[ind_0],
         expected_a,
         pc.polytope.ABS_TOL),\
         (project_dim_0.A[ind_0], expected_a)
-    assert np.allclose(
+    assert_allclose(
         project_dim_0.b[ind_0],
         expected_b,
         pc.polytope.ABS_TOL),\
         (project_dim_0.b[ind_0], expected_b)
-    assert np.allclose(
+    assert_allclose(
         project_dim_1.A[ind_1],
         expected_a,
         pc.polytope.ABS_TOL),\
         (project_dim_1.A[ind_1], expected_a)
-    assert np.allclose(
+    assert_allclose(
         project_dim_1.b[ind_1],
         expected_b,
         pc.polytope.ABS_TOL),\
@@ -75,22 +76,22 @@ def test_fourier_motzkin_triangle():
     expected_a_1 = np.array([[-1.0], [1.0]])
     expected_b_1 = np.array([-1.0, 2.0])
     ind_1 = np.argsort(project_dim_1.A, axis=0).flatten()
-    assert np.allclose(
+    assert_allclose(
         project_dim_0.A[ind_0],
         expected_a_0,
         pc.polytope.ABS_TOL), \
         (project_dim_0.A[ind_0], expected_a_0)
-    assert np.allclose(
+    assert_allclose(
         project_dim_0.b[ind_0],
         expected_b_0,
         pc.polytope.ABS_TOL), \
         (project_dim_0.b[ind_0], expected_b_0)
-    assert np.allclose(
+    assert_allclose(
         project_dim_1.A[ind_1],
         expected_a_1,
         pc.polytope.ABS_TOL), \
         (project_dim_1.A[ind_1], expected_a_1)
-    assert np.allclose(
+    assert_allclose(
         project_dim_1.b[ind_1],
         expected_b_1,
         pc.polytope.ABS_TOL), \
@@ -125,7 +126,7 @@ def test_projection_iterhull():
 
     assert np.all(q.A.shape == expected_q_A.shape)
     assert np.all(q.b.shape == expected_q_b.shape)
-    if not np.allclose(q.A, expected_q_A):
+    if not np.allclose(q.A, expected_q_A, atol=1e-15):
         # Due to randomization, the A matrix found in a given test
         # execution may have rows permuted from the expected A matrix.
         # Therefore, search for a permutation before failing the test.
@@ -133,11 +134,11 @@ def test_projection_iterhull():
         for expected_i, expected_row in enumerate(expected_q_A):
             actual_i = 0
             for actual_i, actual_row in enumerate(q.A):
-                if np.allclose(expected_row, actual_row):
+                if np.allclose(actual_row, expected_row, atol=1e-15):
                     assert actual_i not in permutation
                     permutation[expected_i] = actual_i
                     break
             assert permutation[expected_i] >= 0, "projection is missing expected row"
-        assert np.allclose(expected_q_b, q.b[permutation])
+        assert_allclose(q.b[permutation], expected_q_b, atol=1e-15)
     else:
-        assert np.allclose(expected_q_b, q.b)
+        assert_allclose(q.b, expected_q_b, atol=1e-15)
