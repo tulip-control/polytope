@@ -56,7 +56,7 @@ except ImportError:
     logger.info('MOSEK solver not found.')
 
 try:
-    import gurobipy as gp
+    import gurobipy as gurobi
     installed_solvers.add('gurobi')
 except ImportError:
     logger.info('GUROBI solver not found')
@@ -161,21 +161,21 @@ def _solve_lp_using_scipy(c, G, h):
 def _solve_lp_using_gurobi(c, G, h):
     """Attempt linear optimization using gurobipy"""
     _assert_have_solver('gurobi')
-    m = gp.Model()
-    x = m.addMVar(G.shape[1], lb=-gp.GRB.INFINITY)
+    m = gurobi.Model()
+    x = m.addMVar(G.shape[1], lb=-gurobi.GRB.INFINITY)
     m.addConstr(G@x <= h)
     m.setObjective(c@x)
     m.optimize()
 
     result = dict()
-    if m.Status == gp.GRB.OPTIMAL:
+    if m.Status == gurobi.GRB.OPTIMAL:
         result['status'] = 0
         result['x'] = x.x
         result['fun'] = m.ObjVal
         return result
-    elif m.Status == gp.GRB.INFEASIBLE:
+    elif m.Status == gurobi.GRB.INFEASIBLE:
         result['status'] = 2
-    elif m.Status == gp.GRB.INF_OR_UNBD or m.Status == gp.GRB.UNBOUNDED:
+    elif m.Status == gurobi.GRB.INF_OR_UNBD or m.Status == gurobi.GRB.UNBOUNDED:
         result['status'] = 3
     else:
         raise ValueError(f'`gurobipy` returned unexpected status value: {m.Status}')
