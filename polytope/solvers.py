@@ -57,9 +57,7 @@ except ImportError:
 
 
 # choose default from installed choices
-if 'gurobi' in installed_solvers:
-    default_solver = 'gurobi'
-elif 'glpk' in installed_solvers:
+if 'glpk' in installed_solvers:
     default_solver = 'glpk'
 elif 'scipy' in installed_solvers:
     default_solver = 'scipy'
