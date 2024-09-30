@@ -10,6 +10,12 @@ The `polytope` package selects the default solver as follows:
 You can change this default at runtime by setting the variable
 `default_solver` in the module `solvers`.
 
+Nonfree (i.e., having restrictive licenses) solvers are also
+supported but require extra packages:
+
+* Gurobi, https://pypi.org/project/gurobipy/
+* MOSEK, https://pypi.org/project/Mosek/
+
 For example:
 
 ```python
