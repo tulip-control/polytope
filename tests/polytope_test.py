@@ -616,6 +616,7 @@ def test_reduce():
     assert_allclose(u, np.array([[50.], [1.]]), rtol=1e-07, atol=1e-07)
 
 
+@pytest.mark.nonfree
 def test_gurobipy_return_same_result_as_scipy():
     c, A, b = example_1d()
     result_gurobi = solvers.lpsolve(c, A, b, solver='gurobi')
