@@ -90,9 +90,6 @@ jobs:
                 export CVXOPT_BUILD_GLPK=1
                 pip install cvxopt
                 python -c 'import cvxopt.glpk'
-            - name: Install `gurobipy` (nonfree)
-              run: |
-                pip install gurobipy
             - name: Run all tests, using `cvxopt.glpk`
               run: |
                 set -o posix
@@ -102,4 +99,18 @@ jobs:
                 pytest \
                     -v \
                     --continue-on-collection-errors \
+                    .
+            - name: Install `gurobipy` (nonfree)
+              run: |
+                pip install gurobipy
+            - name: Run tests involving nonfree solvers
+              run: |
+                set -o posix
+                echo 'Exported environment variables:'
+                export -p
+                cd tests/
+                pytest \
+                    -v \
+                    --continue-on-collection-errors \
+                    -m nonfree \
                     .
