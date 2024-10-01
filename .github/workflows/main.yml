@@ -81,6 +81,7 @@ jobs:
                 set -o posix
                 echo 'Exported environment variables:'
                 export -p
+                cd tests/
                 pytest \
                     -v \
                     --continue-on-collection-errors \
