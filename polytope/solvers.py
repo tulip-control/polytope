@@ -159,7 +159,7 @@ def _solve_lp_using_scipy(c, G, h):
 
 
 def _solve_lp_using_gurobi(c, G, h):
-    """Attempt linear optimization using gurobipy"""
+    """Attempt linear optimization using gurobipy."""
     _assert_have_solver('gurobi')
     m = gurobi.Model()
     x = m.addMVar(G.shape[1], lb=-gurobi.GRB.INFINITY)
