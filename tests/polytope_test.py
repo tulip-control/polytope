@@ -8,6 +8,11 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_equal
 import pytest
 import scipy.optimize
 
+try:
+    import gurobipy
+except ImportError:
+    gurobipy = None
+
 import polytope as pc
 import polytope.polytope as alg
 from polytope import solvers
@@ -616,7 +621,9 @@ def test_reduce():
     assert_allclose(u, np.array([[50.], [1.]]), rtol=1e-07, atol=1e-07)
 
 
-@pytest.mark.nonfree
+@pytest.mark.skipif(
+    gurobipy is None,
+    reason='`gurobipy` is not installed')
 def test_gurobipy_return_same_result_as_scipy():
     c, A, b = example_1d()
     result_gurobi = solvers.lpsolve(c, A, b, solver='gurobi')
