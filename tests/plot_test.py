@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Tests for plotting."""
-import unittest
+import pytest
 
 try:
     import matplotlib as mpl
@@ -19,9 +19,9 @@ class Axes(object):
         pass
 
 
-@unittest.skipIf(
+@pytest.mark.skipif(
     mpl is None,
-    '`matplotlib` is not installed')
+    reason='`matplotlib` is not installed')
 def test_plot_transition_arrow():
     p0 = pc.box2poly([[0.0, 1.0], [0.0, 2.0]])
     p1 = pc.box2poly([[0.1, 2.0], [0.0, 2.0]])
