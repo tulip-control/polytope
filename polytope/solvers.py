@@ -175,8 +175,19 @@ def _solve_lp_using_gurobi(c, G, h):
         return result
     elif m.Status == gurobi.GRB.INFEASIBLE:
         result['status'] = 2
-    elif m.Status == gurobi.GRB.INF_OR_UNBD or m.Status == gurobi.GRB.UNBOUNDED:
+    elif m.Status == gurobi.GRB.UNBOUNDED:
         result['status'] = 3
+    elif m.Status == gurobi.GRB.INF_OR_UNBD:
+        m.reset(0)
+        m.Params.DualReductions = 0
+        m.optimize()
+        result['message'] = 'Gurobi optimization status was INF_OR_UNBD, so reoptimized with DualReductions=0'
+        if m.Status == gurobi.GRB.INFEASIBLE:
+            result['status'] = 2
+        elif m.Status == gurobi.GRB.UNBOUNDED:
+            result['status'] = 3
+        else:
+            raise ValueError(f'`gurobipy` returned unexpected status value after reoptimizing with DualReductions=0: {m.Status}')
     else:
         raise ValueError(f'`gurobipy` returned unexpected status value: {m.Status}')
 
