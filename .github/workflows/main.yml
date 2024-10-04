@@ -81,6 +81,7 @@ jobs:
                 set -o posix
                 echo 'Exported environment variables:'
                 export -p
+                cd tests/
                 pytest \
                     -v \
                     --continue-on-collection-errors \
@@ -90,6 +91,9 @@ jobs:
                 export CVXOPT_BUILD_GLPK=1
                 pip install cvxopt
                 python -c 'import cvxopt.glpk'
+            - name: Install optional solvers with restrictive licenses
+              run: |
+                pip install gurobipy
             - name: Run all tests, using `cvxopt.glpk`
               run: |
                 set -o posix

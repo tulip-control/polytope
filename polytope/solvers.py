@@ -10,6 +10,12 @@ The `polytope` package selects the default solver as follows:
 You can change this default at runtime by setting the variable
 `default_solver` in the module `solvers`.
 
+Nonfree (i.e., having restrictive licenses) solvers are also
+supported but require extra packages:
+
+* Gurobi, https://pypi.org/project/gurobipy/
+* MOSEK, https://pypi.org/project/Mosek/
+
 For example:
 
 ```python
@@ -49,6 +55,12 @@ try:
 except ImportError:
     logger.info('MOSEK solver not found.')
 
+try:
+    import gurobipy as gurobi
+    installed_solvers.add('gurobi')
+except ImportError:
+    logger.info('GUROBI solver not found')
+
 
 # choose default from installed choices
 if 'glpk' in installed_solvers:
@@ -59,7 +71,6 @@ elif 'scipy' in installed_solvers:
 else:
     raise ValueError(
         "`installed_solvers` wasn't empty above?")
-
 
 
 def lpsolve(c, G, h, solver=None):
@@ -87,6 +98,8 @@ def lpsolve(c, G, h, solver=None):
         result = _solve_lp_using_cvxopt(c, G, h, solver=solver)
     elif solver == 'scipy':
         result = _solve_lp_using_scipy(c, G, h)
+    elif solver == 'gurobi':
+        result = _solve_lp_using_gurobi(c, G, h)
     else:
         raise Exception(
             'unknown LP solver "{s}".'.format(s=solver))
@@ -143,6 +156,45 @@ def _solve_lp_using_scipy(c, G, h):
         status=sol.status,
         x=sol.x,
         fun=sol.fun)
+
+
+def _solve_lp_using_gurobi(c, G, h):
+    """Attempt linear optimization using gurobipy."""
+    _assert_have_solver('gurobi')
+    m = gurobi.Model()
+    x = m.addMVar(G.shape[1], lb=-gurobi.GRB.INFINITY)
+    m.addConstr(G@x <= h)
+    m.setObjective(c@x)
+    m.optimize()
+
+    result = dict()
+    if m.Status == gurobi.GRB.OPTIMAL:
+        result['status'] = 0
+        result['x'] = x.x
+        result['fun'] = m.ObjVal
+        return result
+    elif m.Status == gurobi.GRB.INFEASIBLE:
+        result['status'] = 2
+    elif m.Status == gurobi.GRB.UNBOUNDED:
+        result['status'] = 3
+    elif m.Status == gurobi.GRB.INF_OR_UNBD:
+        m.reset(0)
+        m.Params.DualReductions = 0
+        m.optimize()
+        result['message'] = 'Gurobi optimization status was INF_OR_UNBD, so reoptimized with DualReductions=0'
+        if m.Status == gurobi.GRB.INFEASIBLE:
+            result['status'] = 2
+        elif m.Status == gurobi.GRB.UNBOUNDED:
+            result['status'] = 3
+        else:
+            raise ValueError(f'`gurobipy` returned unexpected status value after reoptimizing with DualReductions=0: {m.Status}')
+    else:
+        raise ValueError(f'`gurobipy` returned unexpected status value: {m.Status}')
+
+    result['x'] = None
+    result['fun'] = None
+    return result
+
 
 
 def _assert_have_solver(solver):

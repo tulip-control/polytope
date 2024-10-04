@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 """Tests for the polytope package."""
 import logging
+from warnings import warn
 
 import numpy as np
-from numpy.testing import assert_allclose
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_allclose, assert_array_equal, assert_equal
+
 import pytest
 import scipy.optimize
+
+try:
+    import gurobipy
+except ImportError:
+    gurobipy = None
 
 import polytope as pc
 import polytope.polytope as alg
@@ -614,6 +620,35 @@ def test_reduce():
     l, u = poly2.bounding_box
     assert_allclose(l, np.array([[40.], [0.]]), rtol=1e-07, atol=1e-07)
     assert_allclose(u, np.array([[50.], [1.]]), rtol=1e-07, atol=1e-07)
+
+
+@pytest.mark.skipif(
+    gurobipy is None,
+    reason='`gurobipy` is not installed')
+def test_gurobipy_return_same_result_as_scipy():
+    # Try 1-D problem with solution
+    c, A, b = example_1d()
+    result_gurobi = solvers.lpsolve(c, A, b, solver='gurobi')
+    result_scipy = solvers.lpsolve(c, A, b, solver='scipy')
+    assert_equal(result_gurobi['status'], result_scipy['status'])
+    assert_allclose(result_gurobi['x'][0], result_scipy['x'][0])
+    assert_allclose(result_gurobi['fun'], result_scipy['fun'])
+
+    # Try 1-D unbounded problem that may trigger INF_OR_UNBD Gurobi status
+    c = np.array([1])
+    A = np.array([[1]])
+    b = np.array([1])
+    result = solvers.lpsolve(c, A, b, solver='gurobi')
+    result_gurobi = solvers.lpsolve(c, A, b, solver='gurobi')
+    result_scipy = solvers.lpsolve(c, A, b, solver='scipy')
+    assert_equal(result_gurobi['status'], result_scipy['status'])
+    assert_equal(
+        result_gurobi['status'],
+        3,
+        'Optimization status expected to be unbounded, but is not'
+    )
+    if 'message' not in result_gurobi or 'INF_OR_UNBD' not in result_gurobi['message']:
+        warn('Test with Gurobi often results in INF_OR_UNBD but did not')
 
 
 if __name__ == '__main__':
