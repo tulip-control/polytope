@@ -1,4 +1,4 @@
-setuptools==70.0.0
+setuptools==78.1.1
 numpy==1.24.1
 scipy==1.10.0
 networkx==3.0
