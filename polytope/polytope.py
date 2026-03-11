@@ -2377,7 +2377,7 @@ def grid_region(polyreg, res=None):
     if res is None:
         density = 8
         res = [
-            math.ceil(density * (b - a))
+            math.ceil(density * (b[0] - a[0]))
             for a, b in zip(*bbox)]
     if len(res) != polyreg.dim:
         raise ValueError((
