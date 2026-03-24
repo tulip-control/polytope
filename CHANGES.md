@@ -1,6 +1,11 @@
 # Polytope package update history
 
 
+## version 0.2.6 - under development
+
+- REL: require `cvxopt == 1.3.3` in `requirements/extras.txt`
+
+
 ## version 0.2.5 - 6 March 2024
 
 - support `matplotlib >= 3.6.0`
