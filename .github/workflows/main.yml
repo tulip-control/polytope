@@ -24,7 +24,7 @@ jobs:
                     '3.13',
                     ]
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - name: Install APT packages
               run: |
                 sudo apt update
@@ -35,7 +35,7 @@ jobs:
                     libmpfr-dev \
                     libglpk-dev
             - name: Set up Python ${{ matrix.python-version }}
-              uses: actions/setup-python@v5
+              uses: actions/setup-python@v6
               with:
                   python-version: ${{ matrix.python-version }}
             - name: Install dependencies from PyPI
