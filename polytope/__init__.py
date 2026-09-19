@@ -30,7 +30,12 @@
 # OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 """Polytope package."""
-from .version import version as __version__
+
+try:
+    import polytope._version as _version
+    __version__ = _version.version
+except ImportError:
+    __version__ = None
 
 from .polytope import (
     Polytope, Region,

@@ -1,4 +1,3 @@
-include polytope/commit_hash.txt
 recursive-include examples *.py
 include run_tests.py
 include tests/*.py

@@ -49,6 +49,3 @@ test = [
 packages = [
     "polytope",
 ]
-
-[tool.setuptools.package-data]
-"polytope" = ["commit_hash.txt"]
