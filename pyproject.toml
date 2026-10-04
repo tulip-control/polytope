@@ -42,7 +42,9 @@ extra = [
 ]
 test = [
     "matplotlib >= 3.6.3",
+    "packaging >= 25.0",
     "pytest >= 7.2.1",
+    "setuptools >= 39.0.0",
 ]
 
 [tool.setuptools]
