@@ -47,7 +47,6 @@ def git_version(
 
 def run_setup():
     """Get version from git, then install."""
-    # load long description from README.rst
     try:
         version = git_version(VERSION)
     except AssertionError:
