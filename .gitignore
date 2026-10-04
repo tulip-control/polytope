@@ -15,6 +15,6 @@ __pycache__
 build/
 dist/
 doc/_build/
-/polytope/commit_hash.txt
+/polytope/_version.py
 .coverage
 /tests/cover/
