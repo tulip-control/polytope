@@ -37,7 +37,7 @@ def git_version(
     # is it release of `version` ?
     try:
         tag = subprocess.check_output([
-            'git', 'describe', '--match=v[0-9]*','--exact-match','--tags','--dirty'
+            'git', 'describe', '--match=v[0-9]*', '--exact-match', '--tags', '--dirty'
         ], text=True).strip()
     except subprocess.CalledProcessError:
         return f'{version}.dev0+{sha}'
