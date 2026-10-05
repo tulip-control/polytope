@@ -41,7 +41,8 @@ def git_version(
         ], text=True).strip()
     except subprocess.CalledProcessError:
         return f'{version}.dev0+{sha}'
-    assert tag == f'v{version}', (tag, version)
+    if tag != f'v{version}':
+        raise AssertionError((tag, version))
     return version
 
 
